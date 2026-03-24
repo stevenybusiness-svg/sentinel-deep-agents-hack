@@ -83,3 +83,24 @@ def test_aerospike_put_get_roundtrip():
         assert result["num"] == 42
     finally:
         client.close()
+
+
+# ── Frontend build test (INFRA-04) ─────────────────────────────────────────
+
+import subprocess
+
+
+def test_frontend_build():
+    """INFRA-04: Verify React frontend builds successfully with all dependencies."""
+    frontend_dir = os.path.join(os.path.dirname(__file__), "..", "frontend")
+    frontend_dir = os.path.abspath(frontend_dir)
+    assert os.path.isdir(frontend_dir), f"frontend/ directory not found at {frontend_dir}"
+
+    result = subprocess.run(
+        ["npx", "vite", "build"],
+        cwd=frontend_dir,
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    assert result.returncode == 0, f"vite build failed:\n{result.stderr}"
