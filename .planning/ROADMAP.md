@@ -33,7 +33,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. Phase 1 and Phase 2 demo fixture files (invoice image with embedded hidden text, counterparty DB, KYC ledger with Meridian Logistics absent, behavioral baselines) are committed and loadable via a fixture loader
 **Plans:** 5 plans
 Plans:
-- [ ] 01-01-PLAN.md — Python project init, dependency install, package stubs (INFRA-01, INFRA-05)
+- [x] 01-01-PLAN.md — Python project init, dependency install, package stubs (INFRA-01, INFRA-05)
 - [ ] 01-02-PLAN.md — Aerospike Docker setup + async client wrapper (INFRA-02)
 - [ ] 01-03-PLAN.md — React frontend scaffold with @xyflow/react, Zustand, Tailwind + build test (INFRA-04)
 - [ ] 01-04-PLAN.md — Demo fixtures with forensic invoice PNGs, fixture loader, Claude API validation (DEMO-03, INFRA-03)
