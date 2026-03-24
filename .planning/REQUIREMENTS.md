@@ -10,7 +10,7 @@
 - [x] **INFRA-01**: Python 3.11+ project initialized with FastAPI, AsyncAnthropic, Aerospike Python client (19.1.0), RestrictedPython (8.2)
 - [x] **INFRA-02**: Aerospike running via Docker with startup health check (read-after-write validates namespace exists before accepting traffic)
 - [ ] **INFRA-03**: Claude API Tier 2 access confirmed; prompt caching enabled for all agent system prompts to stay within ITPM budget
-- [ ] **INFRA-04**: React 18+ frontend initialized with @xyflow/react (12.4.x), Zustand, Tailwind CSS
+- [x] **INFRA-04**: React 18+ frontend initialized with @xyflow/react (12.4.x), Zustand, Tailwind CSS
 - [x] **INFRA-05**: Environment configuration via .env (ANTHROPIC_API_KEY, AEROSPIKE_HOST, BLAND_API_KEY, OKTA_DOMAIN, OKTA_CLIENT_ID)
 - [ ] **INFRA-06**: TrueFoundry deployment configured for agent fleet (EC2/ECS with AWS infrastructure)
 
@@ -139,7 +139,7 @@
 | INFRA-01 | Phase 1 | Complete |
 | INFRA-02 | Phase 1 | Complete |
 | INFRA-03 | Phase 1 | Pending |
-| INFRA-04 | Phase 1 | Pending |
+| INFRA-04 | Phase 1 | Complete |
 | INFRA-05 | Phase 1 | Complete |
 | INFRA-06 | Phase 6 | Pending |
 | SCHEMA-01 | Phase 1 | Pending |
