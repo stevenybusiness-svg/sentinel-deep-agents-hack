@@ -9,7 +9,7 @@
 
 - [x] **INFRA-01**: Python 3.11+ project initialized with FastAPI, AsyncAnthropic, Aerospike Python client (19.1.0), RestrictedPython (8.2)
 - [x] **INFRA-02**: Aerospike running via Docker with startup health check (read-after-write validates namespace exists before accepting traffic)
-- [ ] **INFRA-03**: Claude API Tier 2 access confirmed; prompt caching enabled for all agent system prompts to stay within ITPM budget
+- [x] **INFRA-03**: Claude API Tier 2 access confirmed; prompt caching enabled for all agent system prompts to stay within ITPM budget
 - [x] **INFRA-04**: React 18+ frontend initialized with @xyflow/react (12.4.x), Zustand, Tailwind CSS
 - [x] **INFRA-05**: Environment configuration via .env (ANTHROPIC_API_KEY, AEROSPIKE_HOST, BLAND_API_KEY, OKTA_DOMAIN, OKTA_CLIENT_ID)
 - [ ] **INFRA-06**: TrueFoundry deployment configured for agent fleet (EC2/ECS with AWS infrastructure)
@@ -91,7 +91,7 @@
 
 - [ ] **DEMO-01**: docker-compose.yml runs full stack (FastAPI, Aerospike, React dev server) in one command with no manual steps
 - [ ] **DEMO-02**: demo_check.py validates all components before demo: Aerospike namespace accessible, API keys valid, Bland AI connectivity, WebSocket connects and receives first event, Phase 1 fixtures load, Phase 2 fixtures load
-- [ ] **DEMO-03**: Demo fixtures committed: Phase 1 (invoice image with embedded hidden text, counterparty DB, behavioral baselines), Phase 2 (spoofed KYC pre-clearance payload, empty KYC ledger for Meridian Logistics)
+- [x] **DEMO-03**: Demo fixtures committed: Phase 1 (invoice image with embedded hidden text, counterparty DB, behavioral baselines), Phase 2 (spoofed KYC pre-clearance payload, empty KYC ledger for Meridian Logistics)
 - [ ] **DEMO-04**: Full Phase 1 → rule generation → Phase 2 arc runs end-to-end without intervention in under 3 minutes
 - [ ] **DEMO-05**: Screen recording of full demo arc captured as fallback before demo day
 
@@ -138,7 +138,7 @@
 |-------------|-------|--------|
 | INFRA-01 | Phase 1 | Complete |
 | INFRA-02 | Phase 1 | Complete |
-| INFRA-03 | Phase 1 | Pending |
+| INFRA-03 | Phase 1 | Complete |
 | INFRA-04 | Phase 1 | Complete |
 | INFRA-05 | Phase 1 | Complete |
 | INFRA-06 | Phase 6 | Pending |
@@ -190,7 +190,7 @@
 | AUTH-02 | Phase 5 | Pending |
 | DEMO-01 | Phase 6 | Pending |
 | DEMO-02 | Phase 6 | Pending |
-| DEMO-03 | Phase 1 | Pending |
+| DEMO-03 | Phase 1 | Complete |
 | DEMO-04 | Phase 6 | Pending |
 | DEMO-05 | Phase 6 | Pending |
 
