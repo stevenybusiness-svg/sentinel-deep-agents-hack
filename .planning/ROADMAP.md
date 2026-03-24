@@ -31,7 +31,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A minimal Claude API call using the configured AsyncAnthropic client returns a response without a 429 error, and prompt caching headers confirm cache_control is active on system prompts
   4. The React frontend boots with @xyflow/react, Zustand, and Tailwind imports resolving without duplicate-context errors
   5. Phase 1 and Phase 2 demo fixture files (invoice image with embedded hidden text, counterparty DB, KYC ledger with Meridian Logistics absent, behavioral baselines) are committed and loadable via a fixture loader
-**Plans**: TBD
+**Plans:** 4 plans
+Plans:
+- [ ] 01-01-PLAN.md — Python project init + frozen Pydantic schemas (SCHEMA-01..04, INFRA-01, INFRA-05)
+- [ ] 01-02-PLAN.md — Aerospike Docker setup + async client wrapper (INFRA-02)
+- [ ] 01-03-PLAN.md — React frontend scaffold with @xyflow/react, Zustand, Tailwind (INFRA-04)
+- [ ] 01-04-PLAN.md — Demo fixtures, fixture loader, Claude API validation (DEMO-03, INFRA-03)
 
 ### Phase 2: Core Investigation Pipeline
 **Goal**: A payment request submitted to the API triggers a complete parallel investigation, produces a verdict board, passes through the Safety Gate, and writes all results to Aerospike — the hidden-text-invoice attack scenario runs end-to-end and produces NO-GO with correct attribution
@@ -102,7 +107,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/TBD | Not started | - |
+| 1. Foundation | 0/4 | Planning complete | - |
 | 2. Core Investigation Pipeline | 0/TBD | Not started | - |
 | 3. Self-Improvement Loop | 0/TBD | Not started | - |
 | 4. Dashboard | 0/TBD | Not started | - |
