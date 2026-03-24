@@ -78,6 +78,12 @@ Recent decisions affecting current work:
 
 None yet.
 
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260324-j7c | Add Bedrock backend support as zero-friction fallback | 2026-03-24 | f8000cd | [260324-j7c-add-bedrock-backend-support-as-zero-fric](.planning/quick/260324-j7c-add-bedrock-backend-support-as-zero-fric/) |
+
 ### Blockers/Concerns
 
 - [Phase 1 risk]: Aerospike Python client (19.1.0) is a C-extension — on Apple Silicon (M-series), requires ARCHFLAGS="-arch arm64" to compile. Validate install on demo hardware immediately on Day 1.
