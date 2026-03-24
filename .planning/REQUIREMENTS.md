@@ -16,10 +16,10 @@
 
 ### Schemas
 
-- [ ] **SCHEMA-01**: Verdict schema frozen — agent_id, claims_checked[] (field, agent_claimed, independently_found, match, severity), behavioral_flags[], agent_confidence, confidence_z_score, unable_to_verify
-- [ ] **SCHEMA-02**: Verdict Board schema frozen — mismatches[], behavioral_flags[], agent_confidence, confidence_z_score, step_sequence_deviation, hardcoded_rule_fired, unable_to_verify[]
-- [ ] **SCHEMA-03**: Episode schema frozen — id, timestamp, action_request, agent_verdicts, verdict_board, gate_decision, gate_rationale, rules_fired, generated_rules_fired, operator_confirmation, attack_type, generated_rule_source, new_rules_deployed
-- [ ] **SCHEMA-04**: WebSocket event taxonomy defined — 9 named events: investigation_started, agent_completed (×3), verdict_board_assembled, gate_evaluated, episode_written, rule_generated, rule_deployed
+- [x] **SCHEMA-01**: Verdict schema frozen — agent_id, claims_checked[] (field, agent_claimed, independently_found, match, severity), behavioral_flags[], agent_confidence, confidence_z_score, unable_to_verify
+- [x] **SCHEMA-02**: Verdict Board schema frozen — mismatches[], behavioral_flags[], agent_confidence, confidence_z_score, step_sequence_deviation, hardcoded_rule_fired, unable_to_verify[]
+- [x] **SCHEMA-03**: Episode schema frozen — id, timestamp, action_request, agent_verdicts, verdict_board, gate_decision, gate_rationale, rules_fired, generated_rules_fired, operator_confirmation, attack_type, generated_rule_source, new_rules_deployed
+- [x] **SCHEMA-04**: WebSocket event taxonomy defined — 9 named events: investigation_started, agent_completed (×3), verdict_board_assembled, gate_evaluated, episode_written, rule_generated, rule_deployed
 
 ### Investigation Pipeline
 
@@ -142,10 +142,10 @@
 | INFRA-04 | Phase 1 | Complete |
 | INFRA-05 | Phase 1 | Complete |
 | INFRA-06 | Phase 6 | Pending |
-| SCHEMA-01 | Phase 1 | Pending |
-| SCHEMA-02 | Phase 1 | Pending |
-| SCHEMA-03 | Phase 1 | Pending |
-| SCHEMA-04 | Phase 1 | Pending |
+| SCHEMA-01 | Phase 1 | Complete |
+| SCHEMA-02 | Phase 1 | Complete |
+| SCHEMA-03 | Phase 1 | Complete |
+| SCHEMA-04 | Phase 1 | Complete |
 | PIPE-01 | Phase 2 | Pending |
 | PIPE-02 | Phase 2 | Pending |
 | PIPE-03 | Phase 2 | Pending |
