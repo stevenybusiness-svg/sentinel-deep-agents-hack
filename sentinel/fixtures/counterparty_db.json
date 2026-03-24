@@ -1,0 +1,31 @@
+{
+  "CP-001": {
+    "name": "Apex Financial Services",
+    "authorized": true,
+    "max_transaction": 500000,
+    "currency": "USD",
+    "last_verified": "2025-11-15"
+  },
+  "CP-002": {
+    "name": "GlobalTrade Corp",
+    "authorized": true,
+    "max_transaction": 250000,
+    "currency": "GBP",
+    "last_verified": "2025-09-22"
+  },
+  "CP-003": {
+    "name": "Northern Pacific Industries",
+    "authorized": true,
+    "max_transaction": 750000,
+    "currency": "CAD",
+    "last_verified": "2025-12-01"
+  },
+  "CP-004": {
+    "name": "Meridian Logistics",
+    "authorized": false,
+    "max_transaction": 0,
+    "currency": "USD",
+    "last_verified": null,
+    "notes": "No authorization record found. Added to DB as unauthorized placeholder."
+  }
+}

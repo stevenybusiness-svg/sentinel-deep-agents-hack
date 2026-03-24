@@ -1,0 +1,30 @@
+{
+  "Apex Financial Services": {
+    "status": "verified",
+    "verification_date": "2025-11-15",
+    "jurisdiction": "US",
+    "risk_rating": "low",
+    "kyc_officer": "J. Martinez"
+  },
+  "GlobalTrade Corp": {
+    "status": "verified",
+    "verification_date": "2025-09-22",
+    "jurisdiction": "UK",
+    "risk_rating": "low",
+    "kyc_officer": "S. Chen"
+  },
+  "Northern Pacific Industries": {
+    "status": "verified",
+    "verification_date": "2025-12-01",
+    "jurisdiction": "CA",
+    "risk_rating": "medium",
+    "kyc_officer": "R. Patel"
+  },
+  "Silverline Payments": {
+    "status": "verified",
+    "verification_date": "2026-01-10",
+    "jurisdiction": "US",
+    "risk_rating": "low",
+    "kyc_officer": "A. Thompson"
+  }
+}
