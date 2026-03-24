@@ -1,0 +1,14 @@
+# Core dependencies — pinned versions matching pyproject.toml
+fastapi==0.115.14
+uvicorn[standard]==0.34.0
+anthropic[aiohttp]==0.86.0
+aerospike==19.1.0
+RestrictedPython==8.1
+pydantic>=2.12,<3
+python-dotenv>=1.0,<2
+
+# Dev dependencies
+pytest>=8.0
+pytest-asyncio>=0.24
+httpx>=0.27
+Pillow>=10.0
