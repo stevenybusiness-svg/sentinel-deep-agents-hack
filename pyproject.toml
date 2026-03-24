@@ -10,7 +10,7 @@ requires-python = ">=3.11"
 dependencies = [
     "fastapi==0.115.14",
     "uvicorn[standard]>=0.34,<0.35",
-    "anthropic[aiohttp]==0.86.0",
+    "anthropic[aiohttp,bedrock]==0.86.0",
     "aerospike==19.1.0",
     "RestrictedPython==8.1",
     "pydantic>=2.12,<3",
