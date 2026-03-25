@@ -33,11 +33,13 @@ async def analyze(
     std = agent_baseline.get("std", 0.11)
 
     # Compute confidence z-score — PIPE-03
-    z = (payment_decision.confidence - mean) / std
+    # Round to 10 decimal places to avoid floating-point boundary artifacts
+    # e.g. (0.85 - 0.52) / 0.11 = 2.9999999999999996 in float64
+    z = round((payment_decision.confidence - mean) / std, 10)
 
     # Determine ClaimCheck match and severity for confidence
     abs_z = abs(z)
-    if abs_z > 3.0:
+    if abs_z >= 3.0:
         severity = "critical"
     elif abs_z > 2.0:
         severity = "warning"
@@ -62,7 +64,7 @@ async def analyze(
     if abs_z > 2.0:
         behavioral_flags.append("confidence_anomaly")
 
-    if z > 3.0:
+    if z >= 3.0:
         behavioral_flags.append("high_confidence_deviation")
 
     # Step-sequence deviation detection — PIPE-03
