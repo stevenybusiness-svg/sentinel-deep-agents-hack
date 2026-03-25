@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Ready to plan
-stopped_at: Completed quick/260324-j7c-add-bedrock-backend-support-as-zero-fric
-last_updated: "2026-03-24T18:00:18.859Z"
+status: Context gathered — ready to plan Phase 2
+stopped_at: Phase 2 planned — 6 plans in 3 waves, verification passed
+last_updated: "2026-03-25T03:11:54.775Z"
 progress:
   total_phases: 6
   completed_phases: 1
-  total_plans: 5
+  total_plans: 11
   completed_plans: 5
 ---
 
@@ -18,8 +18,8 @@ progress:
 
 See: .planning/PROJECT.md (updated 2026-03-24)
 
-**Core value:** The self-improvement loop: a rule learned from one attack type must demonstrably catch a completely different attack — live, on stage, in 3 minutes.
-**Current focus:** Phase 01 — foundation
+**Core value:** The self-improvement loop: the system autonomously generates composite scoring functions from prediction errors, evolves them across incidents, and catches novel attacks — inspectable Python, not a black box. Live, on stage, in 3 minutes.
+**Current focus:** Phase 02 — Core Investigation Pipeline
 
 ## Current Position
 
@@ -59,11 +59,17 @@ Plan: Not started
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- [Init]: Deterministic Python Safety Gate — no LLM in enforcement path; LLMs investigate and generate rules, Python enforces
+- [Init]: Deterministic Python Safety Gate — no LLM in enforcement path; the block decision is an if-statement
 - [Init]: Rule generation prompt must be tested 30+ times in isolation before wiring (Phase 3 go/no-go gate)
 - [Init]: Aerospike for episodic memory — real integration required; latency must be visible on dashboard
-- [Init]: Okta option 1 (token introspection) — ~30 min implementation; sufficient for demo override gate
-- [Init]: Voice + Okta deferred to Phase 5 — core loop must be bulletproof first; voice failure is recoverable, pipeline failure is not
+- [Init]: Voice deferred to Phase 5 — core loop must be bulletproof first; voice failure is recoverable, pipeline failure is not
+- [Revision 260324]: Cybersecurity-first framing — "autonomous agent security" not "payment fraud"; payments are the demo scenario, not the product category
+- [Revision 260324]: Payment Agent must be real Sonnet 4.6 LLM, not hardcoded — agent is genuinely manipulated via prompt injection, not scripted
+- [Revision 260324]: Composite anomaly scoring — generated rules return weighted scores (float), not binary (bool); individually weak signals compound above threshold
+- [Revision 260324]: Prediction step added — system forms expectations from behavioral baselines before investigation; prediction error (expected vs actual) is the primary learning signal for rule generation
+- [Revision 260324]: Rule evolution — after second confirmed incident, scoring function refines using prediction errors from both episodes; drops artifacts, strengthens common signals
+- [Revision 260324]: Okta cut from scope — timeline pressure, not a judge differentiator; mention in Q&A if asked
+- [Revision 260324]: Competitive analysis completed — no existing product generates inspectable detection rules from incidents for AI agent security (Straiker/Lakera/Darktrace/SOAR all have gaps here)
 - [Phase 01-01]: Used setuptools.build_meta backend — setuptools.backends.legacy:build incompatible with installed version
 - [Phase 01-02]: Aerospike sync client + ThreadPoolExecutor pattern — aioaerospike is archived/unmaintained as of August 2025
 - [Phase 01-02]: health_check() performs read-after-write (not just ping) to prove data path end-to-end per INFRA-02
@@ -92,6 +98,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-24T17:54:43.509Z
-Stopped at: Completed quick/260324-j7c-add-bedrock-backend-support-as-zero-fric
-Resume file: None
+Last session: 2026-03-25T03:11:54.757Z
+Stopped at: Phase 2 planned — 6 plans in 3 waves, verification passed
+Resume file: .planning/phases/02-core-investigation-pipeline/02-01-PLAN.md
