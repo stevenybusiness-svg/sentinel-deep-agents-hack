@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Ready to execute
-stopped_at: Completed 04-dashboard-01-PLAN.md
-last_updated: "2026-03-25T20:32:05.944Z"
+stopped_at: Completed 04-dashboard-02-PLAN.md
+last_updated: "2026-03-25T20:36:40.215Z"
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 20
-  completed_plans: 16
+  completed_plans: 17
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-24)
 ## Current Position
 
 Phase: 04 (dashboard) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 
 ## Performance Metrics
 
@@ -62,6 +62,7 @@ Plan: 2 of 5
 | Phase 03 P03 | 264 | 2 tasks | 3 files |
 | Phase 03 P04 | 2 | 2 tasks | 2 files |
 | Phase 04-dashboard P01 | 2 | 2 tasks | 6 files |
+| Phase 04-dashboard P02 | 2 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -114,6 +115,9 @@ Recent decisions affecting current work:
 - [Phase 03]: BEHAVIORAL_RULE_SOURCE generalizes via compound signals (confidence + z-score + unverifiable) shared across both attack vectors — the shared behavioral fingerprint regardless of attack type
 - [Phase 04-dashboard]: initInvestigationTree called on investigation_started WS event so tree resets exactly when backend starts new investigation
 - [Phase 04-dashboard]: trust score computed as 1.0 - composite_score clamped 0-1 — simple inversion for dashboard trust indicator
+- [Phase 04-dashboard]: SentinelNode status-driven rendering with 5 states (pending/active/complete/blocked/rule_node) using Material Symbols icons
+- [Phase 04-dashboard]: Trust score bar integrated inline in GateDecisionPanel (DASH-06 folded into DASH-07 per plan)
+- [Phase 04-dashboard]: InvestigationTree renders empty state waiting message when nodes.length === 0 to avoid blank canvas
 
 ### Pending Todos
 
@@ -133,6 +137,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T20:32:05.937Z
-Stopped at: Completed 04-dashboard-01-PLAN.md
+Last session: 2026-03-25T20:36:40.211Z
+Stopped at: Completed 04-dashboard-02-PLAN.md
 Resume file: None
