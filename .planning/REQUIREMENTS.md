@@ -60,8 +60,8 @@
 
 ### Backend API
 
-- [ ] **API-01**: FastAPI server with WebSocket endpoint (/ws) emitting named investigation events to connected dashboard clients in real time
-- [ ] **API-02**: POST /investigate accepts payment request payload; triggers full investigation pipeline with prediction step; caches active episode state in memory
+- [x] **API-01**: FastAPI server with WebSocket endpoint (/ws) emitting named investigation events to connected dashboard clients in real time
+- [x] **API-02**: POST /investigate accepts payment request payload; triggers full investigation pipeline with prediction step; caches active episode state in memory
 - [ ] **API-03**: POST /confirm accepts operator confirmation (confirmed_attack / false_positive); extracts prediction errors; triggers scoring function generation pipeline if confirmed_attack; stores result to Aerospike
 - [ ] **API-04**: POST /bland-webhook handles Bland AI Q&A turns; responds within 8s; reads pre-computed investigation context from in-memory cache (not Aerospike per-turn)
 
@@ -177,8 +177,8 @@
 | MEM-03 | Phase 2 | Complete |
 | MEM-04 | Phase 2 | Complete |
 | MEM-05 | Phase 3 | Pending |
-| API-01 | Phase 2 | Pending |
-| API-02 | Phase 2 | Pending |
+| API-01 | Phase 2 | Complete |
+| API-02 | Phase 2 | Complete |
 | API-03 | Phase 3 | Pending |
 | API-04 | Phase 5 | Pending |
 | DASH-01 | Phase 4 | Pending |
