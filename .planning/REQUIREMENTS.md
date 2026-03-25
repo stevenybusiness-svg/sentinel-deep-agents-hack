@@ -43,9 +43,9 @@
 
 ### Self-Improvement Loop
 
-- [ ] **LEARN-01**: On operator-confirmed attack, system extracts prediction errors from the episode — where expected values diverged most from actual findings across all VerdictBoard fields
-- [ ] **LEARN-02**: Generated Python scoring function is behavioral — operates only on verdict_board fields; does not reference attack mechanism, document type, or agent names; returns weighted anomaly score (float), not binary bool; includes docstring explaining what behavioral pattern it detects
-- [ ] **LEARN-03**: Generated function passes validation before deployment: AST parse, compile(), test harness executes function against clean baseline (must return score < 0.3) and attack fixture (must return score > 0.6)
+- [x] **LEARN-01**: On operator-confirmed attack, system extracts prediction errors from the episode — where expected values diverged most from actual findings across all VerdictBoard fields
+- [x] **LEARN-02**: Generated Python scoring function is behavioral — operates only on verdict_board fields; does not reference attack mechanism, document type, or agent names; returns weighted anomaly score (float), not binary bool; includes docstring explaining what behavioral pattern it detects
+- [x] **LEARN-03**: Generated function passes validation before deployment: AST parse, compile(), test harness executes function against clean baseline (must return score < 0.3) and attack fixture (must return score > 0.6)
 - [ ] **LEARN-04**: Validated scoring function exec()'d into Safety Gate registry with provenance: episode_id, prediction_errors, timestamp, python_source stored in Aerospike rules set
 - [ ] **LEARN-05**: Phase 2 demo end-to-end: generated scoring function from Phase 1 (invoice attack) fires on Phase 2 verdict board (identity spoofing); hardcoded rules alone insufficient; generated function's contribution pushes composite score above threshold; attribution displays "Blocked by Generated Rule #001 (learned from Episode #001) | Deployed [X]s ago"
 - [ ] **LEARN-06**: Rule evolution: after second confirmed incident, system feeds both VerdictBoards and their prediction errors to Opus 4.6 and generates refined scoring function (v2) — tighter thresholds, drops conditions that were artifacts of one attack, strengthens conditions present in both; v2 replaces v1 in registry with full version history in Aerospike
@@ -53,10 +53,10 @@
 ### Episodic Memory (Aerospike)
 
 - [x] **MEM-01**: Episode records written to Aerospike `sentinel.episodes` set after each incident resolution; write latency measured per operation
-- [ ] **MEM-02**: Generated rule source, provenance, and version history written to Aerospike `sentinel.rules` set; fire_count bin updated atomically via increment(); rules loaded into SafetyGate registry at startup via scan()
+- [x] **MEM-02**: Generated rule source, provenance, and version history written to Aerospike `sentinel.rules` set; fire_count bin updated atomically via increment(); rules loaded into SafetyGate registry at startup via scan()
 - [x] **MEM-03**: Behavioral baselines and prediction history persisted in Aerospike `sentinel.trust` set; queried at investigation start for prediction step
 - [x] **MEM-04**: Recent episodes and prediction errors queried from Aerospike at investigation start; injected into Supervisor context
-- [ ] **MEM-05**: Aerospike write latency measured per operation and exposed via API; displayed on dashboard (target: <5ms per write)
+- [x] **MEM-05**: Aerospike write latency measured per operation and exposed via API; displayed on dashboard (target: <5ms per write)
 
 ### Backend API
 
@@ -166,17 +166,17 @@
 | ENGN-05 | Phase 2 | Complete |
 | ENGN-06 | Phase 2 | Complete |
 | ENGN-07 | Phase 2 | Complete |
-| LEARN-01 | Phase 3 | Pending |
-| LEARN-02 | Phase 3 | Pending |
-| LEARN-03 | Phase 3 | Pending |
+| LEARN-01 | Phase 3 | Complete |
+| LEARN-02 | Phase 3 | Complete |
+| LEARN-03 | Phase 3 | Complete |
 | LEARN-04 | Phase 3 | Pending |
 | LEARN-05 | Phase 3 | Pending |
 | LEARN-06 | Phase 3 | Pending |
 | MEM-01 | Phase 2 | Complete |
-| MEM-02 | Phase 3 | Pending |
+| MEM-02 | Phase 3 | Complete |
 | MEM-03 | Phase 2 | Complete |
 | MEM-04 | Phase 2 | Complete |
-| MEM-05 | Phase 3 | Pending |
+| MEM-05 | Phase 3 | Complete |
 | API-01 | Phase 2 | Complete |
 | API-02 | Phase 2 | Complete |
 | API-03 | Phase 3 | Pending |

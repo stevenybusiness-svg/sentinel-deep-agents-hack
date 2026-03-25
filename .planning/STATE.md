@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Ready to execute
-stopped_at: Completed 03-02-PLAN.md
-last_updated: "2026-03-25T16:29:28.563Z"
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-03-25T16:29:41.340Z"
 progress:
   total_phases: 6
   completed_phases: 2
@@ -102,6 +102,9 @@ Recent decisions affecting current work:
 - [Phase 02-06]: asyncio.TaskGroup dispatches Risk/Compliance/Forensics in parallel with per-agent unable_to_verify fallback (D-13)
 - [Phase 03]: Rule index stored as JSON list under __rules_index__ key — consistent with __episode_index__ pattern from episode_store.py
 - [Phase 03]: Startup rule loading uses inline import inside try/except — non-fatal; server degrades gracefully if Aerospike unavailable
+- [Phase 03-01]: SAFE_BUILTINS duplicated (not imported) from safety_gate.py to avoid circular imports in rule_generator.py
+- [Phase 03-01]: validate_rule() attack score threshold > 0.6 matches Safety Gate ESCALATE threshold — minimum viable signal strength for generated rules
+- [Phase 03-01]: evolve() validates against vb2 (second incident) — evolved function must demonstrate detection on newer attack, not just repeat first
 
 ### Pending Todos
 
@@ -121,6 +124,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T16:28:47.293Z
-Stopped at: Completed 03-02-PLAN.md
+Last session: 2026-03-25T16:29:41.335Z
+Stopped at: Completed 03-01-PLAN.md
 Resume file: None
