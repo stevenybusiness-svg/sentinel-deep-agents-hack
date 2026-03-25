@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Ready to execute
-stopped_at: Completed 02-05-PLAN.md
-last_updated: "2026-03-25T03:26:46.344Z"
+stopped_at: Completed 02-04-PLAN.md
+last_updated: "2026-03-25T03:28:41.568Z"
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 11
-  completed_plans: 7
+  completed_plans: 8
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-24)
 ## Current Position
 
 Phase: 02 (core-investigation-pipeline) — EXECUTING
-Plan: 4 of 6
+Plan: 5 of 6
 
 ## Performance Metrics
 
@@ -54,6 +54,7 @@ Plan: 4 of 6
 | Phase 02 P01 | 3 | 2 tasks | 7 files |
 | Phase 02 P02 | 2 | 2 tasks | 2 files |
 | Phase 02 P05 | 5 | 2 tasks | 3 files |
+| Phase 02 P04 | 243 | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -89,6 +90,8 @@ Recent decisions affecting current work:
 - [Phase 02-02]: parse_payment_decision handles raw JSON, markdown code-fenced JSON, and JSON embedded in prose -- covers all realistic LLM output formats
 - [Phase 02]: Episode index stored as JSON list under __episode_index__ key — scan+sort in Python, acceptable for demo scale
 - [Phase 02]: store_prediction_history keyed as prediction_{episode_id} for direct lookup in Phase 3 rule generation
+- [Phase 02]: RestrictedPython compile_restricted used exclusively in register_rule() — plain compile() never used for generated rules per CLAUDE.md hard constraint
+- [Phase 02]: 8 hardcoded scoring rules cover: hidden_text, z_score, mismatch severity, unverifiable, step deviation, amount threshold, beneficiary, compound behavioral flags
 
 ### Pending Todos
 
@@ -108,6 +111,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T03:26:46.336Z
-Stopped at: Completed 02-05-PLAN.md
+Last session: 2026-03-25T03:28:41.562Z
+Stopped at: Completed 02-04-PLAN.md
 Resume file: None

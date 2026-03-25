@@ -56,7 +56,7 @@ Plans:
 - [x] 02-01-PLAN.md — PaymentDecision schema, VerdictBoard/Episode extensions, PredictionEngine (ENGN-07)
 - [x] 02-02-PLAN.md — Payment Agent with tool-use and Claude vision (PIPE-01, PIPE-07)
 - [ ] 02-03-PLAN.md — Sub-agents: Risk, Compliance, Forensics (PIPE-02..06)
-- [ ] 02-04-PLAN.md — Verdict Board Engine + Safety Gate with file-based scoring rules (ENGN-01..06)
+- [x] 02-04-PLAN.md — Verdict Board Engine + Safety Gate with file-based scoring rules (ENGN-01..06)
 - [ ] 02-05-PLAN.md — Aerospike episode and trust stores with latency tracking (MEM-01, MEM-03, MEM-04)
 - [ ] 02-06-PLAN.md — Supervisor orchestration, FastAPI server, WebSocket, /investigate endpoint (PIPE-02, API-01, API-02)
 **UI hint**: yes

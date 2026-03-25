@@ -33,12 +33,12 @@
 
 ### Verdict Board Engine + Safety Gate
 
-- [ ] **ENGN-01**: Verdict Board Engine performs field-level comparison between payment agent claims and each investigator's independently found values; produces mismatch list with severity tags (critical/warning/info)
-- [ ] **ENGN-02**: Safety Gate applies hardcoded rules first and immutably (adversarial content in document → NO-GO; agent identity unverifiable in authoritative log → NO-GO)
-- [ ] **ENGN-03**: Safety Gate loads all generated scoring functions from rule registry and executes each against the verdict board via RestrictedPython sandbox
-- [ ] **ENGN-04**: Safety Gate outputs GO / NO-GO / ESCALATE with full attribution — which mismatches, which rules fired, which agents found what, and each rule's score contribution
-- [ ] **ENGN-05**: exec() sandbox enforces: builtins whitelist (len, any, all, isinstance, etc.), compile() before exec(), explicit namespace extraction, 5-second timeout, AST string-level pre-check for import/__
-- [ ] **ENGN-06**: Safety Gate computes composite anomaly score — each scoring function returns a weighted signal, individually weak signals compound, total score evaluated against threshold (>=1.0 → NO-GO, >=0.6 → ESCALATE, else → GO)
+- [x] **ENGN-01**: Verdict Board Engine performs field-level comparison between payment agent claims and each investigator's independently found values; produces mismatch list with severity tags (critical/warning/info)
+- [x] **ENGN-02**: Safety Gate applies hardcoded rules first and immutably (adversarial content in document → NO-GO; agent identity unverifiable in authoritative log → NO-GO)
+- [x] **ENGN-03**: Safety Gate loads all generated scoring functions from rule registry and executes each against the verdict board via RestrictedPython sandbox
+- [x] **ENGN-04**: Safety Gate outputs GO / NO-GO / ESCALATE with full attribution — which mismatches, which rules fired, which agents found what, and each rule's score contribution
+- [x] **ENGN-05**: exec() sandbox enforces: builtins whitelist (len, any, all, isinstance, etc.), compile() before exec(), explicit namespace extraction, 5-second timeout, AST string-level pre-check for import/__
+- [x] **ENGN-06**: Safety Gate computes composite anomaly score — each scoring function returns a weighted signal, individually weak signals compound, total score evaluated against threshold (>=1.0 → NO-GO, >=0.6 → ESCALATE, else → GO)
 - [x] **ENGN-07**: Prediction step computes expected VerdictBoard values from behavioral baselines before investigation; prediction errors (expected vs actual) stored with episode for rule generation input
 
 ### Self-Improvement Loop
@@ -52,10 +52,10 @@
 
 ### Episodic Memory (Aerospike)
 
-- [ ] **MEM-01**: Episode records written to Aerospike `sentinel.episodes` set after each incident resolution; write latency measured per operation
+- [x] **MEM-01**: Episode records written to Aerospike `sentinel.episodes` set after each incident resolution; write latency measured per operation
 - [ ] **MEM-02**: Generated rule source, provenance, and version history written to Aerospike `sentinel.rules` set; fire_count bin updated atomically via increment(); rules loaded into SafetyGate registry at startup via scan()
-- [ ] **MEM-03**: Behavioral baselines and prediction history persisted in Aerospike `sentinel.trust` set; queried at investigation start for prediction step
-- [ ] **MEM-04**: Recent episodes and prediction errors queried from Aerospike at investigation start; injected into Supervisor context
+- [x] **MEM-03**: Behavioral baselines and prediction history persisted in Aerospike `sentinel.trust` set; queried at investigation start for prediction step
+- [x] **MEM-04**: Recent episodes and prediction errors queried from Aerospike at investigation start; injected into Supervisor context
 - [ ] **MEM-05**: Aerospike write latency measured per operation and exposed via API; displayed on dashboard (target: <5ms per write)
 
 ### Backend API
@@ -159,12 +159,12 @@
 | PIPE-05 | Phase 2 | Pending |
 | PIPE-06 | Phase 2 | Pending |
 | PIPE-07 | Phase 2 | Complete |
-| ENGN-01 | Phase 2 | Pending |
-| ENGN-02 | Phase 2 | Pending |
-| ENGN-03 | Phase 2 | Pending |
-| ENGN-04 | Phase 2 | Pending |
-| ENGN-05 | Phase 2 | Pending |
-| ENGN-06 | Phase 2 | Pending |
+| ENGN-01 | Phase 2 | Complete |
+| ENGN-02 | Phase 2 | Complete |
+| ENGN-03 | Phase 2 | Complete |
+| ENGN-04 | Phase 2 | Complete |
+| ENGN-05 | Phase 2 | Complete |
+| ENGN-06 | Phase 2 | Complete |
 | ENGN-07 | Phase 2 | Complete |
 | LEARN-01 | Phase 3 | Pending |
 | LEARN-02 | Phase 3 | Pending |
@@ -172,10 +172,10 @@
 | LEARN-04 | Phase 3 | Pending |
 | LEARN-05 | Phase 3 | Pending |
 | LEARN-06 | Phase 3 | Pending |
-| MEM-01 | Phase 2 | Pending |
+| MEM-01 | Phase 2 | Complete |
 | MEM-02 | Phase 3 | Pending |
-| MEM-03 | Phase 2 | Pending |
-| MEM-04 | Phase 2 | Pending |
+| MEM-03 | Phase 2 | Complete |
+| MEM-04 | Phase 2 | Complete |
 | MEM-05 | Phase 3 | Pending |
 | API-01 | Phase 2 | Pending |
 | API-02 | Phase 2 | Pending |
