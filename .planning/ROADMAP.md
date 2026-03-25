@@ -91,7 +91,13 @@ Plans:
   5. The forensic scan panel shows clean invoice vs. annotated forensic scan side-by-side
   6. The generated rule source panel shows readable Python with provenance and evolution history (v1 → v2)
   7. The Aerospike write latency metric is displayed live on the dashboard
-**Plans**: TBD
+**Plans:** 5 plans
+Plans:
+- [ ] 04-01-PLAN.md — Zustand store extensions, WebSocket hook, two-column layout shell with attack buttons (VOICE-04)
+- [ ] 04-02-PLAN.md — Investigation tree with animated nodes, Gate Decision panel, Anomaly Score Bar (DASH-01, DASH-02, DASH-07, DASH-11)
+- [ ] 04-03-PLAN.md — Verdict Board table with prediction sub-rows, Forensic Scan panel (DASH-03, DASH-04, DASH-10)
+- [ ] 04-04-PLAN.md — Rule Source panel with streaming/syntax highlighting, Decision Log, Trust Score Bar, Aerospike Latency (DASH-05, DASH-06, DASH-08, DASH-09)
+- [ ] 04-05-PLAN.md — Visual verification checkpoint (all DASH requirements)
 **UI hint**: yes
 
 ### Phase 5: Voice Integration
@@ -127,6 +133,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. Foundation | 5/5 | Complete   | 2026-03-24 |
 | 2. Core Investigation Pipeline | 6/6 | Complete |  |
 | 3. Self-Improvement Loop | 4/4 | Complete   | 2026-03-25 |
-| 4. Dashboard | 0/TBD | Not started | - |
+| 4. Dashboard | 0/5 | Planned | - |
 | 5. Voice Integration | 0/TBD | Not started | - |
 | 6. Demo Preparation + Deployment | 0/TBD | Not started | - |
