@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Frozen schemas, infrastructure, Aerospike health check, Claude API tier validation, and demo fixtures (completed 2026-03-24)
 - [ ] **Phase 2: Core Investigation Pipeline** - Real LLM Payment Agent, prediction step, parallel sub-agents, Verdict Board Engine, Safety Gate with composite anomaly scoring, Aerospike writes, FastAPI/WebSocket, Phase 1 demo arc end-to-end
-- [ ] **Phase 3: Self-Improvement Loop** - Rule generation prompt (30+ isolation tests), prediction-error-driven scoring function generation, validation harness, rule evolution across incidents, SafetyGate registry, Phase 2 generalization verified end-to-end
+- [x] **Phase 3: Self-Improvement Loop** - Rule generation prompt (30+ isolation tests), prediction-error-driven scoring function generation, validation harness, rule evolution across incidents, SafetyGate registry, Phase 2 generalization verified end-to-end (completed 2026-03-25)
 - [ ] **Phase 4: Dashboard** - Investigation tree, prediction vs. actual display, verdict board table, anomaly score bar with rule contributions, forensic scan panel, generated rule source panel with evolution history, trust score animation, Zustand state, WebSocket integration
 - [ ] **Phase 5: Voice Integration** - Bland AI webhook, barge-in, grounded Q&A with anomaly scores and rule attribution, pre-computed context cache
 - [ ] **Phase 6: Demo Preparation + Deployment** - docker-compose, demo_check.py, fixture loading, dry runs, AWS deployment, screen recording fallback
@@ -72,12 +72,12 @@ Plans:
   4. When the Phase 2 identity-spoofing VerdictBoard is evaluated, hardcoded rules alone produce insufficient anomaly score, but the generated scoring function's contribution pushes the composite score above the NO-GO threshold — with attribution "Blocked by Generated Rule #001"
   5. After confirming Attack 2, the system generates a refined scoring function (Rule 001-v2) using prediction errors from both episodes — the refined function is tighter (lower false positive potential) than v1
   6. Aerospike write latency for rule storage is measured and exposed via API
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans complete
 Plans:
 - [x] 03-01-PLAN.md — RuleGenerator core engine with validation harness, Opus 4.6 prompt, EventType extension (LEARN-01, LEARN-02, LEARN-03)
 - [x] 03-02-PLAN.md — Aerospike rule store with CRUD, latency tracking, startup loading (MEM-02, MEM-05)
 - [x] 03-03-PLAN.md — POST /confirm route with background rule generation pipeline, WebSocket streaming (API-03, LEARN-04)
-- [ ] 03-04-PLAN.md — Cross-attack generalization proof, rule evolution, end-to-end loop test (LEARN-05, LEARN-06)
+- [x] 03-04-PLAN.md — Cross-attack generalization proof, rule evolution, end-to-end loop test (LEARN-05, LEARN-06)
 
 ### Phase 4: Dashboard
 **Goal**: The React dashboard visualizes the complete investigation lifecycle in real time — the investigation tree lights up as sub-agents activate, prediction vs. actual values are displayed, the anomaly score bar fills with color-coded rule contributions, the verdict board shows field-level mismatches, and after rule generation/evolution a new rule node appears with provenance; all information that would be spoken by voice is also visible on screen
@@ -126,7 +126,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete   | 2026-03-24 |
 | 2. Core Investigation Pipeline | 6/6 | Complete |  |
-| 3. Self-Improvement Loop | 3/4 | In Progress|  |
+| 3. Self-Improvement Loop | 4/4 | Complete   | 2026-03-25 |
 | 4. Dashboard | 0/TBD | Not started | - |
 | 5. Voice Integration | 0/TBD | Not started | - |
 | 6. Demo Preparation + Deployment | 0/TBD | Not started | - |
