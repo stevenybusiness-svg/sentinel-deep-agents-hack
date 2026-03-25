@@ -3,6 +3,7 @@ import { useWebSocket } from './hooks/useWebSocket'
 import { InvestigationTree } from './components/InvestigationTree'
 import { GateDecisionPanel } from './components/GateDecisionPanel'
 import { AnomalyScoreBar } from './components/AnomalyScoreBar'
+import { VerdictBoardTable } from './components/VerdictBoardTable'
 
 export default function App() {
   useWebSocket()
@@ -102,8 +103,8 @@ export default function App() {
           {/* Gate Decision + Anomaly Score (Plan 02) */}
           <GateDecisionPanel />
           <AnomalyScoreBar />
-          {/* Placeholder panels — replaced by Plans 03-04 */}
-          <div className="text-text-muted text-xs">Verdict Board</div>
+          {/* Plan 03 components */}
+          <VerdictBoardTable />
           <div className="text-text-muted text-xs">Forensic Scan</div>
           <div className="text-text-muted text-xs">Rule Source</div>
           <div className="text-text-muted text-xs">Aerospike Latency</div>
