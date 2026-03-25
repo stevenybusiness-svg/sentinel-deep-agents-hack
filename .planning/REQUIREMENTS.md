@@ -24,11 +24,11 @@
 ### Investigation Pipeline
 
 - [x] **PIPE-01**: Payment Agent parses a structured payment request, queries counterparty fixture DB, returns verdict with amount/beneficiary/account/confidence/steps_taken/claims_made
-- [ ] **PIPE-02**: Supervisor (Opus 4.6) dispatches Risk, Compliance, Forensics in parallel via asyncio.TaskGroup; collects all verdicts with return_exceptions=True so one failure produces unable_to_verify rather than aborting
-- [ ] **PIPE-03**: Risk Agent computes confidence z-score against behavioral baseline (mean 0.52, std 0.11); detects step-sequence deviations; returns structured findings
-- [ ] **PIPE-04**: Compliance Agent independently queries KYC ledger and agent activity log; validates agent identity claims against authoritative source; returns structured findings on each claim
-- [ ] **PIPE-05**: Forensics Agent independently scans attached document images via vision model; detects adversarial/hidden content regardless of color or contrast; returns actual extracted field values for comparison against agent claims
-- [ ] **PIPE-06**: Forensics Agent returns clean result with "no documents available" note when no attachments present (Phase 2 scenario)
+- [x] **PIPE-02**: Supervisor (Opus 4.6) dispatches Risk, Compliance, Forensics in parallel via asyncio.TaskGroup; collects all verdicts with return_exceptions=True so one failure produces unable_to_verify rather than aborting
+- [x] **PIPE-03**: Risk Agent computes confidence z-score against behavioral baseline (mean 0.52, std 0.11); detects step-sequence deviations; returns structured findings
+- [x] **PIPE-04**: Compliance Agent independently queries KYC ledger and agent activity log; validates agent identity claims against authoritative source; returns structured findings on each claim
+- [x] **PIPE-05**: Forensics Agent independently scans attached document images via vision model; detects adversarial/hidden content regardless of color or contrast; returns actual extracted field values for comparison against agent claims
+- [x] **PIPE-06**: Forensics Agent returns clean result with "no documents available" note when no attachments present (Phase 2 scenario)
 - [x] **PIPE-07**: Payment Agent is a real Sonnet 4.6 LLM instance — not hardcoded; receives payment request, makes genuine decisions, can be genuinely manipulated via prompt injection or social engineering
 
 ### Verdict Board Engine + Safety Gate
@@ -153,11 +153,11 @@
 | SCHEMA-03 | Phase 1 | Complete |
 | SCHEMA-04 | Phase 1 | Complete |
 | PIPE-01 | Phase 2 | Complete |
-| PIPE-02 | Phase 2 | Pending |
-| PIPE-03 | Phase 2 | Pending |
-| PIPE-04 | Phase 2 | Pending |
-| PIPE-05 | Phase 2 | Pending |
-| PIPE-06 | Phase 2 | Pending |
+| PIPE-02 | Phase 2 | Complete |
+| PIPE-03 | Phase 2 | Complete |
+| PIPE-04 | Phase 2 | Complete |
+| PIPE-05 | Phase 2 | Complete |
+| PIPE-06 | Phase 2 | Complete |
 | PIPE-07 | Phase 2 | Complete |
 | ENGN-01 | Phase 2 | Complete |
 | ENGN-02 | Phase 2 | Complete |
