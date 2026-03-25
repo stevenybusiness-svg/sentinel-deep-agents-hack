@@ -14,10 +14,19 @@ RestrictedPython compile_restricted — no system calls, no file access, no netw
 from __future__ import annotations
 
 import importlib.util
+import signal
 from pathlib import Path
 from typing import Callable
 
 from RestrictedPython import compile_restricted
+
+
+class _ExecTimeout(Exception):
+    """Raised when exec() exceeds the 5-second budget."""
+
+
+def _timeout_handler(signum: int, frame: object) -> None:
+    raise _ExecTimeout("Rule execution exceeded 5-second timeout")
 
 from sentinel.schemas.verdict_board import VerdictBoard
 
@@ -143,7 +152,17 @@ class SafetyGate:
             "_inplacevar_": lambda op, x, y: x + y if op == "+=" else x - y,
         }
         namespace: dict = {}
-        exec(code, safe_globals, namespace)  # noqa: S102
+
+        # 5-second timeout per ENGN-05
+        old_handler = signal.signal(signal.SIGALRM, _timeout_handler)
+        signal.alarm(5)
+        try:
+            exec(code, safe_globals, namespace)  # noqa: S102
+        except _ExecTimeout:
+            raise ValueError(f"Generated rule {rule_id!r} exceeded 5-second execution timeout")
+        finally:
+            signal.alarm(0)
+            signal.signal(signal.SIGALRM, old_handler)
 
         # 4. Extract score() function from namespace
         score_fn = namespace.get("score")
@@ -190,10 +209,16 @@ class SafetyGate:
                 # Rule errors must never block the gate — skip silently
                 pass
 
-        # 2. Run generated rules (ENGN-03)
+        # 2. Run generated rules (ENGN-03) with 5-second timeout per ENGN-05
         for rule_id, score_fn in self._generated_rules.items():
             try:
-                score_val = float(score_fn(vb_dict))
+                old_handler = signal.signal(signal.SIGALRM, _timeout_handler)
+                signal.alarm(5)
+                try:
+                    score_val = float(score_fn(vb_dict))
+                finally:
+                    signal.alarm(0)
+                    signal.signal(signal.SIGALRM, old_handler)
                 if score_val > 0:
                     contributions.append({
                         "rule_id": rule_id,
