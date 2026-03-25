@@ -1,6 +1,8 @@
 import { useStore } from './store'
 import { useWebSocket } from './hooks/useWebSocket'
 import { InvestigationTree } from './components/InvestigationTree'
+import { GateDecisionPanel } from './components/GateDecisionPanel'
+import { AnomalyScoreBar } from './components/AnomalyScoreBar'
 
 export default function App() {
   useWebSocket()
@@ -97,9 +99,10 @@ export default function App() {
 
         {/* Right: Panel stack — exactly 6 panels per D-03 */}
         <div className="w-1/2 h-full overflow-y-auto border-l border-border-muted p-4 space-y-3">
-          {/* Placeholder panels — replaced by Plans 02-04 */}
-          <div className="text-text-muted text-xs">Gate Decision panel</div>
-          <div className="text-text-muted text-xs">Anomaly Score Bar</div>
+          {/* Gate Decision + Anomaly Score (Plan 02) */}
+          <GateDecisionPanel />
+          <AnomalyScoreBar />
+          {/* Placeholder panels — replaced by Plans 03-04 */}
           <div className="text-text-muted text-xs">Verdict Board</div>
           <div className="text-text-muted text-xs">Forensic Scan</div>
           <div className="text-text-muted text-xs">Rule Source</div>
