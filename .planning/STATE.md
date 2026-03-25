@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Ready to execute
-stopped_at: Completed 02-01-PLAN.md
-last_updated: "2026-03-25T03:21:37.175Z"
+stopped_at: Completed 02-05-PLAN.md
+last_updated: "2026-03-25T03:26:46.344Z"
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 11
-  completed_plans: 6
+  completed_plans: 7
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-24)
 ## Current Position
 
 Phase: 02 (core-investigation-pipeline) — EXECUTING
-Plan: 2 of 6
+Plan: 4 of 6
 
 ## Performance Metrics
 
@@ -52,6 +52,8 @@ Plan: 2 of 6
 | Phase 01-foundation P05 | 169 | 2 tasks | 6 files |
 | Phase 01-foundation P04 | 4 | 2 tasks | 10 files |
 | Phase 02 P01 | 3 | 2 tasks | 7 files |
+| Phase 02 P02 | 2 | 2 tasks | 2 files |
+| Phase 02 P05 | 5 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -83,6 +85,10 @@ Recent decisions affecting current work:
 - [Phase 02-01]: steps_taken is list[str] for ordered tool call names — sufficient for step deviation detection without over-engineering
 - [Phase 02-01]: summary_score formula: abs(z_score)*0.3 + (0.5 if deviation else 0.0) — deviation weighted higher as stronger behavioral signal
 - [Phase 02-01]: expected_investigation_outcomes derived purely from agent's own claims at prediction time — no external DB lookups needed
+- [Phase 02-02]: Payment Agent module exposes building blocks only -- no autonomous loop per D-03; Supervisor drives conversation turn-by-turn
+- [Phase 02-02]: parse_payment_decision handles raw JSON, markdown code-fenced JSON, and JSON embedded in prose -- covers all realistic LLM output formats
+- [Phase 02]: Episode index stored as JSON list under __episode_index__ key — scan+sort in Python, acceptable for demo scale
+- [Phase 02]: store_prediction_history keyed as prediction_{episode_id} for direct lookup in Phase 3 rule generation
 
 ### Pending Todos
 
@@ -102,6 +108,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T03:21:37.168Z
-Stopped at: Completed 02-01-PLAN.md
+Last session: 2026-03-25T03:26:46.336Z
+Stopped at: Completed 02-05-PLAN.md
 Resume file: None

@@ -51,10 +51,10 @@ Plans:
   5. The Safety Gate computes a composite anomaly score from hardcoded rules and outputs NO-GO with attribution naming the specific mismatches, rules, and their score contributions
   6. Episode record with prediction errors is written to Aerospike after investigation completes
   7. WebSocket clients connected to /ws receive all named investigation events in sequence
-**Plans:** 1/6 plans executed
+**Plans:** 2/6 plans executed
 Plans:
 - [x] 02-01-PLAN.md — PaymentDecision schema, VerdictBoard/Episode extensions, PredictionEngine (ENGN-07)
-- [ ] 02-02-PLAN.md — Payment Agent with tool-use and Claude vision (PIPE-01, PIPE-07)
+- [x] 02-02-PLAN.md — Payment Agent with tool-use and Claude vision (PIPE-01, PIPE-07)
 - [ ] 02-03-PLAN.md — Sub-agents: Risk, Compliance, Forensics (PIPE-02..06)
 - [ ] 02-04-PLAN.md — Verdict Board Engine + Safety Gate with file-based scoring rules (ENGN-01..06)
 - [ ] 02-05-PLAN.md — Aerospike episode and trust stores with latency tracking (MEM-01, MEM-03, MEM-04)
@@ -120,7 +120,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete   | 2026-03-24 |
-| 2. Core Investigation Pipeline | 1/6 | In Progress|  |
+| 2. Core Investigation Pipeline | 2/6 | In Progress|  |
 | 3. Self-Improvement Loop | 0/TBD | Not started | - |
 | 4. Dashboard | 0/TBD | Not started | - |
 | 5. Voice Integration | 0/TBD | Not started | - |
