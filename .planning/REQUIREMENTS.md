@@ -46,7 +46,7 @@
 - [x] **LEARN-01**: On operator-confirmed attack, system extracts prediction errors from the episode — where expected values diverged most from actual findings across all VerdictBoard fields
 - [x] **LEARN-02**: Generated Python scoring function is behavioral — operates only on verdict_board fields; does not reference attack mechanism, document type, or agent names; returns weighted anomaly score (float), not binary bool; includes docstring explaining what behavioral pattern it detects
 - [x] **LEARN-03**: Generated function passes validation before deployment: AST parse, compile(), test harness executes function against clean baseline (must return score < 0.3) and attack fixture (must return score > 0.6)
-- [ ] **LEARN-04**: Validated scoring function exec()'d into Safety Gate registry with provenance: episode_id, prediction_errors, timestamp, python_source stored in Aerospike rules set
+- [x] **LEARN-04**: Validated scoring function exec()'d into Safety Gate registry with provenance: episode_id, prediction_errors, timestamp, python_source stored in Aerospike rules set
 - [ ] **LEARN-05**: Phase 2 demo end-to-end: generated scoring function from Phase 1 (invoice attack) fires on Phase 2 verdict board (identity spoofing); hardcoded rules alone insufficient; generated function's contribution pushes composite score above threshold; attribution displays "Blocked by Generated Rule #001 (learned from Episode #001) | Deployed [X]s ago"
 - [ ] **LEARN-06**: Rule evolution: after second confirmed incident, system feeds both VerdictBoards and their prediction errors to Opus 4.6 and generates refined scoring function (v2) — tighter thresholds, drops conditions that were artifacts of one attack, strengthens conditions present in both; v2 replaces v1 in registry with full version history in Aerospike
 
@@ -62,7 +62,7 @@
 
 - [x] **API-01**: FastAPI server with WebSocket endpoint (/ws) emitting named investigation events to connected dashboard clients in real time
 - [x] **API-02**: POST /investigate accepts payment request payload; triggers full investigation pipeline with prediction step; caches active episode state in memory
-- [ ] **API-03**: POST /confirm accepts operator confirmation (confirmed_attack / false_positive); extracts prediction errors; triggers scoring function generation pipeline if confirmed_attack; stores result to Aerospike
+- [x] **API-03**: POST /confirm accepts operator confirmation (confirmed_attack / false_positive); extracts prediction errors; triggers scoring function generation pipeline if confirmed_attack; stores result to Aerospike
 - [ ] **API-04**: POST /bland-webhook handles Bland AI Q&A turns; responds within 8s; reads pre-computed investigation context from in-memory cache (not Aerospike per-turn)
 
 ### Dashboard
@@ -169,7 +169,7 @@
 | LEARN-01 | Phase 3 | Complete |
 | LEARN-02 | Phase 3 | Complete |
 | LEARN-03 | Phase 3 | Complete |
-| LEARN-04 | Phase 3 | Pending |
+| LEARN-04 | Phase 3 | Complete |
 | LEARN-05 | Phase 3 | Pending |
 | LEARN-06 | Phase 3 | Pending |
 | MEM-01 | Phase 2 | Complete |
@@ -179,7 +179,7 @@
 | MEM-05 | Phase 3 | Complete |
 | API-01 | Phase 2 | Complete |
 | API-02 | Phase 2 | Complete |
-| API-03 | Phase 3 | Pending |
+| API-03 | Phase 3 | Complete |
 | API-04 | Phase 5 | Pending |
 | DASH-01 | Phase 4 | Pending |
 | DASH-02 | Phase 4 | Pending |
