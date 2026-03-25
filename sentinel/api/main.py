@@ -17,6 +17,7 @@ from typing import Any
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
+from sentinel.api.routes.confirm import router as confirm_router
 from sentinel.api.routes.investigate import router as investigate_router
 from sentinel.api.websocket import ws_manager
 from sentinel.config import get_settings
@@ -131,6 +132,7 @@ async def websocket_endpoint(websocket: WebSocket) -> None:
 # ---------------------------------------------------------------------------
 
 app.include_router(investigate_router)
+app.include_router(confirm_router)
 
 
 # ---------------------------------------------------------------------------
