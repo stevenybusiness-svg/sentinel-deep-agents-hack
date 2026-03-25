@@ -44,7 +44,9 @@ export function useWebSocket() {
             const agent = data.agent // "risk" | "compliance" | "forensics"
             s.setAgentStatus(agent, 'complete', data.verdict)
             s.updateNodeStatus(agent, 'complete')
-            s.setEdgeAnimated(`e-sup-${agent === 'compliance' ? 'comp' : agent === 'forensics' ? 'for' : agent}`, true)
+            const shortAgent = agent === 'compliance' ? 'comp' : agent === 'forensics' ? 'for' : agent
+            s.setEdgeAnimated(`e-sup-${shortAgent}`, true)
+            s.setEdgeAnimated(`e-${shortAgent}-gate`, true)
             break
           }
 
@@ -53,12 +55,15 @@ export function useWebSocket() {
             if (data.verdict_board?.prediction_errors) {
               s.setPredictionData(data.verdict_board.prediction_errors)
             }
+            s.updateNodeStatus('gate', 'active')
             break
 
           case 'gate_evaluated':
             s.setGateDecision(data)
             s.setInvestigationStatus('complete')
             s.updateNodeStatus('gate', data.decision === 'NO-GO' ? 'blocked' : 'complete')
+            s.updateNodeStatus('supervisor', 'complete')
+            s.updateNodeStatus('payment', 'complete')
             // Add to decision log
             s.addDecisionLog({
               timestamp: msg.timestamp,

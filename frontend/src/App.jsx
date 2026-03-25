@@ -1,15 +1,12 @@
-import { ReactFlow, Background } from '@xyflow/react'
-import '@xyflow/react/dist/style.css'
 import { useStore } from './store'
 import { useWebSocket } from './hooks/useWebSocket'
+import { InvestigationTree } from './components/InvestigationTree'
 
 export default function App() {
   useWebSocket()
 
   const wsConnected = useStore((s) => s.wsConnected)
   const investigationStatus = useStore((s) => s.investigationStatus)
-  const nodes = useStore((s) => s.nodes)
-  const edges = useStore((s) => s.edges)
 
   const isRunning = investigationStatus === 'running'
 
@@ -95,9 +92,7 @@ export default function App() {
       <div className="flex flex-1 overflow-hidden">
         {/* Left: Investigation tree */}
         <div className="w-1/2 h-full">
-          <ReactFlow nodes={nodes} edges={edges} fitView>
-            <Background color="#30363d" gap={24} />
-          </ReactFlow>
+          <InvestigationTree />
         </div>
 
         {/* Right: Panel stack — exactly 6 panels per D-03 */}
