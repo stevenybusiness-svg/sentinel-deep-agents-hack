@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Ready to plan
-stopped_at: Completed 02-06-PLAN.md
-last_updated: "2026-03-25T04:55:07.291Z"
+status: Ready to execute
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-03-25T16:29:28.563Z"
 progress:
   total_phases: 6
   completed_phases: 2
-  total_plans: 11
-  completed_plans: 11
+  total_plans: 15
+  completed_plans: 13
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-24)
 
 **Core value:** The self-improvement loop: the system autonomously generates composite scoring functions from prediction errors, evolves them across incidents, and catches novel attacks — inspectable Python, not a black box. Live, on stage, in 3 minutes.
-**Current focus:** Phase 02 — core-investigation-pipeline
+**Current focus:** Phase 03 — self-improvement-loop
 
 ## Current Position
 
-Phase: 3
-Plan: Not started
+Phase: 03 (self-improvement-loop) — EXECUTING
+Plan: 3 of 4
 
 ## Performance Metrics
 
@@ -57,6 +57,8 @@ Plan: Not started
 | Phase 02 P04 | 243 | 2 tasks | 12 files |
 | Phase 02 P03 | 330 | 2 tasks | 4 files |
 | Phase 02 P06 | 8 | 3 tasks | 7 files |
+| Phase 03 P02 | 200 | 2 tasks | 3 files |
+| Phase 03-self-improvement-loop P01 | 8 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -98,6 +100,8 @@ Recent decisions affecting current work:
 - [Phase 02-03]: counterparty_db keyed by CP-NNN; compliance searches by name through values for beneficiary lookup
 - [Phase 02-06]: Supervisor makes real Opus 4.6 LLM call to reason about payment before driving Payment Agent turn-by-turn (D-03)
 - [Phase 02-06]: asyncio.TaskGroup dispatches Risk/Compliance/Forensics in parallel with per-agent unable_to_verify fallback (D-13)
+- [Phase 03]: Rule index stored as JSON list under __rules_index__ key — consistent with __episode_index__ pattern from episode_store.py
+- [Phase 03]: Startup rule loading uses inline import inside try/except — non-fatal; server degrades gracefully if Aerospike unavailable
 
 ### Pending Todos
 
@@ -117,6 +121,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T03:40:59.999Z
-Stopped at: Completed 02-06-PLAN.md
+Last session: 2026-03-25T16:28:47.293Z
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None
