@@ -21,8 +21,8 @@ created: 2026-03-25
 | Preset | not applicable |
 | Component library | none — hand-built components using Tailwind utility classes |
 | Icon library | Material Symbols Outlined (Google Fonts CDN, variable font) |
-| Font — display | Inter (400, 500, 600, 700) via Google Fonts CDN |
-| Font — mono | Roboto Mono (400, 500) via Google Fonts CDN |
+| Font — display | Inter (400, 600) via Google Fonts CDN |
+| Font — mono | Roboto Mono (400) via Google Fonts CDN |
 
 **Source:** CONTEXT.md §Established Patterns, `frontend/index.html` Tailwind config, `frontend/src/index.css`
 
@@ -59,7 +59,7 @@ This is a fixed viewport dashboard — no scrolling during demo. All panels are 
 Sentinel Dashboard    [Run Attack 1 — Invoice Injection] [Run Attack 2 — Identity Spoofing]   ● connected · idle
 ```
 
-- Title: left-aligned `text-sm font-bold tracking-tight text-white` (existing)
+- Title: left-aligned `text-sm font-semibold tracking-tight text-white` (existing)
 - Attack buttons: centered or right of title, disabled while `investigationStatus === 'running'`
 - Status chip: right-aligned, existing `font-mono uppercase tracking-wider` with `pulse-dot`
 
@@ -92,12 +92,11 @@ Exceptions:
 
 | Role | Size | Weight | Line Height | Font | Usage |
 |------|------|--------|-------------|------|-------|
-| Display | 13px | 700 | 1.2 | Inter | Header title "Sentinel Dashboard" |
+| Display | 20px | 600 | 1.2 | Inter | Gate verdict text (GO / NO-GO / ESCALATE), header title "Sentinel Dashboard" |
 | Heading | 11px | 600 | 1.3 | Inter | Panel section labels (e.g. "VERDICT BOARD", "ANOMALY SCORE") |
 | Body | 13px | 400 | 1.5 | Inter | Verdict board table rows, attribution text, provenance text |
-| Label | 11px | 500 | 1.4 | Inter | Severity badges, gate decision status chips, small data labels |
-| Code | 12px | 400 | 1.6 | Roboto Mono | Generated rule Python source, provenance key-value pairs |
-| Mono | 10px | 400 | 1.3 | Roboto Mono | Status chip text (uppercase tracking-wider), latency numbers |
+| Label | 11px | 400 | 1.4 | Inter | Severity badges, gate decision status chips, small data labels, pane labels |
+| Code/Mono | 12px | 400 | 1.6 | Roboto Mono | Generated rule Python source, provenance key-value pairs, status chip text (uppercase tracking-wider), latency numbers, timestamps |
 
 **Source:** `frontend/index.html` font config, `frontend/src/index.css` code sizing, existing App.jsx patterns
 
@@ -139,7 +138,7 @@ Node states and visual encoding:
 | blocked | `border-danger` (2px) | `rgba(248,81,73,0.1)` | Material: `block` (text-danger) |
 | rule_node | `border-warning` (1px) | `rgba(227,179,65,0.1)` | Material: `auto_awesome` (text-warning) |
 
-Node labels: 11px Inter 500, `text-text-main`.
+Node labels: 11px Inter 400, `text-text-main`.
 
 Edge animation: `animated: true` on `@xyflow/react` edge config; color `#30363d` default, `#57abff` when data is flowing.
 
@@ -167,7 +166,7 @@ Tree structure:
 └─────────────────────────────────────────────────────┘
 ```
 
-- Gate verdict text: 20px Inter 700. Color: `text-danger` (NO-GO), `text-success` (GO), `text-warning` (ESCALATE)
+- Gate verdict text: Display role — 20px Inter 600. Color: `text-danger` (NO-GO), `text-success` (GO), `text-warning` (ESCALATE)
 - Score line: 13px Inter 400 `text-text-muted`
 - Attribution text: 12px Inter 400 `text-text-main`, wraps below score
 - "Confirm Attack — Learn ▶" button: only visible on NO-GO; `bg-accent text-white font-semibold text-sm px-4 py-2 rounded`; changes to `"Generating rule..."` (disabled, text-muted) after click
@@ -191,7 +190,7 @@ Tree structure:
 
 - Table: full panel width, compact rows (`py-1.5 px-3`)
 - Columns: Field | Agent Claimed | Independently Found | Match | Severity
-- Severity badges: 10px Inter 500 uppercase, pill shape `rounded-full px-1.5 py-0.5`
+- Severity badges: Label role — 11px Inter 400 uppercase, pill shape `rounded-full px-1.5 py-0.5`
   - `critical`: `bg-danger/20 text-danger border border-danger/30`
   - `warning`: `bg-warning/20 text-warning border border-warning/30`
   - `info`: `bg-primary/20 text-primary border border-primary/30`
@@ -205,7 +204,7 @@ Tree structure:
 
 - Two-up layout: left = "Invoice (Agent View)" / right = "Forensic Scan"
 - Each pane: equal width, fixed height (~160px), `object-fit: contain`, `bg-surface rounded border border-border-muted`
-- Label above each pane: 10px Inter 500 uppercase `text-text-muted`
+- Label above each pane: Label role — 11px Inter 400 uppercase `text-text-muted`
 - Hidden text annotation in forensic scan: red overlay highlight (`rgba(248,81,73,0.4)` box) drawn via absolute positioning over the detected region
 - Panel is always rendered; shows placeholder "No documents attached" when forensics agent found no attachments
 
@@ -245,14 +244,14 @@ Prediction errors: confidence_z_score +2.4σ, unable_to_verify [beneficiary]
 - Color interpolation: green (`#3fb950`) at 0.8+, yellow (`#e3b341`) at 0.4–0.8, red (`#f85149`) below 0.4
 - Transition: CSS `transition-all duration-500 ease-out` on width change
 - Value label: right-aligned `text-[11px] font-mono text-text-main`
-- Panel label: "Trust Score" 11px Inter 500 uppercase `text-text-muted`
+- Panel label: "Trust Score" 11px Inter 400 uppercase `text-text-muted`
 
 **Source:** DASH-06, CONTEXT.md §Claude's Discretion (animation timing)
 
 ### Decision Log (DASH-08)
 
 - Scrollable log, max-height ~120px, `overflow-y-auto`
-- Each entry: timestamp (10px Roboto Mono `text-text-muted`) + one-line attribution (12px Inter `text-text-main`)
+- Each entry: timestamp (Code/Mono role — 12px Roboto Mono `text-text-muted`) + one-line attribution (12px Inter `text-text-main`)
 - New entries prepend with `card-enter` slide-in animation (existing keyframe in index.html)
 - Gate decision verdict badge inline: same color encoding as gate decision panel
 
@@ -261,7 +260,7 @@ Prediction errors: confidence_z_score +2.4σ, unable_to_verify [beneficiary]
 ### Aerospike Latency Display (DASH-09)
 
 - Small metric chip at the bottom of the right column
-- Format: `Aerospike: {latency}ms` — Roboto Mono 11px `text-text-muted`
+- Format: `Aerospike: {latency}ms` — Code/Mono role: Roboto Mono 12px `text-text-muted`
 - Value updates live from WebSocket `episode_written` event data
 - Target indicator: green dot if <5ms, yellow if 5–20ms, red if >20ms
 
