@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Ready to plan
-stopped_at: Completed 03-04-PLAN.md
-last_updated: "2026-03-25T16:59:33.047Z"
+status: Ready to execute
+stopped_at: Completed 04-dashboard-01-PLAN.md
+last_updated: "2026-03-25T20:32:05.944Z"
 progress:
   total_phases: 6
   completed_phases: 3
-  total_plans: 15
-  completed_plans: 15
+  total_plans: 20
+  completed_plans: 16
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-24)
 
 **Core value:** The self-improvement loop: the system autonomously generates composite scoring functions from prediction errors, evolves them across incidents, and catches novel attacks — inspectable Python, not a black box. Live, on stage, in 3 minutes.
-**Current focus:** Phase 03 — self-improvement-loop
+**Current focus:** Phase 04 — dashboard
 
 ## Current Position
 
-Phase: 4
-Plan: Not started
+Phase: 04 (dashboard) — EXECUTING
+Plan: 2 of 5
 
 ## Performance Metrics
 
@@ -61,6 +61,7 @@ Plan: Not started
 | Phase 03-self-improvement-loop P01 | 8 | 2 tasks | 3 files |
 | Phase 03 P03 | 264 | 2 tasks | 3 files |
 | Phase 03 P04 | 2 | 2 tasks | 2 files |
+| Phase 04-dashboard P01 | 2 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -111,6 +112,8 @@ Recent decisions affecting current work:
 - [Phase 03]: Evolution fallback to new generation when existing rule source not retrievable from Aerospike — prevents silent pipeline failure
 - [Phase 03]: PHASE2_ATTACK_VB uses step_sequence_deviation=False and no critical mismatches to keep hardcoded composite < 1.0 — the gap that proves generated rules are required for identity spoofing
 - [Phase 03]: BEHAVIORAL_RULE_SOURCE generalizes via compound signals (confidence + z-score + unverifiable) shared across both attack vectors — the shared behavioral fingerprint regardless of attack type
+- [Phase 04-dashboard]: initInvestigationTree called on investigation_started WS event so tree resets exactly when backend starts new investigation
+- [Phase 04-dashboard]: trust score computed as 1.0 - composite_score clamped 0-1 — simple inversion for dashboard trust indicator
 
 ### Pending Todos
 
@@ -130,6 +133,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T16:45:19.704Z
-Stopped at: Completed 03-04-PLAN.md
+Last session: 2026-03-25T20:32:05.937Z
+Stopped at: Completed 04-dashboard-01-PLAN.md
 Resume file: None
