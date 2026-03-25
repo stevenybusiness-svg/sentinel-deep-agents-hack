@@ -67,24 +67,24 @@
 
 ### Dashboard
 
-- [ ] **DASH-01**: Investigation tree rendered with @xyflow/react; nodes animate to active state as sub-agents receive their dispatch; edges animate as data flows
-- [ ] **DASH-02**: New rule node appears in investigation tree after rule deployment — the tree is visibly larger after learning than before
-- [ ] **DASH-03**: Verdict board table shows field-level match/mismatch for all claims_checked with severity indicators
-- [ ] **DASH-04**: Forensic scan panel shows clean invoice view (what human sees) vs. forensic scan (hidden text highlighted in red) side-by-side for Phase 1 demo
+- [x] **DASH-01**: Investigation tree rendered with @xyflow/react; nodes animate to active state as sub-agents receive their dispatch; edges animate as data flows
+- [x] **DASH-02**: New rule node appears in investigation tree after rule deployment — the tree is visibly larger after learning than before
+- [x] **DASH-03**: Verdict board table shows field-level match/mismatch for all claims_checked with severity indicators
+- [x] **DASH-04**: Forensic scan panel shows clean invoice view (what human sees) vs. forensic scan (hidden text highlighted in red) side-by-side for Phase 1 demo
 - [ ] **DASH-05**: Generated rule source panel shows readable Python function the system wrote, with provenance (episode ID, deployed timestamp, prediction errors that produced it) and evolution history (v1 → v2)
 - [ ] **DASH-06**: Trust score bar animates from initial value (0.85) to post-investigation value (0.25) as verdict board assembles
-- [ ] **DASH-07**: Gate decision (GO / NO-GO / ESCALATE) displayed prominently with full attribution text below it
+- [x] **DASH-07**: Gate decision (GO / NO-GO / ESCALATE) displayed prominently with full attribution text below it
 - [ ] **DASH-08**: Decision log shows timestamped trail of all gate decisions with one-line attribution per entry
 - [ ] **DASH-09**: Aerospike latency metric displayed live on dashboard (confirms real integration to Aerospike judges)
-- [ ] **DASH-10**: Prediction vs. actual panel displays expected values from behavioral baselines alongside actual investigation findings, with prediction errors highlighted
-- [ ] **DASH-11**: Composite anomaly score bar shows each rule's weighted contribution color-coded, with threshold line visible; judges can see how individually weak signals compound
+- [x] **DASH-10**: Prediction vs. actual panel displays expected values from behavioral baselines alongside actual investigation findings, with prediction errors highlighted
+- [x] **DASH-11**: Composite anomaly score bar shows each rule's weighted contribution color-coded, with threshold line visible; judges can see how individually weak signals compound
 
 ### Voice Interface (Bland AI)
 
 - [ ] **VOICE-01**: Bland AI call initiated for demo; Supervisor answers "Why did you block that?" and "What was the anomaly score?" in plain language grounded in actual scores and rule attribution
 - [ ] **VOICE-02**: Barge-in configured via interruption_threshold and block_interruptions: false; operator can cut in mid-sentence
 - [ ] **VOICE-03**: All investigation context pre-computed and cached before voice demo starts; webhook handler reads from memory cache, not Aerospike, to stay within 8s response window
-- [ ] **VOICE-04**: Dashboard always shows the same information as voice narration — text fallback is always present if voice fails
+- [x] **VOICE-04**: Dashboard always shows the same information as voice narration — text fallback is always present if voice fails
 
 ### Demo Preparation
 
@@ -181,21 +181,21 @@
 | API-02 | Phase 2 | Complete |
 | API-03 | Phase 3 | Complete |
 | API-04 | Phase 5 | Pending |
-| DASH-01 | Phase 4 | Pending |
-| DASH-02 | Phase 4 | Pending |
-| DASH-03 | Phase 4 | Pending |
-| DASH-04 | Phase 4 | Pending |
+| DASH-01 | Phase 4 | Complete |
+| DASH-02 | Phase 4 | Complete |
+| DASH-03 | Phase 4 | Complete |
+| DASH-04 | Phase 4 | Complete |
 | DASH-05 | Phase 4 | Pending |
 | DASH-06 | Phase 4 | Pending |
-| DASH-07 | Phase 4 | Pending |
+| DASH-07 | Phase 4 | Complete |
 | DASH-08 | Phase 4 | Pending |
 | DASH-09 | Phase 4 | Pending |
-| DASH-10 | Phase 4 | Pending |
-| DASH-11 | Phase 4 | Pending |
+| DASH-10 | Phase 4 | Complete |
+| DASH-11 | Phase 4 | Complete |
 | VOICE-01 | Phase 5 | Pending |
 | VOICE-02 | Phase 5 | Pending |
 | VOICE-03 | Phase 5 | Pending |
-| VOICE-04 | Phase 4 | Pending |
+| VOICE-04 | Phase 4 | Complete |
 | DEMO-01 | Phase 6 | Pending |
 | DEMO-02 | Phase 6 | Pending |
 | DEMO-03 | Phase 1 | Complete |
