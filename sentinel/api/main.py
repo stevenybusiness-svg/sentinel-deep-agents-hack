@@ -70,6 +70,19 @@ async def lifespan(app: FastAPI):
         # Server continues without Aerospike — episodes won't be persisted
         app_state["aerospike"] = None
 
+    # Load generated rules from Aerospike into Safety Gate (MEM-02)
+    if app_state.get("aerospike"):
+        try:
+            from sentinel.memory.rule_store import load_all_rules
+            stored_rules = await load_all_rules(app_state["aerospike"])
+            for rule_record in stored_rules:
+                try:
+                    gate.register_rule(rule_record["rule_id"], rule_record["source"])
+                except Exception:
+                    pass  # Skip invalid stored rules — don't crash startup
+        except Exception:
+            pass  # Aerospike rule load failure is non-fatal
+
     # In-memory episode cache for voice Q&A (API-02)
     app_state["active_episodes"] = {}
 
