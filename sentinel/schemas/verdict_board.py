@@ -19,3 +19,4 @@ class VerdictBoard(BaseModel):
     step_sequence_deviation: bool = False
     hardcoded_rule_fired: bool = False
     unable_to_verify: list[str] = []  # List of agent_ids that returned unable_to_verify=True
+    prediction_errors: dict | None = None  # Summary score + top deviations; populated post-investigation

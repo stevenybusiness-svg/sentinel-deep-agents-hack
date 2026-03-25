@@ -33,3 +33,4 @@ class Episode(BaseModel):
     attack_type: str | None = None
     generated_rule_source: str | None = None
     new_rules_deployed: list[str] = []
+    prediction_report: dict | None = None  # PredictionReport.model_dump(); stored for Phase 3 rule generation
