@@ -4,6 +4,7 @@ import { InvestigationTree } from './components/InvestigationTree'
 import { GateDecisionPanel } from './components/GateDecisionPanel'
 import { AnomalyScoreBar } from './components/AnomalyScoreBar'
 import { RuleSourcePanel } from './components/RuleSourcePanel'
+import { AerospikeLatency } from './components/AerospikeLatency'
 
 export default function App() {
   useWebSocket()
@@ -107,7 +108,7 @@ export default function App() {
           <div className="text-text-muted text-xs">Verdict Board</div>
           <div className="text-text-muted text-xs">Forensic Scan</div>
           <RuleSourcePanel />
-          <div className="text-text-muted text-xs">Aerospike Latency</div>
+          <AerospikeLatency />
         </div>
       </div>
     </div>
