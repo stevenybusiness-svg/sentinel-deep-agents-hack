@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Context gathered — ready to plan Phase 2
-stopped_at: Phase 2 planned — 6 plans in 3 waves, verification passed
-last_updated: "2026-03-25T03:11:54.775Z"
+status: Ready to execute
+stopped_at: Completed 02-01-PLAN.md
+last_updated: "2026-03-25T03:21:37.175Z"
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 11
-  completed_plans: 5
+  completed_plans: 6
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-24)
 
 **Core value:** The self-improvement loop: the system autonomously generates composite scoring functions from prediction errors, evolves them across incidents, and catches novel attacks — inspectable Python, not a black box. Live, on stage, in 3 minutes.
-**Current focus:** Phase 02 — Core Investigation Pipeline
+**Current focus:** Phase 02 — core-investigation-pipeline
 
 ## Current Position
 
-Phase: 2
-Plan: Not started
+Phase: 02 (core-investigation-pipeline) — EXECUTING
+Plan: 2 of 6
 
 ## Performance Metrics
 
@@ -51,6 +51,7 @@ Plan: Not started
 | Phase 01-foundation P03 | 3 | 2 tasks | 7 files |
 | Phase 01-foundation P05 | 169 | 2 tasks | 6 files |
 | Phase 01-foundation P04 | 4 | 2 tasks | 10 files |
+| Phase 02 P01 | 3 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -79,6 +80,9 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: EventType defined as 7-value Literal covering 9 named events (agent_completed sent 3x, once per sub-agent)
 - [Phase 01-04]: Meridian Logistics absent from kyc_ledger.json — intentional gap for Phase 2 identity spoofing attack demo
 - [Phase 01-04]: Invoice hidden text uses rgb(254,254,254) on white — 1-step color diff, invisible to human but detectable by vision model
+- [Phase 02-01]: steps_taken is list[str] for ordered tool call names — sufficient for step deviation detection without over-engineering
+- [Phase 02-01]: summary_score formula: abs(z_score)*0.3 + (0.5 if deviation else 0.0) — deviation weighted higher as stronger behavioral signal
+- [Phase 02-01]: expected_investigation_outcomes derived purely from agent's own claims at prediction time — no external DB lookups needed
 
 ### Pending Todos
 
@@ -98,6 +102,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T03:11:54.757Z
-Stopped at: Phase 2 planned — 6 plans in 3 waves, verification passed
-Resume file: .planning/phases/02-core-investigation-pipeline/02-01-PLAN.md
+Last session: 2026-03-25T03:21:37.168Z
+Stopped at: Completed 02-01-PLAN.md
+Resume file: None
