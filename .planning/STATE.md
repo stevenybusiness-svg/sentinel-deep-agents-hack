@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Ready to plan
-stopped_at: "Checkpoint 04-05: awaiting visual verification of dashboard"
-last_updated: "2026-03-26T01:37:14.239Z"
+status: Ready to execute
+stopped_at: Completed 02-07-PLAN.md
+last_updated: "2026-03-26T03:42:49.246Z"
 progress:
   total_phases: 6
-  completed_phases: 3
-  total_plans: 21
-  completed_plans: 20
+  completed_phases: 4
+  total_plans: 23
+  completed_plans: 21
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-24)
 
 **Core value:** The self-improvement loop: the system autonomously generates composite scoring functions from prediction errors, evolves them across incidents, and catches novel attacks — inspectable Python, not a black box. Live, on stage, in 3 minutes.
-**Current focus:** Phase 04 — dashboard
+**Current focus:** Phase 02 — core-investigation-pipeline
 
 ## Current Position
 
-Phase: 5
-Plan: Not started
+Phase: 02 (core-investigation-pipeline) — EXECUTING
+Plan: 2 of 7
 
 ## Performance Metrics
 
@@ -66,6 +66,7 @@ Plan: Not started
 | Phase 04-dashboard P03 | 102 | 2 tasks | 3 files |
 | Phase 04-dashboard P04 | 113 | 2 tasks | 3 files |
 | Phase 04-dashboard P05 | 2 | 0 tasks | 0 files |
+| Phase 02 P07 | 2 | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -125,6 +126,7 @@ Recent decisions affecting current work:
 - [Phase 04-dashboard]: ForensicScanPanel hasDocuments detection checks claim field names for document/invoice/hidden — simple, no backend flag needed
 - [Phase 04-dashboard]: CSS-class syntax highlighting via regex — no Monaco/Prism; display-only per D-09
 - [Phase 04-dashboard]: Decision log folded into AerospikeLatency panel (DASH-08+DASH-09) to maintain exactly 6 right-column panels per D-03
+- [Phase 02-07]: D-03 gap closed: supervisor_response captured (not discarded), reasoning extracted and injected into Payment Agent first message as 'Supervisor analysis:' prefix
 
 ### Pending Todos
 
@@ -144,6 +146,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T20:46:35.533Z
-Stopped at: Checkpoint 04-05: awaiting visual verification of dashboard
+Last session: 2026-03-26T03:42:49.241Z
+Stopped at: Completed 02-07-PLAN.md
 Resume file: None

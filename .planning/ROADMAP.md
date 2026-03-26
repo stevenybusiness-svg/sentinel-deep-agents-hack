@@ -13,7 +13,7 @@ Sentinel is built in dependency order: frozen schemas and infrastructure first, 
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Frozen schemas, infrastructure, Aerospike health check, Claude API tier validation, and demo fixtures (completed 2026-03-24)
-- [ ] **Phase 2: Core Investigation Pipeline** - Real LLM Payment Agent, prediction step, parallel sub-agents, Verdict Board Engine, Safety Gate with composite anomaly scoring, Aerospike writes, FastAPI/WebSocket, Phase 1 demo arc end-to-end
+- [x] **Phase 2: Core Investigation Pipeline** - Real LLM Payment Agent, prediction step, parallel sub-agents, Verdict Board Engine, Safety Gate with composite anomaly scoring, Aerospike writes, FastAPI/WebSocket, Phase 1 demo arc end-to-end (completed 2026-03-26)
 - [x] **Phase 3: Self-Improvement Loop** - Rule generation prompt (30+ isolation tests), prediction-error-driven scoring function generation, validation harness, rule evolution across incidents, SafetyGate registry, Phase 2 generalization verified end-to-end (completed 2026-03-25)
 - [ ] **Phase 4: Dashboard** - Investigation tree, prediction vs. actual display, verdict board table, anomaly score bar with rule contributions, forensic scan panel, generated rule source panel with evolution history, trust score animation, Zustand state, WebSocket integration
 - [ ] **Phase 5: Voice Integration** - Bland AI webhook, barge-in, grounded Q&A with anomaly scores and rule attribution, pre-computed context cache
@@ -51,7 +51,7 @@ Plans:
   5. The Safety Gate computes a composite anomaly score from hardcoded rules and outputs NO-GO with attribution naming the specific mismatches, rules, and their score contributions
   6. Episode record with prediction errors is written to Aerospike after investigation completes
   7. WebSocket clients connected to /ws receive all named investigation events in sequence
-**Plans:** 7 plans
+**Plans:** 7/7 plans complete
 Plans:
 - [x] 02-01-PLAN.md — PaymentDecision schema, VerdictBoard/Episode extensions, PredictionEngine (ENGN-07)
 - [x] 02-02-PLAN.md — Payment Agent with tool-use and Claude vision (PIPE-01, PIPE-07)
@@ -59,7 +59,7 @@ Plans:
 - [x] 02-04-PLAN.md — Verdict Board Engine + Safety Gate with file-based scoring rules (ENGN-01..06)
 - [x] 02-05-PLAN.md — Aerospike episode and trust stores with latency tracking (MEM-01, MEM-03, MEM-04)
 - [x] 02-06-PLAN.md — Supervisor orchestration, FastAPI server, WebSocket, /investigate endpoint (PIPE-02, API-01, API-02)
-- [ ] 02-07-PLAN.md — Gap closure: wire Supervisor Opus reasoning into Payment Agent context (D-03)
+- [x] 02-07-PLAN.md — Gap closure: wire Supervisor Opus reasoning into Payment Agent context (D-03)
 **UI hint**: yes
 
 ### Phase 3: Self-Improvement Loop
@@ -135,7 +135,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete   | 2026-03-24 |
-| 2. Core Investigation Pipeline | 6/7 | Gap closure |  |
+| 2. Core Investigation Pipeline | 7/7 | Complete   | 2026-03-26 |
 | 3. Self-Improvement Loop | 4/4 | Complete   | 2026-03-25 |
 | 4. Dashboard | 4/5 | In Progress|  |
 | 5. Voice Integration | 0/2 | Planned | - |
