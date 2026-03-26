@@ -3,6 +3,8 @@ import { useWebSocket } from './hooks/useWebSocket'
 import { InvestigationTree } from './components/InvestigationTree'
 import { GateDecisionPanel } from './components/GateDecisionPanel'
 import { AnomalyScoreBar } from './components/AnomalyScoreBar'
+import { VerdictBoardTable } from './components/VerdictBoardTable'
+import { ForensicScanPanel } from './components/ForensicScanPanel'
 import { RuleSourcePanel } from './components/RuleSourcePanel'
 import { AerospikeLatency } from './components/AerospikeLatency'
 
@@ -101,12 +103,10 @@ export default function App() {
 
         {/* Right: Panel stack — exactly 6 panels per D-03 */}
         <div className="w-1/2 h-full overflow-y-auto border-l border-border-muted p-4 space-y-3">
-          {/* Gate Decision + Anomaly Score (Plan 02) */}
           <GateDecisionPanel />
           <AnomalyScoreBar />
-          {/* Placeholder panels — replaced by Plans 03-04 */}
-          <div className="text-text-muted text-xs">Verdict Board</div>
-          <div className="text-text-muted text-xs">Forensic Scan</div>
+          <VerdictBoardTable />
+          <ForensicScanPanel />
           <RuleSourcePanel />
           <AerospikeLatency />
         </div>
