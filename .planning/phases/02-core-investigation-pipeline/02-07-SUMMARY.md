@@ -101,3 +101,10 @@ None - plan executed exactly as written.
 ---
 *Phase: 02-core-investigation-pipeline*
 *Completed: 2026-03-25*
+
+## Self-Check: PASSED
+
+- FOUND: .planning/phases/02-core-investigation-pipeline/02-07-SUMMARY.md
+- FOUND: 7d4d113 (feat task commit)
+- FOUND: cb14218 (docs metadata commit)
+- All 15 supervisor tests pass, 6 safety gate tests pass

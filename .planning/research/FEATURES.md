@@ -1,8 +1,8 @@
 # Feature Research
 
-**Domain:** Multi-agent AI supervision system for autonomous financial payments (hackathon demo context)
-**Researched:** 2026-03-24
-**Confidence:** MEDIUM-HIGH (stack-specific claims HIGH from docs; hackathon strategy claims MEDIUM from community sources; novelty claims MEDIUM from multiple sources cross-checked)
+**Domain:** Runtime security for autonomous AI agents (payments as demo scenario)
+**Researched:** 2026-03-24, updated after competitive analysis
+**Confidence:** MEDIUM-HIGH (stack-specific claims HIGH from docs; hackathon strategy claims MEDIUM from community sources; competitive landscape claims HIGH from vendor documentation and product announcements)
 
 ---
 
@@ -26,18 +26,19 @@ These are non-negotiable. Judges from the payments domain, AWS, and AI safety wi
 
 ### Differentiators (Competitive Advantage — What Makes Sentinel Stand Out)
 
-These are the features that separate Sentinel from generic "AI safety" hackathon submissions. Each one is genuinely novel or rare in 2025.
+These are the features that separate Sentinel from both generic hackathon submissions AND the existing commercial landscape (Straiker, Lakera, Darktrace, SOAR platforms, Guardrails AI, NeMo). Updated after competitive analysis of 20+ products.
 
-| Feature | Value Proposition | Complexity | Demo Risk | Novelty Level | Notes |
-|---------|-------------------|------------|-----------|---------------|-------|
-| Cross-surface behavioral generalization | A rule learned from a document attack (hidden invoice text) catches an inter-agent trust attack (spoofed KYC). Different mechanism, identical behavioral signature. This is the core "wow" moment | VERY HIGH | HIGH | HIGH — most self-learning systems learn to detect what they already saw | The single most differentiating feature. Must work reliably. "The system didn't learn to detect hidden text. It learned to detect when an agent is lying." |
-| Live rule code visibility panel | The generated Python function is readable, attributed to its source episode, and shown on screen in real time. Judges can read the rule the system wrote | MEDIUM | LOW | MEDIUM — "Rule Maker Pattern" is emerging practice in 2025 but rare in hackathon demos | Makes the self-improvement loop auditable rather than magical. Directly addresses "black box" objection |
-| Trust score collapse animation | Watching a trust score go from 0.85 to 0.25 in real time during investigation communicates risk quantification viscerally. No explanation needed | MEDIUM | LOW | LOW (visual novelty) — but HIGH execution value in demo | Pure demo theater but strategically placed: it gives judges a shared language for what's happening |
-| Voice-interrogable investigation | Operator asks "Why did you block that?" and gets a natural language answer grounded in the actual verdict board fields — not a canned response | HIGH | HIGH | MEDIUM — conversational AI explanation is common; grounding it in live structured data is less common | Bland AI judges will evaluate this directly. Must be genuinely responsive to the actual investigation, not scripted |
-| Episodic memory across incidents | The system remembers what it learned from incident 1 when evaluating incident 2, with full provenance. "Blocked by Generated Rule #001 (from invoice attack, deployed 90s ago)" | HIGH | MEDIUM | HIGH — most agent systems have per-session context only; cross-episode persistence is rare in demos | Aerospike integration makes this concrete. The "deployed 90s ago" attribution is the proof-of-memory moment |
-| Forensic side-by-side visualization | Clean invoice vs. forensic scan with hidden text highlighted in red — judges can see exactly what the adversary hid and exactly what the vision model found | MEDIUM | LOW | LOW-MEDIUM — document forensics is established; live side-by-side in a demo is rare | Pure visual impact. Requires a real adversarial document fixture, not a synthetic one |
-| Override identity verification gate | Operator override requires Okta token introspection before taking effect. Closes the "what stops a bad operator?" objection | LOW-MEDIUM | LOW | MEDIUM — Okta integration exists; pairing it with agent supervision is novel | 30-minute implementation. Strong compliance signal for financial domain judges |
-| Additive-only rule architecture | The system cannot learn itself into a weaker state. Generated rules can never modify or delete hardcoded rules. This is a principled safety invariant, not a constraint | LOW | LOW | MEDIUM — few hackathon systems have explicit safety monotonicity | Translates directly into regulatory language: "the system's safety posture can only improve over time" |
+| Feature | Value Proposition | Complexity | Demo Risk | Novelty Level | Competitive Gap |
+|---------|-------------------|------------|-----------|---------------|-----------------|
+| Composite anomaly scoring with rule evolution | Generated scoring functions return weighted signals; individually weak signals compound; rules refine across confirmed incidents using prediction errors from both episodes | VERY HIGH | HIGH | HIGH — no product generates inspectable detection rules from incidents that evolve across attacks | Darktrace updates opaque models. SOAR needs human analysts. Sentinel's rules are readable Python that self-refine. |
+| Prediction step + prediction error as learning signal | System forms expectations from baselines before investigating; the gap between expected and actual is the learning signal for rule generation | HIGH | MEDIUM | HIGH — nobody uses explicit prediction error extraction as input to detection engineering | Most systems learn from labeled data or human-written playbooks, not from measured prediction divergence |
+| Payment Agent as real LLM (genuinely manipulated) | The agent is a Sonnet 4.6 instance making real decisions, not a hardcoded stub; it gets prompt-injected via documents and socially engineered via crafted context | MEDIUM | MEDIUM | MEDIUM-HIGH — most demos use scripted agents; showing a real LLM being compromised is the actual threat model | Validates the "agent-as-threat" model live; judges see real LLM reasoning being manipulated, not a script |
+| Cross-surface behavioral generalization | A scoring function from a document attack catches an inter-agent trust attack. Different vector, same behavioral fingerprint: overconfident agent with unverifiable claims | VERY HIGH | HIGH | HIGH — the demo moment | "The system didn't learn to detect hidden text. It learned to detect when an agent is lying." |
+| Live rule code visibility with evolution history | The generated Python is readable on screen, with provenance and v1 → v2 evolution history showing how the rule tightened after seeing two incidents | MEDIUM | LOW | MEDIUM — Rule Maker Pattern is emerging but no product shows rule evolution on screen | Makes self-improvement auditable, not magical. Judges can read the rule AND see how it refined. |
+| Forensic attribution chain (not compliance audit trail) | Every block traces to: scoring contributions → individual rules → source episodes → prediction errors → operator confirmations | MEDIUM | LOW | MEDIUM-HIGH — existing audit trails are flat logs; this is a forensic investigation provenance chain | Alacriti payments judge and security-minded judges will immediately appreciate this |
+| Voice-interrogable investigation | "Why was this blocked?" → grounded answer with actual anomaly scores, prediction errors, rule contributions, and attribution | HIGH | HIGH | MEDIUM — grounding voice Q&A in live structured anomaly data is less common | Bland AI judges evaluate this directly |
+| Adversarial verification architecture | Three parallel independent investigators checking different evidence dimensions against different ground truth sources | HIGH | MEDIUM | HIGH — no product dispatches multiple independent AI investigators for adversarial cross-checking | Single-pass guardrails (Lakera, NeMo, Guardrails AI) can't structurally detect cross-dimensional inconsistencies |
+| Additive-only rule architecture | The system cannot learn itself into a weaker state. Safety posture is monotonically increasing. | LOW | LOW | MEDIUM | Translates to regulatory language: "detection capability can only improve" |
 
 ### Anti-Features (Deliberately Exclude in 72 Hours)
 
@@ -103,32 +104,40 @@ These look useful but will kill the demo, eat the timeline, or both.
 
 ### Must Ship (Demo Fails Without These)
 
+- [ ] Real LLM Payment Agent (Sonnet 4.6) genuinely manipulated by attacks — not hardcoded
+- [ ] Prediction step: system forms expectations from baselines, records prediction errors
 - [ ] Payment Agent → Supervisor → [Risk + Compliance + Forensics in parallel] → Verdict Board → Safety Gate pipeline
-- [ ] Hidden-text-in-invoice fixture and Forensics detection (Phase 1 demo)
-- [ ] Spoofed-KYC-agent fixture and generated rule catch (Phase 2 demo — the generalization proof)
-- [ ] Rule generation from confirmed incident: Python function written to Aerospike, loaded back into gate
+- [ ] Safety Gate with composite anomaly scoring (weighted signals compound, threshold-based decision)
+- [ ] Hidden-text-in-invoice attack with Forensics detection (Attack 1)
+- [ ] Scoring function generation from confirmed incident with prediction errors as input
+- [ ] Spoofed-KYC-agent attack caught by generated scoring function (Attack 2 — the generalization proof)
+- [ ] Rule evolution: scoring function refines after second confirmed incident
 - [ ] Live investigation tree with node activation (dashboard centerpiece)
+- [ ] Composite anomaly score bar with color-coded rule contributions
 - [ ] Verdict board comparison table with match/mismatch/unable-to-verify visualization
-- [ ] Generated rule source panel showing readable Python with provenance
-- [ ] Trust score collapse animation (0.85 → 0.25) with GO/NO-GO gate decision
+- [ ] Generated rule source panel showing readable Python with provenance and evolution history
+- [ ] Forensic attribution chain (not just a flat audit log)
 - [ ] Aerospike writes visible as latency on dashboard
-- [ ] Bland AI voice Q&A answering "Why did you block that?" with grounded natural language
+- [ ] Bland AI voice Q&A answering "Why did you block that?" grounded in anomaly scores and rule attribution
 
 ### Add If Time Permits (v1.x — after core loop is bulletproof)
 
-- [ ] Okta override identity verification (30 min; strong compliance demo signal)
-- [ ] Forensic side-by-side visualization (adds visual impact for Phase 1)
+- [ ] Prediction vs. actual panel on dashboard (visual comparison of expected/found)
+- [ ] Forensic side-by-side visualization (adds visual impact for Attack 1)
 - [ ] Decision log scrolling panel with full attribution trail
+- [ ] Trust score collapse animation (0.85 → 0.25) — demo theater
 - [ ] Voice barge-in / interruption support (risky — only if Bland AI integration is solid)
-- [ ] Airbyte pre-load confirmation message ("KYC data synced via Airbyte at 09:14")
 
 ### Defer to Post-Hackathon (v2+)
 
+- [ ] Okta identity verification for operator override
+- [ ] Near-miss tracking (transactions where rules almost fired)
+- [ ] Investigator disagreement patterns as detection signal
+- [ ] Self-healing rules (auto-refine on false positive detection)
 - [ ] Multi-tenant RBAC
 - [ ] Attack vector expansion beyond 4 specified
-- [ ] Production-grade Aerospike cluster (single node is fine for demo)
-- [ ] Streaming token output / real-time LLM thinking display
 - [ ] Fine-tuning or model weight update learning loop
+- [ ] Airbyte data sync pipeline
 
 ---
 
@@ -136,18 +145,22 @@ These look useful but will kill the demo, eat the timeline, or both.
 
 | Feature | Judge Impact | Build Cost (72h) | Priority | Demo Risk |
 |---------|--------------|-----------------|----------|-----------|
-| Phase 1 + Phase 2 demo arc (end-to-end) | CRITICAL | HIGH | P0 — build first | CRITICAL |
-| Generalization proof (rule #001 catches different attack) | CRITICAL | HIGH | P0 — test rule generation 30+ times before wiring | HIGH |
-| Aerospike episode + rule persistence with visible latency | HIGH (3 judges) | MEDIUM | P1 | LOW |
-| Bland AI voice Q&A grounded in verdict board | HIGH (2 judges) | MEDIUM-HIGH | P1 — with fallback | HIGH |
+| Core pipeline end-to-end (real LLM agent → investigation → block) | CRITICAL | HIGH | P0 — build first | CRITICAL |
+| Prediction step + prediction error extraction | CRITICAL | MEDIUM | P0 — foundation for rule generation | MEDIUM |
+| Composite anomaly scoring in Safety Gate | CRITICAL | MEDIUM | P0 — the block decision mechanism | MEDIUM |
+| Generalization proof (scoring function from Attack 1 catches Attack 2) | CRITICAL | HIGH | P0 — test 30+ times before wiring | HIGH |
+| Rule evolution after second confirmed incident | HIGH | MEDIUM | P0 — the "wow" third beat | MEDIUM |
+| Aerospike episode + rule + prediction error persistence | HIGH (3 judges) | MEDIUM | P1 | LOW |
+| Bland AI voice Q&A grounded in anomaly scores | HIGH (2 judges) | MEDIUM-HIGH | P1 — with fallback | HIGH |
 | Investigation tree live animation | HIGH (visual demo) | MEDIUM | P1 | LOW |
+| Composite anomaly score bar (color-coded rule contributions) | HIGH (key visual) | MEDIUM | P1 | LOW |
 | Verdict board match/mismatch table | HIGH (compliance signal) | LOW-MEDIUM | P1 | LOW |
-| Generated rule source panel | HIGH (auditability) | LOW | P1 | LOW |
+| Generated rule source panel with evolution history | HIGH (auditability) | LOW | P1 | LOW |
+| Forensic attribution chain display | MEDIUM-HIGH (security teams) | MEDIUM | P1 | LOW |
 | Trust score collapse animation | MEDIUM (theater) | LOW | P2 | LOW |
-| Forensic side-by-side visualization | MEDIUM (Phase 1 impact) | MEDIUM | P2 | LOW |
-| Okta override verification | MEDIUM (compliance story) | LOW (30 min) | P2 | LOW |
+| Forensic side-by-side visualization | MEDIUM (Attack 1 impact) | MEDIUM | P2 | LOW |
+| Prediction vs. actual panel | MEDIUM (technical judges) | LOW-MEDIUM | P2 | LOW |
 | Decision log panel | LOW-MEDIUM | LOW | P3 | LOW |
-| Airbyte mention / fixture confirmation | LOW | VERY LOW | P3 | LOW |
 
 **Priority key:**
 - P0: Demo literally fails without this; build first, validate before moving on
@@ -157,19 +170,31 @@ These look useful but will kill the demo, eat the timeline, or both.
 
 ---
 
-## Competitor Feature Analysis (Hackathon Context)
+## Competitor Feature Analysis
 
-Most multi-agent hackathon submissions in 2025 fall into predictable patterns. Understanding what others build helps position Sentinel's differentiators.
+### vs. Hackathon Submissions
 
 | Feature | Typical Hackathon Submission | Sentinel's Approach | Why Sentinel Wins |
 |---------|------------------------------|---------------------|-------------------|
-| Multi-agent coordination | Sequential pipeline: Agent A calls Agent B calls Agent C | Parallel dispatch: Risk + Compliance + Forensics simultaneously | Faster, more independent, can detect cross-agent disagreement |
-| "Learning" | RAG over past cases, or none at all | Generates executable Python detection rules from confirmed incidents | Readable, attributed, zero inference latency at evaluation time |
-| Auditability | Log output to a database | Verdict board with field-level comparison + rule source code readable on screen | Judges can literally read the rule the system wrote |
-| Safety gate | LLM makes final enforcement decision | Deterministic Python `exec()` enforces rules — no LLM in enforcement path | Regulatory-grade; cannot be hallucinated through |
-| Demo story | "Here's a feature" → "Here's another feature" | Phase 1 attack → rule generated → Phase 2 different attack → same rule fires | Narrative arc with a payoff moment; judges remember it |
-| Voice | Optional chatbot or none | Live bidirectional voice answering grounded Q&A about live investigation | Bland AI judges see genuine integration, not an afterthought |
-| Cross-incident memory | Session context only | Aerospike-persisted episodes: "Blocked by Rule #001 deployed 90 seconds ago" | Proof of persistent learning visible in real time |
+| Multi-agent coordination | Sequential pipeline: Agent A calls Agent B calls Agent C | Parallel adversarial verification: 3 independent investigators | Structurally harder to fool; checks different evidence dimensions |
+| "Learning" | RAG over past cases, or none at all | Generates composite scoring functions from prediction errors; functions evolve across incidents | Readable, attributed, self-refining, zero inference latency |
+| The agent being supervised | Mocked/scripted stub | Real Sonnet 4.6 LLM genuinely manipulated by attacks | Demonstrates actual threat model, not a rehearsed script |
+| Auditability | Log output to a database | Forensic attribution chain: block → rule contributions → source episodes → prediction errors | Full provenance for security incident response |
+| Safety gate | LLM makes final enforcement decision | Composite anomaly scoring — the block decision is an if-statement | Deterministic; cannot be prompt-injected |
+| Demo story | "Here's a feature" → "Here's another feature" | Attack 1 → rule generated → Attack 2 caught → rule evolves | Three-beat narrative with a climax moment |
+
+### vs. Commercial Products (March 2026)
+
+| Commercial Product | What They Do | What Sentinel Does Differently |
+|---|---|---|
+| **Straiker** (runtime agent security) | Traces agent actions, blocks at gateway, 98%+ detection | Sentinel goes deeper: parallel adversarial verification + auto-generates new detection rules from incidents |
+| **Lakera** (→ Check Point) | Prompt-level firewall, sub-50ms | Single-pass I/O filter; Sentinel supervises the full reasoning chain against external ground truth |
+| **Darktrace** (self-learning AI) | Updates opaque ML models from network traffic | Sentinel's rules are readable Python with provenance — auditable, testable, explainable |
+| **SOAR platforms** (Splunk, Palo Alto) | Refine playbooks from incidents (requires human analysts) | Sentinel's rule generation is autonomous — no human writes the detection rule |
+| **Zenity** (agent governance) | Step-level monitoring, policy enforcement | Monitors and enforces; doesn't generate new detection rules from confirmed incidents |
+| **NeMo Guardrails** (NVIDIA) | Programmable guardrails via Colang DSL | Manual policy authoring; Sentinel auto-generates rules. ~500ms baseline latency vs Sentinel's deterministic exec() |
+| **Featurespace/Feedzai** (payment fraud ML) | Behavioral analytics on human transaction patterns | Monitors human behavior; Sentinel monitors AI agent decision chains |
+| **Nobody** | Auto-generated inspectable detection rules for AI agents | **This is the unoccupied niche** |
 
 ---
 
@@ -204,20 +229,26 @@ The dashboard must make these visible. Judges from the payments domain (Alacriti
 
 ---
 
-## Self-Learning Novelty Assessment (2025)
+## Self-Learning Novelty Assessment (March 2026, post competitive analysis)
 
-| Learning Pattern | Novelty Level | Status in 2025 |
-|-----------------|---------------|----------------|
-| RAG over past incidents | NONE | Standard practice; table stakes |
-| Fine-tuning on observed data | LOW | Common; infrastructure-heavy |
-| Prompt evolution (Darwin Gödel Machine) | HIGH | Research-stage; not production |
-| Generated executable rules (Rule Maker Pattern) | MEDIUM-HIGH | Emerging practice; rare in demos |
-| Cross-surface behavioral generalization | HIGH | Novel claim; must be demonstrated live |
-| Additive-only rule architecture (safety monotonicity) | HIGH | No widely-known precedent in production systems |
+| Learning Pattern | Novelty Level | Status in 2026 | Who Does It |
+|-----------------|---------------|----------------|-------------|
+| RAG over past incidents | NONE | Standard practice; table stakes | Everyone |
+| Fine-tuning on observed data | LOW | Common; infrastructure-heavy | Standard ML pipeline |
+| Opaque model self-learning (baseline adaptation) | LOW | Darktrace, CrowdStrike AIDR | Updates weights/models, not inspectable |
+| SOAR playbook refinement | LOW-MEDIUM | Requires human analysts | Splunk, Palo Alto XSOAR, IBM QRadar |
+| Prompt evolution (Darwin Gödel Machine) | HIGH | Research-stage; not production | Academic only |
+| Generated executable rules (Rule Maker Pattern) | MEDIUM-HIGH | Emerging practice; rare in production | tessl.io coined the pattern; few implementations |
+| Composite scoring functions from prediction errors | **HIGH** | **Nobody does this for AI agent security** | **Sentinel's unique approach** |
+| Rule evolution across multiple incidents | **HIGH** | **No product auto-refines detection rules** | **Sentinel's unique approach** |
+| Cross-surface behavioral generalization | HIGH | Novel claim; must be demonstrated live | Sentinel if the demo works |
+| Additive-only rule architecture (safety monotonicity) | MEDIUM-HIGH | No widely-known precedent | Sentinel |
 
-Sentinel's combination of (1) executable rule generation + (2) cross-surface generalization + (3) additive-only safety invariant is genuinely novel as a packaged claim. The individual components are not new. The combination — and the live demonstration that a rule from attack type A catches attack type B — is what makes the claim defensible and memorable.
+**Honest assessment of novelty:** The individual pieces (anomaly scoring, predicate functions, baselines) are not new — banks have had scoring models since the 1980s. What's novel is the **closed loop**: confirmed incident → prediction error extraction → autonomous scoring function generation → validation → deployment → catches novel attack → rule refines. No existing product does this for AI agent security. The claim is narrow, defensible, and demonstrable live.
 
-**Confidence on novelty claim:** MEDIUM — the generalization demonstration depends on the rule generation prompt being robust enough to produce behavioral rather than mechanistic rules. This is the highest-risk single component. The PROJECT.md note about testing rule generation 30+ times in isolation is correct and critical.
+**What to avoid claiming:** Don't frame this as "self-learning AI" or reference theoretical frameworks (LeCun, world models). Let the engineering speak. If a judge recognizes the conceptual alignment, that's 10x more impressive than name-dropping it.
+
+**Confidence on novelty claim:** MEDIUM-HIGH (upgraded from MEDIUM after competitive analysis confirmed no product occupies this niche). The generalization demonstration still depends on the rule generation prompt producing behavioral scoring functions — this remains the highest-risk component.
 
 ---
 

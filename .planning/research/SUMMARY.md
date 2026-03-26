@@ -1,17 +1,21 @@
 # Project Research Summary
 
-**Project:** Sentinel — Real-Time Multi-Agent AI Supervision System for Financial Payments
-**Domain:** Multi-agent AI supervision / financial compliance / hackathon demo system
-**Researched:** 2026-03-24
+**Project:** Sentinel — Runtime Security for Autonomous AI Agents
+**Domain:** Autonomous agent security / runtime defense / AI threat detection (payments as demo scenario)
+**Researched:** 2026-03-24, updated after competitive analysis (20+ products evaluated)
 **Confidence:** MEDIUM-HIGH
 
 ## Executive Summary
 
-Sentinel is a real-time multi-agent supervision system that intercepts autonomous payment agent decisions, runs parallel sub-agent investigations (Risk, Compliance, Forensics), and applies a deterministic Safety Gate to block or approve transfers. The core architectural claim — and the central demo payoff — is cross-surface behavioral generalization: a detection rule learned from a document forgery attack (hidden invoice text) catches an entirely different attack type (inter-agent identity spoofing) because the rule captures behavioral signature (high agent confidence + investigator field mismatches) rather than the specific mechanism. This is genuinely novel relative to typical 2025 hackathon submissions and is defensible with a live demonstration.
+Sentinel is a runtime security system for autonomous AI agents. It intercepts agent actions at the execution boundary, dispatches three independent AI investigators to adversarially verify the agent's claims against ground truth, and blocks actions that can't be confirmed. The core threat model: the AI agent itself is the compromised entity — prompt-injected via documents, socially engineered by other agents, or hallucinating with high confidence. Existing guardrails (Lakera, Straiker, NeMo, Guardrails AI) filter inputs and outputs but trust the agent's reasoning. Sentinel doesn't.
 
-The recommended approach is a Python/FastAPI backend with AsyncAnthropic SDK for parallel Claude API calls, Aerospike for sub-5ms persistent episode storage, @xyflow/react for the real-time investigation tree, and Bland AI voice webhooks for post-investigation Q&A. The architecture enforces a strict invariant: no LLM participates in enforcement decisions. LLMs generate Python rule code; deterministic Python enforces it. This separation is the system's primary compliance and auditability claim and must be preserved without exception.
+The central demo payoff is the self-improvement loop: after confirming an attack, the system extracts prediction errors (where its expectations diverged from reality), generates a composite scoring function (inspectable Python, not a black box), validates it, deploys it, and catches the next attack — even with a completely different attack vector — because compromised agents exhibit the same behavioral fingerprint. After a second confirmed incident, the scoring function evolves: drops conditions that were artifacts of one attack, strengthens signals present in both. No existing product does this: Darktrace updates opaque models; SOAR platforms require human analysts; Sentinel autonomously writes readable, testable, attributable detection rules.
 
-The most significant risks cluster around three areas: (1) Claude API rate limits at Tier 1 will kill the parallel investigation demo — advancing to Tier 2 ($40 spend) is a prerequisite, not an option; (2) the rule generation prompt is the single highest-failure-risk component — it must be tested 30+ times in isolation and validated against both Phase 1 and Phase 2 fixture verdict boards before being wired into the pipeline; and (3) Bland AI webhook latency will stall the voice demo if voice context is not pre-computed and cached before Phase 3 begins. Demo environment divergence (wrong namespace in Aerospike, localhost webhook URL, missing env vars) is a consistent hackathon killer that requires a pre-demo validation script run at T-1 hour.
+**Competitive position (validated March 2026):** The AI agent security market is exploding (Straiker, Lakera→Check Point, Zenity, HiddenLayer, Cisco AI Defense, NVIDIA NeMo). But no product generates inspectable detection rules from incidents that catch novel attacks. No product treats the agent as the potentially compromised entity with adversarial verification. No product provides composite anomaly scoring where individually weak signals compound. This is the unoccupied niche.
+
+The recommended approach is a Python/FastAPI backend with AsyncAnthropic SDK, Aerospike for persistent storage, @xyflow/react for the dashboard, and Bland AI for voice Q&A. The payment agent is a real Sonnet 4.6 LLM (not hardcoded) that gets genuinely manipulated. The block decision is an if-statement — no LLM in the enforcement path.
+
+The most significant risks remain: (1) Claude API rate limits at Tier 1; (2) the scoring function generation prompt (30+ isolation tests required); (3) Bland AI webhook latency. Okta has been cut from scope for timeline reasons.
 
 ## Key Findings
 
@@ -60,7 +64,19 @@ Research identified a clear three-tier feature structure for a 72-hour hackathon
 
 ### Architecture Approach
 
-The system has a clear layered pipeline: Entry Layer (FastAPI HTTP + Bland AI webhook) → Supervisor Layer (Opus 4.6, dispatches parallel sub-agents via asyncio.gather) → Sub-Agent Layer (Risk + Compliance + Forensics, each Sonnet 4.6) → Verdict Board Engine (deterministic field comparison, no LLM) → Safety Gate (deterministic Python exec, no LLM) → Aerospike persistence + WebSocket broadcast to React dashboard. The Self-Improvement Loop is a separate trigger path: operator confirms attack → Opus generates Python rule → exec() into registry → Aerospike rule store → loaded on next investigation start. This design cleanly separates LLM reasoning from deterministic enforcement across well-defined Pydantic schema boundaries.
+Four-layer architecture:
+
+1. **Autonomous Agent (Real LLM)** — Payment Agent is Sonnet 4.6 making genuine decisions. Attacks manipulate its reasoning via prompt injection or social engineering. Not hardcoded.
+
+2. **Adversarial Verification (AI Investigates)** — Supervisor (Opus 4.6) forms predictions from behavioral baselines, dispatches Risk + Compliance + Forensics in parallel via asyncio.TaskGroup. Each investigator checks external ground truth directly — they don't ask the agent if it's telling the truth. Prediction errors (expected vs actual) are computed and stored.
+
+3. **Verdict Board Assembly (Deterministic)** — Structured field-level comparison: agent claimed X, investigator found Y, match/mismatch/unable_to_verify. No LLM judgment.
+
+4. **Safety Gate (If-Statement)** — Hardcoded rules first (immutable), then generated composite scoring functions. Each function returns a weighted anomaly score; individually weak signals compound. Total score exceeds threshold → NO-GO. No LLM in the enforcement path.
+
+**Self-Improvement Loop:** Operator confirms attack → system extracts prediction errors → Opus generates composite scoring function over VerdictBoard fields → validation harness → deploy to registry → catches next attack. After second confirmation → scoring function evolves using prediction errors from both episodes.
+
+This design cleanly separates LLM reasoning from deterministic enforcement across well-defined Pydantic schema boundaries.
 
 **Major components:**
 1. **SupervisorAgent** — Orchestrates investigation, assembles VerdictBoard from sub-agent returns, handles voice Q&A; does NOT apply rules or write decisions

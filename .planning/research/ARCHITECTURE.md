@@ -1,7 +1,7 @@
 # Architecture Research
 
-**Domain:** Real-time multi-agent supervision system (payment agent oversight)
-**Researched:** 2026-03-24
+**Domain:** Runtime security for autonomous AI agents (payments as demo scenario)
+**Researched:** 2026-03-24, updated after competitive analysis and architecture revision
 **Confidence:** HIGH (core patterns), MEDIUM (Bland AI integration details)
 
 ## Standard Architecture
@@ -10,82 +10,82 @@
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
-│                        ENTRY LAYER                                   │
-│  ┌──────────────────┐           ┌────────────────────────────────┐   │
-│  │  Bland AI Voice  │           │  FastAPI HTTP /investigate     │   │
-│  │  Webhook POST    │           │  (payment agent verdict input) │   │
-│  └────────┬─────────┘           └────────────┬───────────────────┘   │
-│           │ call_id + transcript              │ PaymentVerdict        │
-└───────────┼──────────────────────────────────┼───────────────────────┘
-            │                                  │
-            ▼                                  ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│                     SUPERVISOR LAYER (Opus 4.6)                      │
+│                   LAYER 1: AUTONOMOUS AGENT (Real LLM)               │
 │  ┌───────────────────────────────────────────────────────────────┐   │
-│  │  SupervisorAgent                                               │   │
-│  │  - Receives PaymentVerdict                                     │   │
-│  │  - Builds investigation context from Aerospike (trust, rules)  │   │
-│  │  - Emits WS: investigation_started                             │   │
-│  │  - asyncio.gather() → 3 sub-agents                             │   │
-│  │  - Assembles VerdictBoard from sub-agent returns               │   │
-│  │  - Emits WS: verdict_board_assembled                           │   │
+│  │  Payment Agent (Sonnet 4.6) — NOT hardcoded                    │   │
+│  │  - Receives payment request, queries fixtures, makes decisions │   │
+│  │  - Can be genuinely manipulated (prompt injection, spoofing)   │   │
+│  │  - Returns structured PaymentVerdict with confidence + claims  │   │
 │  └───────────────────────────────────────────────────────────────┘   │
-└──────────────────────────┬────────────────────────────────────────────┘
-                           │ asyncio.gather()
-          ┌────────────────┼────────────────┐
-          ▼                ▼                ▼
-┌─────────────────┐ ┌─────────────┐ ┌──────────────────┐
-│  Risk Agent     │ │  Compliance │ │  Forensics Agent │
-│  (Sonnet 4.6)   │ │  Agent      │ │  (Sonnet 4.6 +   │
-│                 │ │  (Sonnet    │ │   vision)         │
-│  z-score vs     │ │  4.6)       │ │                  │
-│  baseline,      │ │             │ │  doc scan,        │
-│  step-sequence  │ │  KYC cross- │ │  hidden text,     │
-│  deviation      │ │  validation │ │  field extract    │
-│                 │ │             │ │                  │
-│  → AgentVerdict │ │ → AgentVerdict│ → AgentVerdict   │
-└─────────────────┘ └─────────────┘ └──────────────────┘
-          │                │                │
-          └────────────────┼────────────────┘
-                           │ List[AgentVerdict]
+└──────────────────────────┬───────────────────────────────────────────┘
+                           │ PaymentVerdict
                            ▼
 ┌──────────────────────────────────────────────────────────────────────┐
-│                    VERDICT BOARD ENGINE (deterministic)              │
+│              LAYER 2: ADVERSARIAL VERIFICATION (AI Investigates)      │
 │  ┌───────────────────────────────────────────────────────────────┐   │
-│  │  field-level comparison: payment claims vs investigator finds  │   │
-│  │  outputs: match | mismatch | unable_to_verify per field        │   │
-│  │  NO float math — enum comparison only                          │   │
-│  │  → VerdictBoard dict                                           │   │
+│  │  Supervisor (Opus 4.6)                                         │   │
+│  │  1. Forms PREDICTIONS from behavioral baselines (Aerospike)    │   │
+│  │  2. Dispatches 3 sub-agents in parallel (asyncio.TaskGroup)    │   │
+│  │  3. Computes PREDICTION ERRORS (expected vs actual)            │   │
+│  └───────────────────────────────────────────────────────────────┘   │
+│                          │ TaskGroup                                  │
+│         ┌────────────────┼────────────────┐                          │
+│         ▼                ▼                ▼                          │
+│  ┌─────────────┐ ┌─────────────┐ ┌──────────────────┐              │
+│  │ Risk Agent  │ │ Compliance  │ │ Forensics Agent  │              │
+│  │ (Sonnet 4.6)│ │ Agent       │ │ (Sonnet 4.6 +    │              │
+│  │             │ │ (Sonnet 4.6)│ │  vision)          │              │
+│  │ z-score vs  │ │             │ │                   │              │
+│  │ baseline,   │ │ KYC cross-  │ │ doc scan,         │              │
+│  │ step-seq    │ │ validation, │ │ hidden text,      │              │
+│  │ deviation   │ │ activity log│ │ field extract     │              │
+│  └─────────────┘ └─────────────┘ └──────────────────┘              │
+└──────────────────────────┬───────────────────────────────────────────┘
+                           │ List[AgentVerdict] + prediction_errors
+                           ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│              LAYER 3: VERDICT BOARD ENGINE (deterministic)            │
+│  ┌───────────────────────────────────────────────────────────────┐   │
+│  │  Field-level comparison: payment claims vs investigator finds  │   │
+│  │  Outputs: match | mismatch | unable_to_verify per field        │   │
+│  │  NO LLM — enum comparison only                                 │   │
+│  │  → VerdictBoard dict + prediction_errors                       │   │
 │  └───────────────────────────────────────────────────────────────┘   │
 └──────────────────────────┬───────────────────────────────────────────┘
                            │ VerdictBoard
                            ▼
 ┌──────────────────────────────────────────────────────────────────────┐
-│                    SAFETY GATE (deterministic Python)                │
+│         LAYER 4: SAFETY GATE (The block decision is an if-statement) │
 │  ┌───────────────────────────────────────────────────────────────┐   │
-│  │  1. Hardcoded rules (always run first, cannot be removed)      │   │
-│  │  2. Generated rule registry (exec()'d Python functions)        │   │
-│  │  → GateDecision: GO | NO_GO | ESCALATE + attribution list      │   │
+│  │  1. Hardcoded rules (immutable, cannot be removed)             │   │
+│  │  2. Generated scoring functions (weighted anomaly scores)      │   │
+│  │  3. Composite score: sum of all rule contributions             │   │
+│  │  → score >= 1.0: NO-GO | >= 0.6: ESCALATE | else: GO          │   │
+│  │  → Full attribution: which rules, what scores, from which      │   │
+│  │    episodes, what prediction errors produced them               │   │
 │  └───────────────────────────────────────────────────────────────┘   │
 └──────────────────────────┬───────────────────────────────────────────┘
-                           │ GateDecision
+                           │ GateDecision + forensic attribution
           ┌────────────────┴────────────────────────┐
           ▼                                         ▼
 ┌──────────────────────┐              ┌──────────────────────────────┐
 │  Aerospike           │              │  Self-Improvement Loop       │
-│  Episode Write       │              │  (operator confirms attack)  │
+│  Episode + Errors    │              │  (operator confirms attack)  │
 │  (<5ms target)       │              │                              │
-│                      │              │  Opus 4.6 generates Python   │
-│  namespace: sentinel │              │  rule → exec() → registry   │
-│  set: episodes       │              │  → Aerospike rule_store      │
-│  set: rules          │              └──────────────────────────────┘
-│  set: trust          │
-└──────────────────────┘
+│                      │              │  1. Extract prediction errors │
+│  namespace: sentinel │              │  2. Opus 4.6 generates       │
+│  set: episodes       │              │     scoring function         │
+│  set: rules          │              │  3. Validate + deploy        │
+│  set: trust          │              │  4. After 2nd incident:      │
+│                      │              │     EVOLVE function (v2)     │
+│                      │              │  → Aerospike rule_store      │
+└──────────────────────┘              └──────────────────────────────┘
                            │ (all events throughout)
                            ▼
 ┌──────────────────────────────────────────────────────────────────────┐
 │                    WEBSOCKET EVENT BUS                               │
 │  ConnectionManager broadcasts typed events → React dashboard        │
+│  + Bland AI Voice Q&A (grounded in anomaly scores + attribution)    │
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -103,6 +103,7 @@
 | AerospikeStore | Persistent episode records, rule registry, trust postures, baselines | Not used for transient in-flight state |
 | WebSocketBus | Broadcasts typed events to dashboard clients | Not used for request/response; one-way push |
 | FastAPI | HTTP routes for payment input, webhook receiver, WebSocket endpoint | Not a business logic layer |
+| PaymentAgent | Real Sonnet 4.6 LLM that processes payment requests and makes genuine decisions; can be manipulated via prompt injection or social engineering | Does not investigate itself; its output is what gets investigated |
 | BlandAI | Voice interface for operator Q&A; triggers FastAPI webhook on call events | Does not have access to verdict data except via Supervisor response |
 
 ## Recommended Project Structure
@@ -138,8 +139,6 @@ sentinel/
 │   └── events.py            # All WebSocket event types (typed dicts)
 ├── improvement/
 │   └── rule_generator.py    # Opus prompt + rule generation + validation
-├── integrations/
-│   └── okta.py              # Token introspection for override verification
 └── frontend/                # React app (separate build)
     ├── src/
     │   ├── components/
@@ -240,16 +239,16 @@ class ConnectionManager:
             self.connections.remove(ws)
 ```
 
-### Pattern 3: exec() Safety Gate with Restricted Globals
+### Pattern 3: exec() Safety Gate with Composite Anomaly Scoring
 
-**What:** Generated Python rule functions are exec()'d into a restricted namespace at registration time, then called at evaluation time with the `VerdictBoard` as the only input.
+**What:** Generated Python scoring functions are exec()'d into a restricted namespace at registration time, then called at evaluation time with the `VerdictBoard` as the only input. Each function returns a weighted anomaly score (float). Scores from all rules are summed; composite score evaluated against thresholds.
 
-**Critical constraint:** This is architecturally NOT a security sandbox against adversarial input — it is a controlled execution surface for rules that Opus generates from a tightly-constrained prompt. The restriction is about preventing accidental scope pollution, not defeating a determined attacker.
+**Critical constraint:** This is architecturally NOT a security sandbox against adversarial input — it is a controlled execution surface for scoring functions that Opus generates from a tightly-constrained prompt. The restriction is about preventing accidental scope pollution, not defeating a determined attacker.
 
 **Restriction approach:**
 ```python
 SAFE_BUILTINS = {
-    "len": len, "any": any, "all": all,
+    "len": len, "any": any, "all": all, "min": min, "max": max,
     "isinstance": isinstance, "dict": dict, "list": list,
     "str": str, "int": int, "bool": bool, "float": float,
     "True": True, "False": False, "None": None,
@@ -260,7 +259,7 @@ GATE_GLOBALS = {
 }
 
 def register_rule(rule_id: str, python_source: str) -> None:
-    """Compile and register a generated rule function."""
+    """Compile and register a generated scoring function."""
     namespace = dict(GATE_GLOBALS)
     try:
         compiled = compile(python_source, f"<rule_{rule_id}>", "exec")
@@ -268,41 +267,32 @@ def register_rule(rule_id: str, python_source: str) -> None:
     except SyntaxError as e:
         raise RuleRegistrationError(f"Rule {rule_id} syntax error: {e}")
 
-    fn_name = _extract_function_name(python_source)  # parse AST to get def name
+    fn_name = _extract_function_name(python_source)
     if fn_name not in namespace:
         raise RuleRegistrationError(f"Rule {rule_id}: no function found after exec")
 
     _registry[rule_id] = namespace[fn_name]
 
-def evaluate_rule(rule_id: str, verdict_board: VerdictBoard) -> bool:
-    """Call a registered rule with a 5-second timeout."""
-    fn = _registry[rule_id]
-    with _timeout(seconds=5):
-        return fn(verdict_board.model_dump())
+def evaluate_all_rules(verdict_board: VerdictBoard) -> tuple[float, list[RuleContribution]]:
+    """Evaluate all registered rules, return composite score + per-rule contributions."""
+    contributions = []
+    board_dict = verdict_board.model_dump()
+    for rule_id, fn in _registry.items():
+        with _timeout(seconds=5):
+            score = fn(board_dict)
+        contributions.append(RuleContribution(rule_id=rule_id, score=score))
+    composite = sum(c.score for c in contributions)
+    return composite, contributions
+
+# Gate decision: composite >= 1.0 → NO-GO | >= 0.6 → ESCALATE | else → GO
 ```
 
-**Timeout via `signal.alarm`** (Unix only — acceptable for Linux deploy on EC2):
-```python
-import signal
-from contextlib import contextmanager
-
-@contextmanager
-def _timeout(seconds: int):
-    def handler(signum, frame):
-        raise RuleTimeoutError("Rule execution exceeded time limit")
-    signal.signal(signal.SIGALRM, handler)
-    signal.alarm(seconds)
-    try:
-        yield
-    finally:
-        signal.alarm(0)
-```
-
-**Rule function contract (enforced by prompt and AST check):**
+**Scoring function contract (enforced by prompt and AST check):**
 - Single argument: `verdict_board: dict`
-- Returns: `bool` (True = this rule fires / block)
+- Returns: `float` (weighted anomaly score, 0.0 = no signal, higher = more anomalous)
 - No side effects permitted in the restricted namespace
-- Rule source is stored verbatim in Aerospike and readable on dashboard
+- Rule source is stored verbatim in Aerospike with provenance (episode_id, prediction_errors, version history)
+- Readable on dashboard with color-coded contribution to composite score
 
 ### Pattern 4: Aerospike Episode Storage Schema
 
@@ -385,9 +375,7 @@ async def bland_webhook(payload: BlandWebhookPayload) -> BlandWebhookResponse:
     return BlandWebhookResponse(response=answer)
 ```
 
-**Override flow:** Operator says "override" → Bland AI sends `override_requested: true` variable → FastAPI routes to Okta token introspection → returns `verified: true/false` → Bland AI speaks result.
-
-**Timeout critical:** Bland AI will time out if the webhook doesn't respond quickly enough. The Supervisor answer_operator_question call must complete within ~8 seconds. Keep a cache of the most recent episode state in memory to avoid Aerospike lookup on every Q&A turn.
+**Timeout critical:** Bland AI will time out if the webhook doesn't respond quickly enough. The Supervisor answer_operator_question call must complete within ~8 seconds. Keep a cache of the most recent episode state (including anomaly scores, rule contributions, and prediction errors) in memory to avoid Aerospike lookup on every Q&A turn.
 
 ## Data Flow
 
@@ -427,21 +415,50 @@ SupervisorAgent.run(verdict)
 ### Self-Improvement Flow
 
 ```
-POST /confirm-incident { episode_id, attack_type }
+POST /confirm { episode_id, confirmed_attack }
     │
     ▼
-RuleGenerator.generate(verdict_board, mismatches, attack_type)
+Extract prediction errors from episode
+    │ expected vs actual across all VerdictBoard fields
+    │ identifies where predictions diverged most from reality
+    ▼
+RuleGenerator.generate(verdict_board, prediction_errors, attack_type)
     │ Opus 4.6 API call
-    │ Returns python_source (function string)
+    │ Prompt: "generate a scoring function over VerdictBoard fields
+    │          that captures this behavioral fingerprint"
+    │ Returns python_source (scoring function string)
+    ▼
+Validate: AST parse, compile(), fires on attack fixture, clean on baseline
+    │
     ▼
 RuleRegistry.register(rule_id, python_source)
     │ exec() into restricted namespace
-    │ validates function found and callable
+    │ validates function returns float
     ▼
 Aerospike.put(("sentinel", "rules", rule_id), bins)
-    │
+    │ bins: rule_id, python_source, source_episode_id,
+    │       prediction_errors, deployed_at, version=1
     ▼
 WS broadcast: rule_generated + rule_deployed
+
+--- RULE EVOLUTION (after second confirmed incident) ---
+
+POST /confirm { episode_id_2, confirmed_attack }
+    │
+    ▼
+Load rule_001 + its source episode + prediction errors
+Load episode_2 + its prediction errors
+    │
+    ▼
+RuleGenerator.evolve(rule_001_source, [episode_1_errors, episode_2_errors])
+    │ Opus 4.6: "refine this scoring function using prediction errors
+    │            from both incidents; drop artifacts, strengthen common signals"
+    │ Returns refined python_source
+    ▼
+Validate → Register as rule_001 v2 → Aerospike (version=2, preserves v1 history)
+    │
+    ▼
+WS broadcast: rule_evolved { rule_id, old_version, new_version }
 ```
 
 ### WebSocket Event Stream Direction
@@ -522,16 +539,13 @@ This is the critical sequencing for a 72-hour solo build. Each item depends on a
     └── Depends on: RuleGenerator, EpisodeStore, WebSocket bus
 ```
 
-### Chain 5: Voice + Auth (post-core)
+### Chain 5: Voice (post-core)
 
 ```
 14. Bland AI webhook endpoint
     └── Depends on: SupervisorAgent (for answer_operator_question)
     └── Implement after core pipeline is stable
-
-15. Okta token introspection
-    └── Depends on: Bland AI webhook route
-    └── ~30 min implementation; add only after voice works
+    └── Grounded Q&A: answers reference actual anomaly scores, rule contributions, prediction errors
 ```
 
 ## Interface Contracts
@@ -600,19 +614,29 @@ class GateDecision(BaseModel):
     evaluated_at: datetime
 ```
 
-### Generated Rule Function Contract
+### Generated Scoring Function Contract
 
 ```python
 # Prompt instructs Opus to generate exactly this signature:
-def detect_<attack_pattern>(verdict_board: dict) -> bool:
+def score_<behavioral_pattern>(verdict_board: dict) -> float:
     """
-    Docstring: attack type, source episode, behavioral pattern description.
-    Returns True if this rule fires (block the payment).
+    Docstring: behavioral pattern detected, source episode, prediction errors
+    that produced this function, what it generalizes to.
+    Returns weighted anomaly score (0.0 = no signal, higher = more anomalous).
     """
-    # verdict_board keys: fields (list of dicts with keys:
-    #   field, payment_claim, investigator_finding, status, severity)
-    ...
-    return bool
+    score = 0.0
+
+    # Each signal contributes weighted score
+    unverifiable = len(verdict_board.get("unable_to_verify", []))
+    score += min(unverifiable * 0.3, 0.9)
+
+    z_score = verdict_board.get("confidence_z_score", 0.0)
+    score += min(z_score * 0.1, 0.5)
+
+    if verdict_board.get("step_sequence_deviation"):
+        score += 0.4
+
+    return score
 ```
 
 ### BlandWebhookPayload / BlandWebhookResponse
@@ -683,7 +707,7 @@ class BlandWebhookResponse(BaseModel):
 | Anthropic API | `AsyncAnthropic` client, one per agent class | Opus 4.6 for Supervisor + RuleGenerator; Sonnet 4.6 for sub-agents |
 | Aerospike | `aerospike` Python client, connection pool at startup | All writes in episode store, all reads in trust/rule store |
 | Bland AI | Inbound POST webhook during call pathway | Synchronous — Bland AI blocks on response; 8s timeout budget |
-| Okta | Token introspection REST call on override request | One HTTP call per override; no session state |
+| Okta | CUT from v1 scope | Mention in Q&A if asked about operator authentication |
 
 ### Internal Boundaries
 
@@ -696,7 +720,7 @@ class BlandWebhookResponse(BaseModel):
 | Any component → ConnectionManager | Direct async call | `(event_name: str, payload: dict)` |
 | Any component → AerospikeStore | Direct async call | Pydantic model → `model_dump()` → bins |
 | FastAPI route → SupervisorAgent | Direct async call | HTTP payload validated to Pydantic, returns `GateDecision` |
-| FastAPI bland route → SupervisorAgent | Direct async call (≤8s) | `BlandWebhookPayload` → `str` |
+| FastAPI bland route → SupervisorAgent | Direct async call (≤8s) | `BlandWebhookPayload` → `str` (grounded in anomaly scores + attribution) |
 
 ## Sources
 
