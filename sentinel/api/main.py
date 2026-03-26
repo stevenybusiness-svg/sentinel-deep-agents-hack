@@ -16,6 +16,8 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from sentinel.api.routes.confirm import router as confirm_router
 from sentinel.api.routes.investigate import router as investigate_router
@@ -147,3 +149,19 @@ async def health() -> dict:
         "status": "ok",
         "aerospike": app_state.get("aerospike") is not None,
     }
+
+
+# ---------------------------------------------------------------------------
+# Static frontend — serve React build from frontend/dist
+# ---------------------------------------------------------------------------
+
+_FRONTEND_DIST = Path(__file__).parent.parent.parent / "frontend" / "dist"
+
+if _FRONTEND_DIST.exists():
+    # Serve hashed assets (JS/CSS chunks) under /assets
+    app.mount("/assets", StaticFiles(directory=str(_FRONTEND_DIST / "assets")), name="assets")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def spa_catch_all(full_path: str) -> FileResponse:
+        """Return index.html for all non-API paths to support client-side routing."""
+        return FileResponse(str(_FRONTEND_DIST / "index.html"))
