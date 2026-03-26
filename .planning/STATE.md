@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Ready to plan
-stopped_at: Completed quick/260326-07t-PLAN.md
-last_updated: "2026-03-26T04:14:49.556Z"
+status: Ready to execute
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-03-26T05:24:56.530Z"
 progress:
-  total_phases: 6
+  total_phases: 7
   completed_phases: 4
   total_plans: 23
-  completed_plans: 21
+  completed_plans: 22
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-24)
 
 **Core value:** The self-improvement loop: the system autonomously generates composite scoring functions from prediction errors, evolves them across incidents, and catches novel attacks — inspectable Python, not a black box. Live, on stage, in 3 minutes.
-**Current focus:** Phase 02 — core-investigation-pipeline
+**Current focus:** Phase 05 — voice-integration
 
 ## Current Position
 
-Phase: 03
-Plan: Not started
+Phase: 05 (voice-integration) — EXECUTING
+Plan: 2 of 2
 
 ## Performance Metrics
 
@@ -68,6 +68,7 @@ Plan: Not started
 | Phase 04-dashboard P05 | 2 | 0 tasks | 0 files |
 | Phase 02 P07 | 2 | 1 tasks | 2 files |
 | Phase quick P260326-07t | 177 | 2 tasks | 1 files |
+| Phase 05-voice-integration PP01 | 287 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -129,6 +130,12 @@ Recent decisions affecting current work:
 - [Phase 04-dashboard]: Decision log folded into AerospikeLatency panel (DASH-08+DASH-09) to maintain exactly 6 right-column panels per D-03
 - [Phase 02-07]: D-03 gap closed: supervisor_response captured (not discarded), reasoning extracted and injected into Payment Agent first message as 'Supervisor analysis:' prefix
 - [Phase quick-260326-07t]: SPA catch-all registered after /health — API routes not shadowed; _FRONTEND_DIST.exists() guard for graceful startup without build
+- [Phase 05-01]: Use __latest__ sentinel key as primary fallback — simpler than Bland request_data variable threading which has underdocumented interpolation behavior in dynamic_data body
+- [Phase 05-01]: Return 503 from /bland-call when BLAND_API_KEY is placeholder to prevent silent auth failure
+
+### Roadmap Evolution
+
+- Phase 04.1 inserted after Phase 4: Performance Optimization and Qualitative Analysis Panel (URGENT) — 30s pipeline latency unacceptable for demo; judges need qualitative attack narrative, subagent reasoning breakdown, and self-improvement story alongside quantitative metrics
 
 ### Pending Todos
 
@@ -139,6 +146,7 @@ None yet.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260324-j7c | Add Bedrock backend support as zero-friction fallback | 2026-03-24 | f8000cd | [260324-j7c-add-bedrock-backend-support-as-zero-fric](.planning/quick/260324-j7c-add-bedrock-backend-support-as-zero-fric/) |
+| 260326-07t | Serve React frontend as static files from FastAPI | 2026-03-26 | c8d8164 | [260326-07t-serve-react-frontend-as-static-files-fro](.planning/quick/260326-07t-serve-react-frontend-as-static-files-fro/) |
 
 ### Blockers/Concerns
 
@@ -148,6 +156,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-26T04:14:39.449Z
-Stopped at: Completed quick/260326-07t-PLAN.md
+Last session: 2026-03-26T05:24:56.524Z
+Stopped at: Completed 05-01-PLAN.md
 Resume file: None

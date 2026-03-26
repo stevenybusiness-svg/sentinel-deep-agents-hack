@@ -63,7 +63,7 @@
 - [x] **API-01**: FastAPI server with WebSocket endpoint (/ws) emitting named investigation events to connected dashboard clients in real time
 - [x] **API-02**: POST /investigate accepts payment request payload; triggers full investigation pipeline with prediction step; caches active episode state in memory
 - [x] **API-03**: POST /confirm accepts operator confirmation (confirmed_attack / false_positive); extracts prediction errors; triggers scoring function generation pipeline if confirmed_attack; stores result to Aerospike
-- [ ] **API-04**: POST /bland-webhook handles Bland AI Q&A turns; responds within 8s; reads pre-computed investigation context from in-memory cache (not Aerospike per-turn)
+- [x] **API-04**: POST /bland-webhook handles Bland AI Q&A turns; responds within 8s; reads pre-computed investigation context from in-memory cache (not Aerospike per-turn)
 
 ### Dashboard
 
@@ -71,19 +71,19 @@
 - [x] **DASH-02**: New rule node appears in investigation tree after rule deployment — the tree is visibly larger after learning than before
 - [x] **DASH-03**: Verdict board table shows field-level match/mismatch for all claims_checked with severity indicators
 - [x] **DASH-04**: Forensic scan panel shows clean invoice view (what human sees) vs. forensic scan (hidden text highlighted in red) side-by-side for Phase 1 demo
-- [ ] **DASH-05**: Generated rule source panel shows readable Python function the system wrote, with provenance (episode ID, deployed timestamp, prediction errors that produced it) and evolution history (v1 → v2)
-- [ ] **DASH-06**: Trust score bar animates from initial value (0.85) to post-investigation value (0.25) as verdict board assembles
+- [x] **DASH-05**: Generated rule source panel shows readable Python function the system wrote, with provenance (episode ID, deployed timestamp, prediction errors that produced it) and evolution history (v1 → v2)
+- [x] **DASH-06**: Trust score bar animates from initial value (0.85) to post-investigation value (0.25) as verdict board assembles
 - [x] **DASH-07**: Gate decision (GO / NO-GO / ESCALATE) displayed prominently with full attribution text below it
-- [ ] **DASH-08**: Decision log shows timestamped trail of all gate decisions with one-line attribution per entry
-- [ ] **DASH-09**: Aerospike latency metric displayed live on dashboard (confirms real integration to Aerospike judges)
+- [x] **DASH-08**: Decision log shows timestamped trail of all gate decisions with one-line attribution per entry
+- [x] **DASH-09**: Aerospike latency metric displayed live on dashboard (confirms real integration to Aerospike judges)
 - [x] **DASH-10**: Prediction vs. actual panel displays expected values from behavioral baselines alongside actual investigation findings, with prediction errors highlighted
 - [x] **DASH-11**: Composite anomaly score bar shows each rule's weighted contribution color-coded, with threshold line visible; judges can see how individually weak signals compound
 
 ### Voice Interface (Bland AI)
 
-- [ ] **VOICE-01**: Bland AI call initiated for demo; Supervisor answers "Why did you block that?" and "What was the anomaly score?" in plain language grounded in actual scores and rule attribution
-- [ ] **VOICE-02**: Barge-in configured via interruption_threshold and block_interruptions: false; operator can cut in mid-sentence
-- [ ] **VOICE-03**: All investigation context pre-computed and cached before voice demo starts; webhook handler reads from memory cache, not Aerospike, to stay within 8s response window
+- [x] **VOICE-01**: Bland AI call initiated for demo; Supervisor answers "Why did you block that?" and "What was the anomaly score?" in plain language grounded in actual scores and rule attribution
+- [x] **VOICE-02**: Barge-in configured via interruption_threshold and block_interruptions: false; operator can cut in mid-sentence
+- [x] **VOICE-03**: All investigation context pre-computed and cached before voice demo starts; webhook handler reads from memory cache, not Aerospike, to stay within 8s response window
 - [x] **VOICE-04**: Dashboard always shows the same information as voice narration — text fallback is always present if voice fails
 
 ### Demo Preparation
@@ -180,21 +180,21 @@
 | API-01 | Phase 2 | Complete |
 | API-02 | Phase 2 | Complete |
 | API-03 | Phase 3 | Complete |
-| API-04 | Phase 5 | Pending |
+| API-04 | Phase 5 | Complete |
 | DASH-01 | Phase 4 | Complete |
 | DASH-02 | Phase 4 | Complete |
 | DASH-03 | Phase 4 | Complete |
 | DASH-04 | Phase 4 | Complete |
-| DASH-05 | Phase 4 | Pending |
-| DASH-06 | Phase 4 | Pending |
+| DASH-05 | Phase 4 | Complete |
+| DASH-06 | Phase 4 | Complete |
 | DASH-07 | Phase 4 | Complete |
-| DASH-08 | Phase 4 | Pending |
-| DASH-09 | Phase 4 | Pending |
+| DASH-08 | Phase 4 | Complete |
+| DASH-09 | Phase 4 | Complete |
 | DASH-10 | Phase 4 | Complete |
 | DASH-11 | Phase 4 | Complete |
-| VOICE-01 | Phase 5 | Pending |
-| VOICE-02 | Phase 5 | Pending |
-| VOICE-03 | Phase 5 | Pending |
+| VOICE-01 | Phase 5 | Complete |
+| VOICE-02 | Phase 5 | Complete |
+| VOICE-03 | Phase 5 | Complete |
 | VOICE-04 | Phase 4 | Complete |
 | DEMO-01 | Phase 6 | Pending |
 | DEMO-02 | Phase 6 | Pending |

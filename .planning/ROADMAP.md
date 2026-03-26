@@ -101,6 +101,16 @@ Plans:
 - [x] 04-05-PLAN.md — Visual verification checkpoint (all DASH requirements)
 **UI hint**: yes
 
+### Phase 04.1: Performance Optimization and Qualitative Analysis Panel (INSERTED)
+
+**Goal:** [Urgent work - to be planned]
+**Requirements**: TBD
+**Depends on:** Phase 4
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 04.1 to break down)
+
 ### Phase 5: Voice Integration
 **Goal**: The Bland AI voice session is live for the demo — the Supervisor answers "Why did you block that?" in plain language using actual anomaly scores, prediction errors, and rule attribution; barge-in works; all voice answers are also visible on the dashboard as text fallback
 **Depends on**: Phase 4
@@ -109,9 +119,9 @@ Plans:
   1. A Bland AI voice call is initiated, the Supervisor answers a natural language question about the investigation decision grounded in actual anomaly scores and rule attribution, and the webhook response is delivered within the 8-second budget
   2. Barge-in works during a voice session — interrupting the Supervisor mid-sentence causes it to stop speaking and process the new question
   3. The dashboard displays the same information as voice narration — text fallback is always present if voice fails
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 Plans:
-- [ ] 05-01-PLAN.md — Backend Bland AI routes: POST /bland-call, POST /bland-webhook, __latest__ sentinel key, tests (VOICE-01, VOICE-02, VOICE-03, API-04)
+- [x] 05-01-PLAN.md — Backend Bland AI routes: POST /bland-call, POST /bland-webhook, __latest__ sentinel key, tests (VOICE-01, VOICE-02, VOICE-03, API-04)
 - [ ] 05-02-PLAN.md — Frontend VoicePanel with Start button, text fallback display, visual verification (VOICE-01, VOICE-04)
 **UI hint**: yes
 
@@ -138,5 +148,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 2. Core Investigation Pipeline | 7/7 | Complete   | 2026-03-26 |
 | 3. Self-Improvement Loop | 4/4 | Complete   | 2026-03-25 |
 | 4. Dashboard | 4/5 | In Progress|  |
-| 5. Voice Integration | 0/2 | Planned | - |
+| 5. Voice Integration | 1/2 | In Progress|  |
 | 6. Demo Preparation + Deployment | 0/TBD | Not started | - |
