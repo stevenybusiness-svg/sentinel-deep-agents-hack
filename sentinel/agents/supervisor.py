@@ -248,7 +248,7 @@ high unverifiable claim count, etc.).
 Example generated function structure:
     def generated_rule_001(verdict_board: dict) -> float:
         score = 0.0
-        z = verdict_board.get("prediction_errors", {}).get("summary_score", 0.0)
+        z = verdict_board.get("prediction_errors", {{}}).get("summary_score", 0.0)
         if z > 2.5:
             score += 0.4  # Anomalous z-score
         flags = verdict_board.get("behavioral_flags", [])
@@ -470,7 +470,7 @@ Step sequence baseline:
 RULE REGISTRY STATE FORMAT
 
 The active rule registry contains entries with this structure:
-{
+{{
   "rule_id": "generated_001",  // Incrementing ID string
   "episode_id": "...",         // Episode that triggered generation
   "generated_at": "...",       // ISO 8601 timestamp
@@ -479,7 +479,7 @@ The active rule registry contains entries with this structure:
   "validation_score": 0.82,    // Score on source attack fixture at validation time
   "description": "...",        // Human-readable description of behavioral signal
   "incidents": ["ep-id-1"],    // Episode IDs that contributed to this rule
-}
+}}
 
 When presenting rule information to an operator, cite the rule_id, the episode that
 triggered it, and the behavioral signal it detects. Do not reference attack-specific
