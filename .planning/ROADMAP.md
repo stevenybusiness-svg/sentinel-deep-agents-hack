@@ -109,7 +109,7 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 04.1-01-PLAN.md — Backend performance optimization: batched tool calls, prompt caching, Supervisor streaming, narrative template generation + async polish (D-01, D-02, D-03, D-09)
+- [x] 04.1-01-PLAN.md — Backend performance optimization: batched tool calls, prompt caching, Supervisor streaming, narrative template generation + async polish (D-01, D-02, D-03, D-09)
 - [ ] 04.1-02-PLAN.md — Qualitative Analysis Panel: Zustand state, WebSocket handlers, 4-card component, App.jsx layout integration (D-04 through D-10)
 
 ### Phase 5: Voice Integration
@@ -149,6 +149,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6
 | 2. Core Investigation Pipeline | 7/7 | Complete   | 2026-03-26 |
 | 3. Self-Improvement Loop | 4/4 | Complete   | 2026-03-25 |
 | 4. Dashboard | 4/5 | In Progress|  |
-| 4.1 Performance + Qualitative | 0/2 | Not started | - |
+| 4.1 Performance + Qualitative | 1/2 | In Progress|  |
 | 5. Voice Integration | 1/2 | In Progress|  |
 | 6. Demo Preparation + Deployment | 0/TBD | Not started | - |
