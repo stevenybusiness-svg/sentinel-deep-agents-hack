@@ -147,6 +147,7 @@ None yet.
 |---|-------------|------|--------|-----------|
 | 260324-j7c | Add Bedrock backend support as zero-friction fallback | 2026-03-24 | f8000cd | [260324-j7c-add-bedrock-backend-support-as-zero-fric](.planning/quick/260324-j7c-add-bedrock-backend-support-as-zero-fric/) |
 | 260326-07t | Serve React frontend as static files from FastAPI | 2026-03-26 | c8d8164 | [260326-07t-serve-react-frontend-as-static-files-fro](.planning/quick/260326-07t-serve-react-frontend-as-static-files-fro/) |
+| 260326-2j3 | Fix forensic scan overlay covering hidden injection text | 2026-03-26 | 7bb2dac | [260326-2j3-fix-forensic-scan-overlay-covering-hidde](.planning/quick/260326-2j3-fix-forensic-scan-overlay-covering-hidde/) |
 
 ### Blockers/Concerns
 
