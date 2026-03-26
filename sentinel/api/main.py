@@ -19,6 +19,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from sentinel.api.routes.bland_webhook import router as bland_webhook_router
 from sentinel.api.routes.confirm import router as confirm_router
 from sentinel.api.routes.investigate import router as investigate_router
 from sentinel.api.websocket import ws_manager
@@ -133,8 +134,9 @@ async def websocket_endpoint(websocket: WebSocket) -> None:
 # Investigation routes — API-02
 # ---------------------------------------------------------------------------
 
-app.include_router(investigate_router)
-app.include_router(confirm_router)
+app.include_router(investigate_router, prefix="/api")
+app.include_router(confirm_router, prefix="/api")
+app.include_router(bland_webhook_router)
 
 
 # ---------------------------------------------------------------------------
