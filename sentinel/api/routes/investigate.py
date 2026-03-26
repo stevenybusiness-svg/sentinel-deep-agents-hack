@@ -69,6 +69,8 @@ async def investigate(req: InvestigateRequest) -> InvestigateResponse:
 
     # Cache active episode for voice Q&A (API-02)
     app_state["active_episodes"][result["episode_id"]] = result["episode"]
+    # Update __latest__ sentinel key so webhook fallback always resolves (VOICE-03)
+    app_state["active_episodes"]["__latest__"] = result["episode_id"]
 
     return InvestigateResponse(
         episode_id=result["episode_id"],

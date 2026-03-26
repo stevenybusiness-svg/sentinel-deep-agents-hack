@@ -19,6 +19,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from sentinel.api.routes.bland_call import router as bland_call_router
 from sentinel.api.routes.bland_webhook import router as bland_webhook_router
 from sentinel.api.routes.confirm import router as confirm_router
 from sentinel.api.routes.investigate import router as investigate_router
@@ -90,6 +91,11 @@ async def lifespan(app: FastAPI):
     # In-memory episode cache for voice Q&A (API-02)
     app_state["active_episodes"] = {}
 
+    # Bland AI configuration for voice Q&A (VOICE-01)
+    import os as _os
+    app_state["bland_api_key"] = _os.getenv("BLAND_API_KEY", "")
+    app_state["public_host"] = _os.getenv("PUBLIC_HOST", "http://localhost:8000")
+
     yield
 
     # ---- Shutdown ----
@@ -136,6 +142,7 @@ async def websocket_endpoint(websocket: WebSocket) -> None:
 
 app.include_router(investigate_router, prefix="/api")
 app.include_router(confirm_router, prefix="/api")
+app.include_router(bland_call_router)
 app.include_router(bland_webhook_router)
 
 
