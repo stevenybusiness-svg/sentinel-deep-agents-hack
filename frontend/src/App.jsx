@@ -3,6 +3,8 @@ import { useWebSocket } from './hooks/useWebSocket'
 import { InvestigationTree } from './components/InvestigationTree'
 import { GateDecisionPanel } from './components/GateDecisionPanel'
 import { AnomalyScoreBar } from './components/AnomalyScoreBar'
+import { RuleSourcePanel } from './components/RuleSourcePanel'
+import { AerospikeLatency } from './components/AerospikeLatency'
 
 export default function App() {
   useWebSocket()
@@ -105,8 +107,8 @@ export default function App() {
           {/* Placeholder panels — replaced by Plans 03-04 */}
           <div className="text-text-muted text-xs">Verdict Board</div>
           <div className="text-text-muted text-xs">Forensic Scan</div>
-          <div className="text-text-muted text-xs">Rule Source</div>
-          <div className="text-text-muted text-xs">Aerospike Latency</div>
+          <RuleSourcePanel />
+          <AerospikeLatency />
         </div>
       </div>
     </div>
