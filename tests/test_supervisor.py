@@ -497,6 +497,57 @@ async def test_compare_outcomes_called():
 # ---------------------------------------------------------------------------
 
 
+# ---------------------------------------------------------------------------
+# Test 9: Supervisor reasoning injected into Payment Agent first message (D-03 gap)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_supervisor_reasoning_injected_into_payment_agent():
+    """D-03 gap closure: Supervisor Opus reasoning is injected into Payment Agent first message."""
+    supervisor_text = "HIGH RISK: This payment to Meridian Logistics requires extra scrutiny. Check KYC carefully."
+    mock_llm = _make_mock_llm(supervisor_text=supervisor_text)
+    models = {"supervisor": "claude-opus-4-6", "agent": "claude-sonnet-4-6"}
+
+    with (
+        patch("sentinel.agents.supervisor.risk.analyze") as mock_risk,
+        patch("sentinel.agents.supervisor.compliance.validate") as mock_compliance,
+        patch("sentinel.agents.supervisor.forensics.scan") as mock_forensics,
+    ):
+        mock_risk.return_value = Verdict(
+            agent_id="risk", claims_checked=[], behavioral_flags=[], agent_confidence=0.85
+        )
+        mock_compliance.return_value = Verdict(
+            agent_id="compliance", claims_checked=[], behavioral_flags=[], agent_confidence=0.90
+        )
+        mock_forensics.return_value = Verdict(
+            agent_id="forensics", claims_checked=[], behavioral_flags=[], agent_confidence=0.80
+        )
+
+        await run_investigation(
+            payment_request={"amount": 50000, "beneficiary": "Meridian Logistics"},
+            fixtures=_make_fixtures(),
+            invoice_path=None,
+            llm_client=mock_llm,
+            models=models,
+            safety_gate=_make_mock_safety_gate(),
+            aerospike=None,
+            ws=_make_mock_ws(),
+        )
+
+    # The second LLM call (first Payment Agent turn) should contain the Supervisor reasoning
+    second_call = mock_llm.messages.create.call_args_list[1]
+    agent_first_message = second_call.kwargs["messages"][0]["content"]
+    assert "Supervisor analysis:" in agent_first_message
+    assert "HIGH RISK" in agent_first_message
+    assert "Meridian Logistics" in agent_first_message
+
+
+# ---------------------------------------------------------------------------
+# Test 8: _extract_actual_findings helper maps verdict fields correctly
+# ---------------------------------------------------------------------------
+
+
 def test_extract_actual_findings_from_verdicts():
     """_extract_actual_findings maps compliance and forensics verdicts to finding keys."""
     compliance_verdict = Verdict(

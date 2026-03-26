@@ -114,7 +114,7 @@ async def run_investigation(
     #    Opus 4.6 Supervisor makes an initial reasoning call about this payment.
     supervisor_prompt = SUPERVISOR_SYSTEM_PROMPT.format(episode_context=episode_context)
 
-    await llm_client.messages.create(
+    supervisor_response = await llm_client.messages.create(
         model=models["supervisor"],
         max_tokens=1024,
         system=supervisor_prompt,
@@ -128,12 +128,21 @@ async def run_investigation(
         }],
     )
 
+    # Extract Supervisor reasoning to inject into Payment Agent context (D-03)
+    supervisor_reasoning = ""
+    for block in supervisor_response.content:
+        if hasattr(block, "text"):
+            supervisor_reasoning += block.text
+
     # 4. Payment Agent multi-turn conversation (Sonnet 4.6 with PAYMENT_TOOLS)
     #    The Supervisor has reasoned about the request; now drive the Payment Agent
     #    turn-by-turn until it produces its final PaymentDecision.
     agent_messages: list[dict] = [{
         "role": "user",
-        "content": f"Process this payment request:\n{json.dumps(payment_request, indent=2)}",
+        "content": (
+            f"Process this payment request:\n{json.dumps(payment_request, indent=2)}\n\n"
+            f"Supervisor analysis:\n{supervisor_reasoning}"
+        ),
     }]
     steps_taken: list[str] = []
     payment_decision: PaymentDecision | None = None
