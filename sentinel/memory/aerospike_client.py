@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Async-compatible Aerospike client using sync client + ThreadPoolExecutor.
 
 Per CLAUDE.md: official sync client + run_in_executor is the supported pattern.
@@ -6,9 +7,13 @@ aioaerospike is archived/unmaintained as of August 2025.
 import os
 import asyncio
 import time
-import aerospike
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any
+from typing import Any, Optional
+
+try:
+    import aerospike as _aerospike_lib
+except ImportError:
+    _aerospike_lib = None
 
 
 class AerospikeClient:
@@ -20,21 +25,23 @@ class AerospikeClient:
 
     def __init__(
         self,
-        host: str | None = None,
-        port: int | None = None,
-        namespace: str | None = None,
+        host: Optional[str] = None,
+        port: Optional[int] = None,
+        namespace: Optional[str] = None,
         max_workers: int = 4,
     ):
         self.host = host or os.getenv("AEROSPIKE_HOST", "localhost")
         self.port = port or int(os.getenv("AEROSPIKE_PORT", "3000"))
         self.namespace = namespace or os.getenv("AEROSPIKE_NAMESPACE", "sentinel")
         self._executor = ThreadPoolExecutor(max_workers=max_workers)
-        self._client: aerospike.Client | None = None
+        self._client = None
 
     def connect(self) -> "AerospikeClient":
         """Connect to Aerospike server. Call once at app startup."""
+        if _aerospike_lib is None:
+            raise RuntimeError("aerospike package not installed")
         config = {"hosts": [(self.host, self.port)]}
-        self._client = aerospike.client(config).connect()
+        self._client = _aerospike_lib.client(config).connect()
         return self
 
     def close(self) -> None:
@@ -89,7 +96,7 @@ class AerospikeClient:
 
 
 # Module-level singleton (lazy -- call connect() at app startup)
-_client: AerospikeClient | None = None
+_client: Optional["AerospikeClient"] = None
 
 
 def get_aerospike_client() -> AerospikeClient:

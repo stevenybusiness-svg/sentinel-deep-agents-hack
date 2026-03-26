@@ -1,3 +1,4 @@
+from __future__ import annotations
 """LLM client factory and model ID lookup for Sentinel.
 
 Supports two backends selectable via the LLM_BACKEND env var:

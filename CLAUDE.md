@@ -3,16 +3,18 @@
 
 **Sentinel**
 
-Sentinel is a runtime multi-agent supervision system for autonomous payment agents. It investigates payment actions in real time using three parallel sub-agents (Risk, Compliance, Forensics), blocks irreversible transfers when agent behavior can't be independently verified, and generates executable Python detection rules from confirmed incidents — so the next attack it catches can be one it has never seen before. Built for the AWS Deep Agents Hackathon (72-hour solo build, deadline ~2026-03-27).
+Sentinel is a runtime security system for autonomous AI agents. It intercepts agent actions at the execution boundary, dispatches independent AI investigators to adversarially verify the agent's claims against ground truth, and blocks actions that can't be independently confirmed. When it catches a new attack, it generates a composite scoring function — inspectable Python, not a black box — that catches the same behavioral pattern in future incidents. The scoring functions evolve across confirmed incidents, getting sharper with each attack the system sees. Built for the AWS Deep Agents Hackathon (72-hour solo build, deadline ~2026-03-27). Payments are the demo scenario; the architecture applies anywhere an autonomous agent touches the real world.
 
-**Core Value:** The self-improvement loop: a rule learned from one attack type must demonstrably catch a completely different attack — live, on stage, in 3 minutes.
+**Core Value:** The self-improvement loop: the system autonomously generates composite scoring functions from prediction errors, evolves them across incidents, and catches novel attacks. The block decision is an if-statement — no LLM in the enforcement path. Live, on stage, in 3 minutes.
+
+**Threat Model:** The AI agent itself is the compromised entity. Existing guardrails filter inputs/outputs but trust the agent's reasoning. Sentinel doesn't. The payment agent is a real LLM (Sonnet 4.6) that gets genuinely manipulated — not hardcoded, not scripted.
 
 ### Constraints
 
-- **Timeline**: 72 hours, solo — build priority order from spec must be followed ruthlessly; voice + Okta + Airbyte are post-core
-- **Tech Stack**: Python/FastAPI backend, React frontend, Claude API (Opus 4.6 for Supervisor, Sonnet 4.6 for sub-agents), Aerospike, Bland AI webhooks, HTML5 Canvas animation (per design guide)
-- **Safety Gate**: Must use deterministic Python exec() for generated rules — no LLM in the enforcement decision path; this is an explicit architectural invariant and a judge talking point
-- **Demo reliability**: The self-improvement loop (incident 1 → rule generation → incident 2 → rule fires) must be bulletproof before any polish work begins; fallback = text narration if voice fails
+- **Timeline**: 72 hours, solo — build priority order from spec must be followed ruthlessly; voice is post-core
+- **Tech Stack**: Python/FastAPI backend, React frontend, Claude API (Opus 4.6 for Supervisor, Sonnet 4.6 for sub-agents and Payment Agent), Aerospike, Bland AI webhooks
+- **Safety Gate**: The block decision is an if-statement. Generated scoring functions return weighted anomaly scores; composite score exceeds threshold → NO-GO. No LLM in the enforcement path.
+- **Demo reliability**: The self-improvement loop (incident 1 → scoring function generated → incident 2 → function fires → function evolves) must be bulletproof before any polish work begins; fallback = text narration if voice fails
 - **Aerospike**: Real persistent storage required — 3 Aerospike judges; latency must be visible on dashboard
 - **Bland AI**: Real voice required — 2 Bland AI judges; fallback to text-on-dashboard only if SDK proves intractable in timeline
 <!-- GSD:project-end -->
@@ -30,7 +32,7 @@ Sentinel is a runtime multi-agent supervision system for autonomous payment agen
 | aerospike | 19.1.0 | Episodic memory / persistent storage | Official Python client; synchronous C-extension bindings with sub-ms operations at hardware level; 3 Aerospike judges require real integration |
 | React | 18.x | Frontend UI | Concurrent features (useTransition, Suspense) handle rapid state updates from WebSocket; 19 is available but introduces breaking changes not worth debugging in 72h |
 | @xyflow/react | 12.4.4 | Pipeline node graph | Production-ready, React-native (no D3 DOM conflict), built-in animated edges, customizable nodes — exact match for investigation tree requirement |
-| okta-jwt-verifier | 0.4.0 | Okta token introspection | Official Okta library, async support, AccessTokenVerifier handles Okta-issued tokens; v0.4.0 released Jan 2026 |
+| okta-jwt-verifier | 0.4.0 | Okta token introspection (CUT — v2 if time) | Cut from v1 scope; mention in Q&A if asked about operator authentication |
 ### Supporting Libraries
 | Library | Version | Purpose | When to Use |
 |---------|---------|---------|-------------|

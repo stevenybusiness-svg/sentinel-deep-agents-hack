@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Centralized configuration loading from .env for Sentinel."""
 import os
 from pathlib import Path
