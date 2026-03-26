@@ -103,13 +103,14 @@ Plans:
 
 ### Phase 04.1: Performance Optimization and Qualitative Analysis Panel (INSERTED)
 
-**Goal:** [Urgent work - to be planned]
-**Requirements**: TBD
+**Goal:** Reduce investigation pipeline latency from ~30s to <10s via batched tool calls, prompt caching, and Supervisor streaming; add a full-width qualitative analysis panel with 4 plain English cards (Attack Narrative, Agent Reasoning, Prediction vs. Actual, Self-Improvement Arc) using hybrid template-fill + async LLM polish
+**Requirements**: D-01, D-02, D-03, D-04, D-05, D-06, D-07, D-08, D-09, D-10
 **Depends on:** Phase 4
-**Plans:** 0 plans
+**Plans:** 2 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 04.1 to break down)
+- [ ] 04.1-01-PLAN.md — Backend performance optimization: batched tool calls, prompt caching, Supervisor streaming, narrative template generation + async polish (D-01, D-02, D-03, D-09)
+- [ ] 04.1-02-PLAN.md — Qualitative Analysis Panel: Zustand state, WebSocket handlers, 4-card component, App.jsx layout integration (D-04 through D-10)
 
 ### Phase 5: Voice Integration
 **Goal**: The Bland AI voice session is live for the demo — the Supervisor answers "Why did you block that?" in plain language using actual anomaly scores, prediction errors, and rule attribution; barge-in works; all voice answers are also visible on the dashboard as text fallback
@@ -140,7 +141,7 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -148,5 +149,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 2. Core Investigation Pipeline | 7/7 | Complete   | 2026-03-26 |
 | 3. Self-Improvement Loop | 4/4 | Complete   | 2026-03-25 |
 | 4. Dashboard | 4/5 | In Progress|  |
+| 4.1 Performance + Qualitative | 0/2 | Not started | - |
 | 5. Voice Integration | 1/2 | In Progress|  |
 | 6. Demo Preparation + Deployment | 0/TBD | Not started | - |
