@@ -109,7 +109,10 @@ Plans:
   1. A Bland AI voice call is initiated, the Supervisor answers a natural language question about the investigation decision grounded in actual anomaly scores and rule attribution, and the webhook response is delivered within the 8-second budget
   2. Barge-in works during a voice session — interrupting the Supervisor mid-sentence causes it to stop speaking and process the new question
   3. The dashboard displays the same information as voice narration — text fallback is always present if voice fails
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 05-01-PLAN.md — Backend Bland AI routes: POST /bland-call, POST /bland-webhook, __latest__ sentinel key, tests (VOICE-01, VOICE-02, VOICE-03, API-04)
+- [ ] 05-02-PLAN.md — Frontend VoicePanel with Start button, text fallback display, visual verification (VOICE-01, VOICE-04)
 **UI hint**: yes
 
 ### Phase 6: Demo Preparation + Deployment
@@ -135,5 +138,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 2. Core Investigation Pipeline | 6/7 | Gap closure |  |
 | 3. Self-Improvement Loop | 4/4 | Complete   | 2026-03-25 |
 | 4. Dashboard | 4/5 | In Progress|  |
-| 5. Voice Integration | 0/TBD | Not started | - |
+| 5. Voice Integration | 0/2 | Planned | - |
 | 6. Demo Preparation + Deployment | 0/TBD | Not started | - |
