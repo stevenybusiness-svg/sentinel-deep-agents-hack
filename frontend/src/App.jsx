@@ -7,6 +7,7 @@ import { VerdictBoardTable } from './components/VerdictBoardTable'
 import { ForensicScanPanel } from './components/ForensicScanPanel'
 import { RuleSourcePanel } from './components/RuleSourcePanel'
 import { AerospikeLatency } from './components/AerospikeLatency'
+import { VoicePanel } from './components/VoicePanel'
 
 export default function App() {
   useWebSocket()
@@ -109,6 +110,7 @@ export default function App() {
           <ForensicScanPanel />
           <RuleSourcePanel />
           <AerospikeLatency />
+          <VoicePanel />
         </div>
       </div>
     </div>

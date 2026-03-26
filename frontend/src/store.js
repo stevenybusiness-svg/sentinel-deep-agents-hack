@@ -57,6 +57,12 @@ export const useStore = create((set, get) => ({
   trustScore: 0.85,
   setTrustScore: (score) => set({ trustScore: score }),
 
+  // Voice call state (Phase 5 / VOICE-01)
+  voiceCallId: null,
+  voiceCallStatus: 'idle', // idle | calling | active | error
+  setVoiceCallId: (id) => set({ voiceCallId: id }),
+  setVoiceCallStatus: (status) => set({ voiceCallStatus: status }),
+
   // Current episode ID setter
   setCurrentEpisodeId: (id) => set({ currentEpisodeId: id }),
   setInvestigationStatus: (status) => set({ investigationStatus: status }),
