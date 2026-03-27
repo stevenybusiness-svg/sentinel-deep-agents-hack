@@ -8,6 +8,7 @@ import { ForensicScanPanel } from './components/ForensicScanPanel'
 import { RuleSourcePanel } from './components/RuleSourcePanel'
 import { AerospikeLatency } from './components/AerospikeLatency'
 import { VoicePanel } from './components/VoicePanel'
+import { QualitativeAnalysisPanel } from './components/QualitativeAnalysisPanel'
 
 export default function App() {
   useWebSocket()
@@ -112,6 +113,11 @@ export default function App() {
           <AerospikeLatency />
           <VoicePanel />
         </div>
+      </div>
+
+      {/* Qualitative Analysis -- full-width bottom row (D-10) */}
+      <div className="border-t border-border-muted bg-bg-dark px-4 py-3 shrink-0">
+        <QualitativeAnalysisPanel />
       </div>
     </div>
   )
