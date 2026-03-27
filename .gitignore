@@ -16,3 +16,5 @@ htmlcov/
 .kiro/
 .vscode/
 data/
+*.pem
+.continue-here.md
