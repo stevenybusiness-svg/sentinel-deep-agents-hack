@@ -131,6 +131,14 @@ export const useStore = create((set, get) => ({
     ),
   })),
 
+  setEdgeActive: (edgeId, color = '#3b82f6') => set((s) => ({
+    edges: s.edges.map((e) =>
+      e.id === edgeId
+        ? { ...e, animated: true, style: { stroke: color, strokeWidth: 2 } }
+        : e
+    ),
+  })),
+
   addRuleNode: (ruleId, label) => set((s) => ({
     nodes: [...s.nodes, {
       id: ruleId,

@@ -45,8 +45,8 @@ export function useWebSocket() {
             s.setAgentStatus(agent, 'complete', data.verdict)
             s.updateNodeStatus(agent, 'complete')
             const shortAgent = agent === 'compliance' ? 'comp' : agent === 'forensics' ? 'for' : agent
-            s.setEdgeAnimated(`e-sup-${shortAgent}`, true)
-            s.setEdgeAnimated(`e-${shortAgent}-gate`, true)
+            s.setEdgeActive(`e-sup-${shortAgent}`, '#3b82f6')
+            s.setEdgeActive(`e-${shortAgent}-gate`, '#3b82f6')
             break
           }
 
@@ -56,6 +56,9 @@ export function useWebSocket() {
               s.setPredictionData(data.verdict_board.prediction_errors)
             }
             s.updateNodeStatus('gate', 'active')
+            s.setEdgeActive('e-risk-gate', '#e3b341')
+            s.setEdgeActive('e-comp-gate', '#e3b341')
+            s.setEdgeActive('e-for-gate', '#e3b341')
             break
 
           case 'gate_evaluated':
@@ -64,6 +67,12 @@ export function useWebSocket() {
             s.updateNodeStatus('gate', data.decision === 'NO-GO' ? 'blocked' : 'complete')
             s.updateNodeStatus('supervisor', 'complete')
             s.updateNodeStatus('payment', 'complete')
+            {
+              const edgeColor = data.decision === 'NO-GO' ? '#f85149' : data.decision === 'ESCALATE' ? '#e3b341' : '#3fb950'
+              s.setEdgeActive('e-risk-gate', edgeColor)
+              s.setEdgeActive('e-comp-gate', edgeColor)
+              s.setEdgeActive('e-for-gate', edgeColor)
+            }
             // Add to decision log
             s.addDecisionLog({
               timestamp: msg.timestamp,
