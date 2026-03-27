@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Ready to execute
-stopped_at: Completed 07-01-PLAN.md
-last_updated: "2026-03-27T05:45:29.377Z"
+stopped_at: Completed 07-02-PLAN.md
+last_updated: "2026-03-27T05:56:15.426Z"
 progress:
   total_phases: 8
   completed_phases: 7
   total_plans: 30
-  completed_plans: 28
+  completed_plans: 29
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-24)
 ## Current Position
 
 Phase: 07 (demo-polish-airbyte-integration) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 
 ## Performance Metrics
 
@@ -74,6 +74,7 @@ Plan: 2 of 3
 | Phase 06 P01 | 2 | 2 tasks | 4 files |
 | Phase 06 P02 | 163 | 2 tasks | 2 files |
 | Phase 07 P01 | 5 | 2 tasks | 4 files |
+| Phase 07 P02 | 5 | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -144,6 +145,9 @@ Recent decisions affecting current work:
 - [Phase 06]: Adapted dry_run.py to actual API schemas: /api/investigate with scenario+payment_request, /api/confirm with episode_id+attack_type
 - [Phase 07]: Invoice PNG routes registered before SPA catch-all — FastAPI route priority requires explicit routes first
 - [Phase 07]: setEdgeActive action adds both animated and colored style to edges — blue=active, gold=evaluating, red=blocked, green=passed
+- [Phase 07]: PyAirbyte DuckDB fallback pattern: try ab.get_default_cache().get_duckdb_conn(), fall back to direct duckdb on failure
+- [Phase 07]: duckdb pinned to 1.1.3 to avoid import error in latest release (TimestampMillisecondValue name mismatch)
+- [Phase 07]: VoicePanel fully replaced by AirbyteReportPanel -- Airbyte+Slack story front and center for judges
 
 ### Roadmap Evolution
 
@@ -170,6 +174,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-27T05:45:29.371Z
-Stopped at: Completed 07-01-PLAN.md
+Last session: 2026-03-27T05:56:15.419Z
+Stopped at: Completed 07-02-PLAN.md
 Resume file: None
