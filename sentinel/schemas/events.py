@@ -22,6 +22,7 @@ EventType = Literal[
     "rule_deployed",
     "rule_generating",          # Streaming tokens during rule generation
     "rule_generation_failed",   # All retries exhausted — generation failed
+    "payment_agent_step",       # Per-tool-call progress from Payment Agent
     "supervisor_token",         # Streaming text delta from Supervisor reasoning (D-03)
     "narrative_template",       # Immediate template-filled narrative after gate evaluation (D-09)
     "narrative_ready",          # LLM-polished narrative arrives 3-5s later (D-09)
