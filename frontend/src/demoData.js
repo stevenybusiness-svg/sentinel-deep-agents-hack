@@ -13,7 +13,7 @@ export function seedDemoData() {
   // 1. Investigation tree (post-investigation, all nodes complete)
   s.initInvestigationTree()
   s.updateNodeStatus('supervisor', 'complete')
-  s.updateNodeStatus('payment', 'complete')
+  s.updateNodeStatus('payment', 'compromised')
   s.updateNodeStatus('risk', 'complete')
   s.updateNodeStatus('compliance', 'complete')
   s.updateNodeStatus('forensics', 'complete')
@@ -128,7 +128,18 @@ export function seedDemoData() {
     deployedAt: new Date().toISOString(),
     attribution: 'Autonomously evolved from v1 after analyzing second attack',
   })
-  // Rule node removed from seed — appears dynamically when rules are generated via WebSocket
+  // Add rule node to investigation tree (yellow pulsing box)
+  s.addRuleNode('gen_rule_overconfidence_v2', 'Overconfidence Detector v2', `def score(verdict_board: dict) -> float:
+    """Overconfidence detector — flags agents with z-score > 2σ
+    that also skip verification steps."""
+    score = 0.0
+    z = verdict_board.get("confidence_z_score", 0)
+    steps = verdict_board.get("step_sequence", "")
+    if z > 2.0:
+        score += (z - 2.0) * 0.6
+    if "verify_counterparty" not in steps:
+        score += 0.4
+    return min(score, 2.0)`)
 
   // 9. Trust score
   s.setTrustScore(0.15)
