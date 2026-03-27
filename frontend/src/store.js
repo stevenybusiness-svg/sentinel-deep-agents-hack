@@ -109,7 +109,8 @@ export const useStore = create((set, get) => ({
 
   initInvestigationTree: () => set((s) => {
     // Separate persisted rules (pulsing boxes) from annotations
-    const persistedRules = s.persistedRuleNodes.filter(n => n.data?.status === 'rule_node')
+    const isRuleStatus = (st) => st === 'rule_node' || st === 'rule_new' || st === 'rule_evolving'
+    const persistedRules = s.persistedRuleNodes.filter(n => isRuleStatus(n.data?.status))
     const hasPersistedRules = persistedRules.length > 0
 
     // For Attack 2: position rule nodes at TOP, feeding into Payment Agent
@@ -180,25 +181,27 @@ export const useStore = create((set, get) => ({
   })),
 
   addRuleNode: (ruleId, label, source) => set((s) => {
+    const isRuleStatus = (st) => st === 'rule_node' || st === 'rule_new' || st === 'rule_evolving'
+
     // Check if this rule node already exists in CURRENT nodes (evolution path — same rule_id)
-    const existingIdx = s.nodes.findIndex(n => n.id === ruleId && n.data?.status === 'rule_node')
+    const existingIdx = s.nodes.findIndex(n => n.id === ruleId && isRuleStatus(n.data?.status))
     if (existingIdx !== -1) {
-      // Update existing node: refresh label and ensure it pulses orange
+      // Update existing node: refresh label, entrance glow burst then settle
       const updatedNodes = s.nodes.map(n =>
         n.id === ruleId
-          ? { ...n, data: { ...n.data, label, status: 'rule_node' } }
+          ? { ...n, data: { ...n.data, label, status: 'rule_new' } }
           : n
       )
       const updatedPersisted = s.persistedRuleNodes.map(n =>
         n.id === ruleId
-          ? { ...n, data: { ...n.data, label, status: 'rule_node' } }
+          ? { ...n, data: { ...n.data, label, status: 'rule_new' } }
           : n
       )
       return { nodes: updatedNodes, persistedRuleNodes: updatedPersisted }
     }
 
     // Find persisted rules from previous attacks (these are at the top of the graph in Attack 2)
-    const previousRules = s.persistedRuleNodes.filter(n => n.data?.status === 'rule_node')
+    const previousRules = s.persistedRuleNodes.filter(n => isRuleStatus(n.data?.status))
     const hasPersistedRules = previousRules.length > 0
 
     // Position the new rule below the gate
@@ -209,7 +212,7 @@ export const useStore = create((set, get) => ({
     const newNode = {
       id: ruleId,
       position: { x: 520, y: ruleY },
-      data: { label, icon: 'auto_awesome', status: 'rule_node' },
+      data: { label, icon: 'auto_awesome', status: 'rule_new' },
       type: 'sentinel',
     }
     const newEdges = [

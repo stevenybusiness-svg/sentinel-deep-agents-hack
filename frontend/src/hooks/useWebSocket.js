@@ -263,8 +263,8 @@ export function useWebSocket() {
               const descriptiveLabel = buildRuleLabel(ruleId, version, data.source)
 
               s.addRuleNode(ruleId, descriptiveLabel, data.source)
-              // New rule enters with dramatic glow burst, then settles to steady pulse
-              s.updateNodeStatus(ruleId, 'rule_new')
+              // addRuleNode sets status to 'rule_new' (glow burst entrance)
+              // After animation completes, settle to steady pulse
               setTimeout(() => {
                 useStore.getState().updateNodeStatus(ruleId, 'rule_node')
               }, 2000)
