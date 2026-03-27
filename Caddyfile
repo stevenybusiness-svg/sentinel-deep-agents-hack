@@ -1,4 +1,4 @@
-YOUR_DOMAIN {
+3.20.246.253.nip.io {
     # Reverse proxy all traffic to FastAPI (serves both API and static frontend)
     reverse_proxy sentinel:8000
 

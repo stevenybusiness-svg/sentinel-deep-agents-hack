@@ -1,0 +1,26 @@
+name: Deploy Backend to EC2
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: 3.20.246.253
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/sentinel-deep-agents-hack || exit 1
+            git fetch origin master
+            git reset --hard origin/master
+            sudo docker compose -f docker-compose.prod.yml build --quiet 2>/dev/null \
+              || sudo docker-compose -f docker-compose.prod.yml build --quiet
+            sudo docker compose -f docker-compose.prod.yml up -d 2>/dev/null \
+              || sudo docker-compose -f docker-compose.prod.yml up -d
+            sleep 5
+            curl -sf http://localhost:8000/health && echo "Healthy" || echo "WARNING: unhealthy"
