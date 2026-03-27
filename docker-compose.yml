@@ -17,5 +17,18 @@ services:
       timeout: 3s
       retries: 10
 
+  sentinel:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment:
+      - AEROSPIKE_HOST=aerospike
+      - AEROSPIKE_PORT=3000
+      - AEROSPIKE_NAMESPACE=sentinel
+    depends_on:
+      aerospike:
+        condition: service_healthy
+
 volumes:
   aerospike-data:
