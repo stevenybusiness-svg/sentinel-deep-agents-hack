@@ -1,10 +1,8 @@
 # Sentinel
 
-**Runtime security for autonomous AI agents.**
+**Self-healing runtime security for autonomous AI agents.**
 
-Sentinel intercepts agent actions at the execution boundary, dispatches independent AI investigators to adversarially verify the agent's claims against ground truth, and blocks actions that can't be independently confirmed. When it catches a novel attack, it autonomously generates a composite scoring function -- inspectable Python, not a black box -- that detects the same behavioral pattern in future incidents. The scoring functions evolve across confirmed attacks, getting sharper with each incident the system sees.
-
-The block decision is an if-statement. No LLM in the enforcement path.
+Sentinel watches what AI agents actually do -- not what they say they're doing. Independent investigators verify every claim against ground truth. When an attack gets through, the system writes its own detection rule, validates it, and deploys it -- no human in the loop. The next attack hits a smarter system. Rules evolve across incidents, compounding signal from every confirmed threat. The system doesn't just detect -- it learns.
 
 ---
 
@@ -363,4 +361,4 @@ docker compose up --build
 
 ---
 
-**Built solo in 72 hours for the AWS Deep Agents Hackathon.**
+**Built for the AWS Deep Agents Hackathon.**
