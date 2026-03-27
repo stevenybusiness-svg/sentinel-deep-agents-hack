@@ -869,10 +869,10 @@ async def run_investigation(
     steps_taken: list[str] = []
     payment_decision: PaymentDecision | None = None
 
-    for _turn in range(5):
+    for _turn in range(8):
         agent_response = await llm_client.messages.create(
             model=models["agent"],
-            max_tokens=512,
+            max_tokens=768,
             system=[{
                 "type": "text",
                 "text": PAYMENT_AGENT_SYSTEM_PROMPT,
@@ -911,7 +911,7 @@ async def run_investigation(
             break
     else:
         raise RuntimeError(
-            f"Payment Agent exceeded 5 turns without producing a decision "
+            f"Payment Agent exceeded 8 turns without producing a decision "
             f"for episode {episode_id}"
         )
 

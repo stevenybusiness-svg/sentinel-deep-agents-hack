@@ -122,15 +122,14 @@ export function ForensicScanPanel() {
   const attackPhase = useStore((s) => s.attackPhase)
   const [lightbox, setLightbox] = useState(null) // { src, alt, isForensic }
 
-  const hasDocuments = agents.forensics?.verdict?.claims_checked?.some(
+  const isAttack2 = attackPhase === 2
+  // Attack 1 always has invoice documents; also check forensics verdict for dynamic evidence
+  const hasDocuments = !isAttack2 || agents.forensics?.verdict?.claims_checked?.some(
     (c) =>
       c.field?.toLowerCase().includes('document') ||
       c.field?.toLowerCase().includes('hidden') ||
       c.field?.toLowerCase().includes('invoice')
   )
-
-  const isAttack2 = attackPhase === 2
-  const hasEvidence = hasDocuments || isAttack2
 
   return (
     <>

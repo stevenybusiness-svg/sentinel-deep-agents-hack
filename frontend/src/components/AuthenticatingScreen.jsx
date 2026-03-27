@@ -7,20 +7,20 @@ export function AuthenticatingScreen() {
 
   useEffect(() => {
     const steps = [
-      { at: 400, text: 'Verifying credentials via Auth0...' },
-      { at: 1200, text: 'Validating IAM role permissions...' },
-      { at: 2200, text: 'Checking security clearance level...' },
-      { at: 3200, text: 'Initializing threat detection systems...' },
-      { at: 4200, text: 'Loading security protocols...' },
-      { at: 5200, text: 'Access granted.' },
+      { at: 300, text: 'Verifying credentials via Auth0...' },
+      { at: 900, text: 'Validating IAM role permissions...' },
+      { at: 1600, text: 'Checking security clearance level...' },
+      { at: 2400, text: 'Initializing threat detection systems...' },
+      { at: 3200, text: 'Loading security protocols...' },
+      { at: 4000, text: 'Access granted.' },
     ]
 
     const checkItems = [
-      { at: 800, label: 'Auth0 token verified', icon: 'verified_user' },
-      { at: 1600, label: 'IAM role: SecurityOperator', icon: 'admin_panel_settings' },
-      { at: 2600, label: 'MFA status: Confirmed', icon: 'security' },
-      { at: 3600, label: 'Session scope: read/execute/escalate', icon: 'policy' },
-      { at: 4600, label: 'Sentinel pipeline: Online', icon: 'hub' },
+      { at: 600, label: 'Auth0 token verified', icon: 'verified_user' },
+      { at: 1200, label: 'IAM role: SecurityOperator', icon: 'admin_panel_settings' },
+      { at: 2000, label: 'MFA status: Confirmed', icon: 'security' },
+      { at: 2800, label: 'Session scope: read/execute/escalate', icon: 'policy' },
+      { at: 3500, label: 'Sentinel pipeline: Online', icon: 'hub' },
     ]
 
     const timers = steps.map((step) =>
@@ -33,7 +33,7 @@ export function AuthenticatingScreen() {
 
     // Smooth progress bar
     const interval = setInterval(() => {
-      setProgress((p) => Math.min(p + 0.55, 100))
+      setProgress((p) => Math.min(p + 0.75, 100))
     }, 30)
 
     return () => {

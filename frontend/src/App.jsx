@@ -58,7 +58,7 @@ export default function App() {
       setLocalAuth(true)
       setAuthenticating(false)
       authTimer.current = null
-    }, 6000)
+    }, 4500)
   }
 
   // Show authenticating screen during transition or Auth0 loading
