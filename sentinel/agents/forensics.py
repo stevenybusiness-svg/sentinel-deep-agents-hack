@@ -101,8 +101,12 @@ async def scan(
 
     response = await client.messages.create(
         model=model,
-        max_tokens=1024,
-        system=_FORENSICS_SYSTEM_PROMPT,
+        max_tokens=512,
+        system=[{
+            "type": "text",
+            "text": _FORENSICS_SYSTEM_PROMPT,
+            "cache_control": {"type": "ephemeral"},
+        }],
         messages=[
             {
                 "role": "user",

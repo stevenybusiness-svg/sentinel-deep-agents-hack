@@ -17,10 +17,12 @@ _MODELS: dict[str, dict[str, str]] = {
     "anthropic": {
         "supervisor": "claude-opus-4-6",
         "agent": "claude-sonnet-4-6",
+        "forensics": "claude-haiku-4-5-20251001",
     },
     "bedrock": {
         "supervisor": "us.anthropic.claude-opus-4-5-20251101-v1:0",
         "agent": "us.anthropic.claude-sonnet-4-5-20251001-v1:0",
+        "forensics": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
     },
 }
 

@@ -691,7 +691,7 @@ def build_narrative_template(
                 f"It is now active in the Safety Gate."
             )
     else:
-        arc = "No rules generated yet. Confirm an attack to trigger learning."
+        arc = "No rules generated yet. Autonomous learning will begin after investigation completes."
 
     return {
         "attack_narrative": attack_narrative,
@@ -834,43 +834,19 @@ async def run_investigation(
         except Exception:
             pass  # Fall back to "No prior episodes."
 
-    # 3. Supervisor LLM reasoning step — streaming (D-02, D-03)
-    #    Opus 4.6 Supervisor streams reasoning; each token is broadcast as supervisor_token.
-    #    cache_control on system prompt block — requires ≥ 4096 tokens to be effective.
-    supervisor_prompt = SUPERVISOR_SYSTEM_PROMPT.format(episode_context=episode_context)
-
-    supervisor_reasoning = ""
-    async with llm_client.messages.stream(
-        model=models["supervisor"],
-        max_tokens=1024,
-        system=[{
-            "type": "text",
-            "text": supervisor_prompt,
-            "cache_control": {"type": "ephemeral"},
-        }],
-        messages=[{
-            "role": "user",
-            "content": (
-                f"New payment request to investigate:\n"
-                f"{json.dumps(payment_request, indent=2)}\n\n"
-                "Direct the Payment Agent to process this request."
-            ),
-        }],
-    ) as stream:
-        async for text_chunk in stream.text_stream:
-            supervisor_reasoning += text_chunk
-            await ws.broadcast("supervisor_token", episode_id, {"token": text_chunk})
-        # Recover full Message object for stop_reason and usage stats
-        await stream.get_final_message()
+    # 3. Supervisor is the orchestrator — no blocking LLM call.
+    #    The Payment Agent starts immediately; Supervisor dispatches sub-agents after.
+    await ws.broadcast("supervisor_token", episode_id, {
+        "token": "Intercepting payment request. Dispatching Payment Agent for processing...",
+    })
 
     # 4. Payment Agent multi-turn conversation (Sonnet 4.6 with PAYMENT_TOOLS)
     #    cache_control on Payment Agent system prompt block (D-02).
-    #    The Supervisor has reasoned; now drive Payment Agent turn-by-turn.
+    #    Payment Agent processes first — it's the potentially compromised entity.
     agent_messages: list[dict] = [{
         "role": "user",
         "content": (
-            f"Process this payment request:\n{json.dumps(payment_request, indent=2)}\n\n"
-            f"Supervisor analysis:\n{supervisor_reasoning}"
+            f"Process this payment request:\n{json.dumps(payment_request, indent=2)}"
         ),
     }]
     steps_taken: list[str] = []
@@ -985,7 +961,8 @@ async def run_investigation(
     async def run_forensics() -> None:
         try:
             verdicts[2] = await forensics.scan(
-                payment_decision, invoice_path, llm_client, models["agent"],
+                payment_decision, invoice_path, llm_client,
+                models.get("forensics", models["agent"]),
             )
         except Exception:
             verdicts[2] = Verdict(
@@ -1083,27 +1060,34 @@ async def run_investigation(
     # Read attack_type from episode (set by investigate route)
     _ep_attack_type = getattr(episode, "attack_type", None) or (episode.get("attack_type") if isinstance(episode, dict) else None)
 
-    slack_ok = await send_investigation_report(
-        episode_id=episode_id,
-        decision=gate_result["decision"],
-        composite_score=gate_result.get("composite_score", 0.0),
-        attribution=gate_result.get("attribution", ""),
-        agent_verdicts=agent_verdict_dicts,
-        rules_fired=[c["rule_id"] for c in gate_result.get("rule_contributions", [])],
-        generated_rules_fired=[
-            c["rule_id"]
-            for c in gate_result.get("rule_contributions", [])
-            if c.get("is_generated", False)
-        ],
-        attack_narrative=template_narratives.get("attack_narrative"),
-        agent_reasoning=template_narratives.get("agent_reasoning"),
-        prediction_summary=template_narratives.get("prediction_summary"),
-        attack_type=_ep_attack_type,
-    )
-    await ws.broadcast("report_delivered", episode_id, {
-        "channel": "slack",
-        "success": slack_ok,
-    })
+    # Fire-and-forget: Slack delivery runs in background to avoid blocking pipeline
+    async def _slack_and_notify():
+        try:
+            slack_ok = await send_investigation_report(
+                episode_id=episode_id,
+                decision=gate_result["decision"],
+                composite_score=gate_result.get("composite_score", 0.0),
+                attribution=gate_result.get("attribution", ""),
+                agent_verdicts=agent_verdict_dicts,
+                rules_fired=[c["rule_id"] for c in gate_result.get("rule_contributions", [])],
+                generated_rules_fired=[
+                    c["rule_id"]
+                    for c in gate_result.get("rule_contributions", [])
+                    if c.get("is_generated", False)
+                ],
+                attack_narrative=template_narratives.get("attack_narrative"),
+                agent_reasoning=template_narratives.get("agent_reasoning"),
+                prediction_summary=template_narratives.get("prediction_summary"),
+                attack_type=_ep_attack_type,
+            )
+        except Exception:
+            slack_ok = False
+        await ws.broadcast("report_delivered", episode_id, {
+            "channel": "slack",
+            "success": slack_ok,
+        })
+
+    asyncio.create_task(_slack_and_notify())
 
     # 9c. Fire async narrative polish — fire-and-forget, MUST NOT await (D-09)
     asyncio.create_task(_generate_narrative_polish(

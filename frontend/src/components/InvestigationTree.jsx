@@ -29,6 +29,12 @@ function SentinelNode({ data }) {
       iconName = 'block'
       bgStyle = { backgroundColor: 'rgba(248,81,73,0.1)' }
       break
+    case 'compromised':
+      borderClass = 'border-2 border-danger'
+      iconColorClass = 'text-danger'
+      iconName = 'warning'
+      bgStyle = { backgroundColor: 'rgba(248,81,73,0.15)' }
+      break
     case 'rule_node':
       borderClass = 'border border-warning'
       iconColorClass = 'text-warning'
@@ -54,7 +60,7 @@ function SentinelNode({ data }) {
 
   return (
     <div
-      className={`bg-surface rounded-lg ${paddingClass} flex items-center gap-2 transition-all duration-150 ${borderClass} ${status === 'rule_node' ? 'rule-pulse' : ''}`}
+      className={`bg-surface rounded-lg ${paddingClass} flex items-center gap-2 transition-all duration-150 ${borderClass} ${status === 'rule_node' ? 'rule-pulse' : ''} ${status === 'compromised' ? 'compromised-pulse' : ''}`}
       style={bgStyle}
     >
       <Handle type="target" position={Position.Top} style={{ visibility: 'hidden' }} />

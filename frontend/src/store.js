@@ -105,26 +105,26 @@ export const useStore = create((set, get) => ({
 
   initInvestigationTree: () => set((s) => ({
     nodes: [
-      { id: 'supervisor', position: { x: 250, y: 0 }, data: { label: 'Supervisor (Opus)', icon: 'hub', status: 'active' }, type: 'sentinel' },
-      { id: 'payment', position: { x: 250, y: 100 }, data: { label: 'Payment Agent (Sonnet)', icon: 'payments', status: 'active' }, type: 'sentinel' },
-      { id: 'risk', position: { x: 50, y: 220 }, data: { label: 'Risk Agent', icon: 'shield', status: 'pending' }, type: 'sentinel' },
-      { id: 'compliance', position: { x: 250, y: 220 }, data: { label: 'Compliance Agent', icon: 'verified_user', status: 'pending' }, type: 'sentinel' },
-      { id: 'forensics', position: { x: 450, y: 220 }, data: { label: 'Forensics Agent', icon: 'search', status: 'pending' }, type: 'sentinel' },
+      { id: 'payment', position: { x: 250, y: 0 }, data: { label: 'Payment Agent (Sonnet)', icon: 'payments', status: 'active' }, type: 'sentinel' },
+      { id: 'risk', position: { x: 50, y: 120 }, data: { label: 'Risk Agent', icon: 'shield', status: 'pending' }, type: 'sentinel' },
+      { id: 'compliance', position: { x: 250, y: 120 }, data: { label: 'Compliance Agent', icon: 'verified_user', status: 'pending' }, type: 'sentinel' },
+      { id: 'forensics', position: { x: 450, y: 120 }, data: { label: 'Forensics Agent', icon: 'search', status: 'pending' }, type: 'sentinel' },
+      { id: 'supervisor', position: { x: 250, y: 240 }, data: { label: 'Supervisor (Opus)', icon: 'hub', status: 'pending' }, type: 'sentinel' },
       { id: 'gate', position: { x: 250, y: 340 }, data: { label: 'Safety Gate (Deterministic)', icon: 'security', status: 'pending' }, type: 'sentinel' },
-      // Re-add Attack 1's rule nodes as completed/inherited (green, not pulsing)
+      // Re-add Attack 1's rule nodes as active/pulsing (orange) — they're firing in the gate
       ...s.persistedRuleNodes.map(n => ({
         ...n,
-        data: { ...n.data, status: 'complete' }
+        data: { ...n.data, status: 'rule_node' }
       })),
     ],
     edges: [
-      { id: 'e-sup-pay', source: 'supervisor', target: 'payment', animated: true },
-      { id: 'e-sup-risk', source: 'supervisor', target: 'risk', animated: false },
-      { id: 'e-sup-comp', source: 'supervisor', target: 'compliance', animated: false },
-      { id: 'e-sup-for', source: 'supervisor', target: 'forensics', animated: false },
-      { id: 'e-risk-gate', source: 'risk', target: 'gate', animated: false },
-      { id: 'e-comp-gate', source: 'compliance', target: 'gate', animated: false },
-      { id: 'e-for-gate', source: 'forensics', target: 'gate', animated: false },
+      { id: 'e-pay-risk', source: 'payment', target: 'risk', animated: false },
+      { id: 'e-pay-comp', source: 'payment', target: 'compliance', animated: false },
+      { id: 'e-pay-for', source: 'payment', target: 'forensics', animated: false },
+      { id: 'e-risk-sup', source: 'risk', target: 'supervisor', animated: false },
+      { id: 'e-comp-sup', source: 'compliance', target: 'supervisor', animated: false },
+      { id: 'e-for-sup', source: 'forensics', target: 'supervisor', animated: false },
+      { id: 'e-sup-gate', source: 'supervisor', target: 'gate', animated: false },
       ...s.persistedRuleEdges,
     ],
   })),
@@ -150,6 +150,23 @@ export const useStore = create((set, get) => ({
   })),
 
   addRuleNode: (ruleId, label, source) => set((s) => {
+    // Check if this rule node already exists (evolution path — same rule_id, new version)
+    const existingIdx = s.nodes.findIndex(n => n.id === ruleId)
+    if (existingIdx !== -1) {
+      // Update existing node: refresh label and ensure it pulses orange
+      const updatedNodes = s.nodes.map(n =>
+        n.id === ruleId
+          ? { ...n, data: { ...n.data, label, status: 'rule_node' } }
+          : n
+      )
+      const updatedPersisted = s.persistedRuleNodes.map(n =>
+        n.id === ruleId
+          ? { ...n, data: { ...n.data, label, status: 'rule_node' } }
+          : n
+      )
+      return { nodes: updatedNodes, persistedRuleNodes: updatedPersisted }
+    }
+
     const newNode = {
       id: ruleId,
       position: { x: 500, y: 340 },

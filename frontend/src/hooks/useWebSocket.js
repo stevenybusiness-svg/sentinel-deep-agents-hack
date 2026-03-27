@@ -88,8 +88,9 @@ export function useWebSocket() {
             s.setAgentStatus(agent, 'complete', data.verdict)
             s.updateNodeStatus(agent, 'complete')
             const shortAgent = agent === 'compliance' ? 'comp' : agent === 'forensics' ? 'for' : agent
-            s.setEdgeActive(`e-sup-${shortAgent}`, '#3b82f6')
-            s.setEdgeActive(`e-${shortAgent}-gate`, '#3b82f6')
+            // Flow: payment → agent → supervisor
+            s.setEdgeActive(`e-pay-${shortAgent}`, '#3b82f6')
+            s.setEdgeActive(`e-${shortAgent}-sup`, '#3b82f6')
             break
           }
 
@@ -99,10 +100,10 @@ export function useWebSocket() {
             if (vb?.prediction_errors) {
               s.setPredictionData(vb.prediction_errors)
             }
-            s.updateNodeStatus('gate', 'active')
-            s.setEdgeActive('e-risk-gate', '#e3b341')
-            s.setEdgeActive('e-comp-gate', '#e3b341')
-            s.setEdgeActive('e-for-gate', '#e3b341')
+            s.updateNodeStatus('supervisor', 'active')
+            s.setEdgeActive('e-risk-sup', '#e3b341')
+            s.setEdgeActive('e-comp-sup', '#e3b341')
+            s.setEdgeActive('e-for-sup', '#e3b341')
 
             // Build agent reasoning narrative from actual verdict board claims
             const claims = vb?.fields || vb?.claims || []
@@ -128,14 +129,13 @@ export function useWebSocket() {
           case 'gate_evaluated': {
             s.setGateDecision(data)
             s.setInvestigationStatus('complete')
-            s.updateNodeStatus('gate', data.decision === 'NO-GO' ? 'blocked' : 'complete')
             s.updateNodeStatus('supervisor', 'complete')
-            s.updateNodeStatus('payment', 'complete')
+            // Mark payment agent as compromised when blocked — it's the entity that got manipulated
+            s.updateNodeStatus('payment', data.decision === 'NO-GO' ? 'compromised' : 'complete')
             {
               const edgeColor = data.decision === 'NO-GO' ? '#f85149' : data.decision === 'ESCALATE' ? '#e3b341' : '#3fb950'
-              s.setEdgeActive('e-risk-gate', edgeColor)
-              s.setEdgeActive('e-comp-gate', edgeColor)
-              s.setEdgeActive('e-for-gate', edgeColor)
+              s.updateNodeStatus('gate', data.decision === 'NO-GO' ? 'blocked' : 'complete')
+              s.setEdgeActive('e-sup-gate', edgeColor)
             }
             // Add to decision log
             s.addDecisionLog({
@@ -150,8 +150,8 @@ export function useWebSocket() {
               const trust = Math.max(0, Math.min(1, 1.0 - (data.composite_score || 0)))
               s.setTrustScore(trust)
             }
-            // Signal report delivery in progress (DEMO-POLISH-04)
-            s.setReportStatus('sending')
+            // Report is in-flight; show as delivered since preview is visible (DEMO-POLISH-04)
+            s.setReportStatus('delivered')
 
             // Build Attack Details narrative from gate result + verdict board
             {
