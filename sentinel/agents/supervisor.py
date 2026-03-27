@@ -1121,6 +1121,7 @@ async def run_investigation(
             if c["is_generated"]
         ],
         prediction_report=prediction.model_dump(),
+        attack_type=attack_type,
     )
 
     # 11. Write to Aerospike (MEM-01) — failure does not block gate decision

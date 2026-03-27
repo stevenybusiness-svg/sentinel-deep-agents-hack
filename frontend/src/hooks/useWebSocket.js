@@ -105,20 +105,19 @@ export function useWebSocket() {
             s.setEdgeActive('e-comp-sup', '#e3b341')
             s.setEdgeActive('e-for-sup', '#e3b341')
 
-            // Build agent reasoning narrative from actual verdict board claims
-            const claims = vb?.fields || vb?.claims || []
-            const mismatches = claims.filter(c => c.match === 'mismatch')
-            const zClaim = claims.find(c => c.field === 'confidence_z_score')
-            const kycClaim = claims.find(c => c.field === 'counterparty_registered' || c.field === 'counterparty_kyc_status')
-            const docClaim = claims.find(c => c.field === 'document_integrity')
-            const stepClaim = claims.find(c => c.field === 'step_sequence')
+            // Build agent reasoning narrative from verdict board mismatches
+            const mismatches = vb?.mismatches || []
+            const flags = vb?.behavioral_flags || []
+            const zScore = vb?.confidence_z_score
 
             let reasoning = ''
-            if (zClaim) reasoning += `Confidence z-score: ${zClaim.investigator_finding} (agent claimed: ${zClaim.agent_claim}). `
-            if (stepClaim) reasoning += `Step sequence: ${stepClaim.investigator_finding} (expected: ${stepClaim.agent_claim}). `
-            if (kycClaim) reasoning += `KYC status: ${kycClaim.investigator_finding} (agent claimed: ${kycClaim.agent_claim}). `
-            if (docClaim) reasoning += `Document integrity: ${docClaim.investigator_finding} (agent claimed: ${docClaim.agent_claim}). `
-            reasoning += `${mismatches.length} mismatches found across ${claims.length} claims checked.`
+            if (zScore != null) reasoning += `Confidence z-score: ${zScore.toFixed(2)} (baseline threshold: 2.0). `
+            if (vb?.step_sequence_deviation) reasoning += `Step sequence deviation detected. `
+            for (const mm of mismatches) {
+              reasoning += `${mm.field}: found "${mm.found}" vs agent claimed "${mm.agent_claimed}" (${mm.severity}). `
+            }
+            if (flags.length > 0) reasoning += `Behavioral flags: ${flags.join(', ')}. `
+            reasoning += `${mismatches.length} mismatches detected.`
 
             if (reasoning.trim()) {
               s.setNarrativeData('agentReasoning', reasoning)

@@ -16,18 +16,19 @@ EPISODES_SET = "episodes"
 async def write_episode(episode: Episode, client: AerospikeClient) -> float:
     """Write episode to Aerospike sentinel.episodes set. Returns write latency in ms (MEM-01)."""
     start = time.perf_counter()
+    # Aerospike bin names MUST be <= 15 characters (BinNameError otherwise)
     bins = {
         "episode_id": episode.id,
         "timestamp": int(episode.timestamp.timestamp() * 1000),
-        "action_request": json.dumps(episode.action_request),
+        "action_req": json.dumps(episode.action_request),
         "gate_decision": episode.gate_decision,
-        "gate_rationale": episode.gate_rationale,
+        "gate_rational": episode.gate_rationale,
         "rules_fired": json.dumps(episode.rules_fired),
-        "generated_rules_fired": json.dumps(episode.generated_rules_fired),
+        "gen_rules": json.dumps(episode.generated_rules_fired),
         "verdict_board": json.dumps(episode.verdict_board.model_dump()),
         "agent_verdicts": json.dumps([v.model_dump() for v in episode.agent_verdicts]),
-        "prediction_report": json.dumps(episode.prediction_report) if episode.prediction_report else "null",
-        "operator_confirmation": episode.operator_confirmation or "",
+        "pred_report": json.dumps(episode.prediction_report) if episode.prediction_report else "null",
+        "op_confirm": episode.operator_confirmation or "",
         "attack_type": episode.attack_type or "",
     }
     await client.put(EPISODES_SET, episode.id, bins)
@@ -40,12 +41,13 @@ async def get_episode(episode_id: str, client: AerospikeClient) -> dict:
     """Read a single episode from Aerospike by ID."""
     bins = await client.get(EPISODES_SET, episode_id)
     # Deserialize JSON fields
-    bins["action_request"] = json.loads(bins.get("action_request", "{}"))
+    # Bin names shortened to <=15 chars; map back to full names for callers
+    bins["action_request"] = json.loads(bins.get("action_req", "{}"))
     bins["rules_fired"] = json.loads(bins.get("rules_fired", "[]"))
-    bins["generated_rules_fired"] = json.loads(bins.get("generated_rules_fired", "[]"))
+    bins["generated_rules_fired"] = json.loads(bins.get("gen_rules", "[]"))
     bins["verdict_board"] = json.loads(bins.get("verdict_board", "{}"))
     bins["agent_verdicts"] = json.loads(bins.get("agent_verdicts", "[]"))
-    bins["prediction_report"] = json.loads(bins.get("prediction_report", "null"))
+    bins["prediction_report"] = json.loads(bins.get("pred_report", "null"))
     return bins
 
 

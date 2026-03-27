@@ -34,11 +34,12 @@ async def write_rule(
         Write latency in milliseconds, rounded to 2 decimal places.
     """
     start = time.perf_counter()
+    # Aerospike bin names MUST be <= 15 characters (BinNameError otherwise)
     bins = {
         "rule_id": rule_id,
         "source": source,
         "episode_ids": json.dumps(episode_ids),
-        "prediction_errors": json.dumps(prediction_errors),
+        "pred_errors": json.dumps(prediction_errors),
         "timestamp": int(time.time() * 1000),
         "version": version,
         "fire_count": 0,
@@ -88,7 +89,7 @@ async def load_all_rules(client: AerospikeClient) -> list[dict]:
             bins = await client.get(RULES_SET, rid)
             # Deserialize JSON-encoded bins
             bins["episode_ids"] = json.loads(bins.get("episode_ids", "[]"))
-            bins["prediction_errors"] = json.loads(bins.get("prediction_errors", "{}"))
+            bins["prediction_errors"] = json.loads(bins.get("pred_errors", "{}"))
             rules.append(bins)
         except Exception:
             continue
