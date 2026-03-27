@@ -84,13 +84,7 @@ function AuthenticatedApp({ user, logout }) {
   // Which attack phase we're on (1 or 2)
   const [attackPhase, setAttackPhase] = useState(1)
 
-  // Seed demo data on load
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    if (params.get('demo') !== 'false') {
-      seedDemoData()
-    }
-  }, [])
+  // Demo seed removed — investigation animates only when user clicks Launch Investigation
 
   const wsConnected = useStore((s) => s.wsConnected)
   const investigationStatus = useStore((s) => s.investigationStatus)
