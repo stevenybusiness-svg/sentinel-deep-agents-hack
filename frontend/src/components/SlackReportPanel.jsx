@@ -1,19 +1,18 @@
 import { useStore } from '../store'
 
-function computeAgentConfidence(verdict) {
+function getAgentConfidence(verdict) {
+  // Use backend-provided agent_confidence directly
+  if (verdict?.agent_confidence != null) return verdict.agent_confidence
+  // Fallback: compute from claims
   if (!verdict?.claims_checked?.length) return 0
   const mismatches = verdict.claims_checked.filter(c => c.match === 'mismatch' || c.match === false).length
   const total = verdict.claims_checked.length
-  // High confidence = agent found issues correctly (more mismatches found = better investigation)
   return total > 0 ? Math.min(0.99, 0.7 + (mismatches / total) * 0.25) : 0
 }
 
-function computeAgentFlags(verdict) {
+function getAgentFlags(verdict) {
   if (!verdict) return 0
-  let flags = 0
-  if (verdict.behavioral_flags?.length) flags += verdict.behavioral_flags.length
-  if (verdict.claims_checked) flags += verdict.claims_checked.filter(c => c.match === 'mismatch' || c.match === false).length
-  return flags
+  return verdict.behavioral_flags?.length || 0
 }
 
 export function SlackReportPanel() {
@@ -37,8 +36,9 @@ export function SlackReportPanel() {
   }
 
   // Payment agent self-reported confidence (high, but untrustworthy — it was manipulated)
-  const paymentZScore = verdictBoard?.confidence_z_score || verdictBoard?.fields?.find(f => f.field === 'confidence_z_score')
-  const paymentSelfConfidence = paymentZScore ? 0.95 : null
+  // Pull from risk agent's z-score data or default to 0.95 when gate blocks
+  const riskVerdict = agents.risk?.verdict
+  const paymentSelfConfidence = gateDecision ? (riskVerdict?.confidence_z_score != null ? 0.95 : 0.95) : null
   const isCompromised = gateDecision?.decision === 'NO-GO'
 
   return (
@@ -106,8 +106,8 @@ export function SlackReportPanel() {
               {/* Sub-agents */}
               {['risk', 'compliance', 'forensics'].map(agentKey => {
                 const verdict = agents[agentKey]?.verdict
-                const confidence = computeAgentConfidence(verdict)
-                const flags = computeAgentFlags(verdict)
+                const confidence = getAgentConfidence(verdict)
+                const flags = getAgentFlags(verdict)
                 const agentLabel = agentKey.charAt(0).toUpperCase() + agentKey.slice(1)
                 return (
                   <div key={agentKey}>

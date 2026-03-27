@@ -655,13 +655,29 @@ def build_narrative_template(
         f"The system {decision_word} this transaction: {gate_result['attribution']}"
     )
 
-    # --- Agent reasoning (1 sentence per agent) ---
+    # --- Agent reasoning (1 sentence per agent, human-readable flags) ---
+    _FLAG_LABELS = {
+        "hidden_text_detected": "hidden text detected in document",
+        "overconfidence": "confidence anomaly",
+        "step_sequence_deviation": "deviated from expected step sequence",
+        "high_confidence_deviation": "abnormally high confidence",
+        "confidence_anomaly": "confidence anomaly",
+    }
     agent_lines = []
     for v in verdicts:
         if v is None:
             continue
-        flags = ", ".join(v.behavioral_flags) if v.behavioral_flags else "no anomalies"
-        agent_lines.append(f"{v.agent_id.capitalize()}: {flags}.")
+        # Convert raw flags to readable labels, skip verbose scan_anomaly_ entries
+        readable_flags = []
+        for f in v.behavioral_flags:
+            if f in _FLAG_LABELS:
+                readable_flags.append(_FLAG_LABELS[f])
+            elif not f.startswith("scan_anomaly_"):
+                readable_flags.append(f.replace("_", " "))
+        if not readable_flags and any(f.startswith("scan_anomaly_") for f in v.behavioral_flags):
+            readable_flags.append("document anomalies detected")
+        flags_str = ", ".join(readable_flags[:3]) if readable_flags else "no anomalies"
+        agent_lines.append(f"{v.agent_id.capitalize()}: {flags_str}.")
     agent_reasoning = " ".join(agent_lines) if agent_lines else "No agent verdicts available."
 
     # --- Prediction vs. actual summary ---
@@ -748,7 +764,7 @@ async def _generate_narrative_polish(
         )
 
         polish_response = await llm_client.messages.create(
-            model=models["agent"],
+            model=models.get("forensics", models["agent"]),
             max_tokens=512,
             messages=[{"role": "user", "content": polish_prompt}],
         )
@@ -853,10 +869,10 @@ async def run_investigation(
     steps_taken: list[str] = []
     payment_decision: PaymentDecision | None = None
 
-    for _turn in range(10):
+    for _turn in range(5):
         agent_response = await llm_client.messages.create(
             model=models["agent"],
-            max_tokens=1024,
+            max_tokens=512,
             system=[{
                 "type": "text",
                 "text": PAYMENT_AGENT_SYSTEM_PROMPT,
@@ -895,7 +911,7 @@ async def run_investigation(
             break
     else:
         raise RuntimeError(
-            f"Payment Agent exceeded 10 turns without producing a decision "
+            f"Payment Agent exceeded 5 turns without producing a decision "
             f"for episode {episode_id}"
         )
 

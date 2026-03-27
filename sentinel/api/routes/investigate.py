@@ -143,7 +143,7 @@ async def _auto_trigger_rule_generation(
     """
     try:
         # Brief delay so frontend renders gate_decision before rule_generating events arrive
-        await asyncio.sleep(0.3)
+        await asyncio.sleep(0.1)
 
         from sentinel.api.routes.confirm import ConfirmRequest, _run_rule_pipeline
 

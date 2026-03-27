@@ -180,11 +180,11 @@ async def scan(
             )
         )
 
-    # Flag anomalies from scan
-    if anomalies:
-        for anomaly in anomalies:
-            flag = "scan_anomaly_" + anomaly[:50].lower().replace(" ", "_").replace(",", "")
-            behavioral_flags.append(flag)
+    # Flag anomalies from scan — limit to 2 concise flags for readable reports
+    if anomalies and not hidden_detected:
+        behavioral_flags.append("document_anomalies_detected")
+    elif anomalies and hidden_detected:
+        behavioral_flags.append("injection_with_anomalies")
 
     # Document scan summary claim
     claims_checked.append(
