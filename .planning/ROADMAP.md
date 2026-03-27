@@ -123,7 +123,7 @@ Plans:
 **Plans:** 1/2 plans executed
 Plans:
 - [x] 05-01-PLAN.md — Backend Bland AI routes: POST /bland-call, POST /bland-webhook, __latest__ sentinel key, tests (VOICE-01, VOICE-02, VOICE-03, API-04)
-- [ ] 05-02-PLAN.md — Frontend VoicePanel with Start button, text fallback display, visual verification (VOICE-01, VOICE-04)
+- [x] 05-02-PLAN.md — Frontend VoicePanel with Start button, text fallback display, visual verification (VOICE-01, VOICE-04)
 **UI hint**: yes
 
 ### Phase 6: Demo Preparation + Deployment
