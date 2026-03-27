@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Phase complete — ready for verification
-stopped_at: Completed 07-03-PLAN.md
-last_updated: "2026-03-27T05:59:12.962Z"
+status: Ready to execute
+stopped_at: Completed 08-01-PLAN.md
+last_updated: "2026-03-27T12:03:38.722Z"
 progress:
-  total_phases: 8
+  total_phases: 10
   completed_phases: 8
-  total_plans: 30
-  completed_plans: 30
+  total_plans: 33
+  completed_plans: 31
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-24)
 
 **Core value:** The self-improvement loop: the system autonomously generates composite scoring functions from prediction errors, evolves them across incidents, and catches novel attacks — inspectable Python, not a black box. Live, on stage, in 3 minutes.
-**Current focus:** Phase 07 — demo-polish-airbyte-integration
+**Current focus:** Phase 08 — vercel-full-stack-deployment
 
 ## Current Position
 
-Phase: 07 (demo-polish-airbyte-integration) — EXECUTING
-Plan: 3 of 3
+Phase: 08 (vercel-full-stack-deployment) — EXECUTING
+Plan: 2 of 3
 
 ## Performance Metrics
 
@@ -76,6 +76,7 @@ Plan: 3 of 3
 | Phase 07 P01 | 5 | 2 tasks | 4 files |
 | Phase 07 P02 | 5 | 2 tasks | 12 files |
 | Phase 07 P03 | 64 | 2 tasks | 2 files |
+| Phase 08 P01 | 15 | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -150,11 +151,15 @@ Recent decisions affecting current work:
 - [Phase 07]: duckdb pinned to 1.1.3 to avoid import error in latest release (TimestampMillisecondValue name mismatch)
 - [Phase 07]: VoicePanel fully replaced by AirbyteReportPanel -- Airbyte+Slack story front and center for judges
 - [Phase 07]: ForensicIntroScreen dismissed by clicking attack button — single click triggers both setShowIntro(false) and runAttack() simultaneously for zero-delay transition
+- [Phase 08]: Auth0 isLoading checked before isAuthenticated -- prevents redirect loop on page refresh
+- [Phase 08]: Slack reporter enrichment backward-compatible with default None params -- existing callers unaffected
+- [Phase 08]: Airbyte gutted to stub docstring rather than deleted -- prevents ImportError from lingering references
 
 ### Roadmap Evolution
 
 - Phase 04.1 inserted after Phase 4: Performance Optimization and Qualitative Analysis Panel (URGENT) — 30s pipeline latency unacceptable for demo; judges need qualitative attack narrative, subagent reasoning breakdown, and self-improvement story alongside quantitative metrics
 - Phase 07 added: Demo Polish & Airbyte Integration — fix broken images, reduce latency, dynamic edge animations, swap Bland→Airbyte+Slack, rename attack buttons, forensic scan as intro screen
+- Phase 08 added: Vercel Full-Stack Deployment — deploy entire stack to single Vercel URL with SSE, serverless Python runtime, remote Aerospike
 
 ### Pending Todos
 
@@ -176,6 +181,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-27T05:59:12.955Z
-Stopped at: Completed 07-03-PLAN.md
+Last session: 2026-03-27T12:03:38.713Z
+Stopped at: Completed 08-01-PLAN.md
 Resume file: None
