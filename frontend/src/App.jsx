@@ -109,6 +109,7 @@ function AuthenticatedApp({ user, logout }) {
   }
 
   function handleAttack1() {
+    useStore.getState().setAttackPhase(1)
     runAttack({
       payment_request: {
         from: 'Acme Corp',
@@ -123,6 +124,7 @@ function AuthenticatedApp({ user, logout }) {
   }
 
   function handleAttack2() {
+    useStore.getState().setAttackPhase(2)
     runAttack({
       payment_request: {
         from: 'Acme Corp',

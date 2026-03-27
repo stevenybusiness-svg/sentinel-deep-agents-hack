@@ -81,7 +81,7 @@ export function QualitativeAnalysisPanel() {
 
   return (
     <>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-4 gap-3">
         <NarrativeCard
           label="Attack Details"
           contentKey="attackNarrative"
@@ -101,6 +101,12 @@ export function QualitativeAnalysisPanel() {
           contentKey="predictionSummary"
           polishingKey="predictionSummary"
           emptyState="Prediction data will appear after investigation."
+          onExpand={handleExpand}
+        />
+        <NarrativeCard
+          label="Self-Improvement Arc"
+          contentKey="selfImprovementArc"
+          emptyState="Rule generation data will appear after gate evaluation."
           onExpand={handleExpand}
         />
       </div>

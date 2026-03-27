@@ -91,6 +91,10 @@ export const useStore = create((set, get) => ({
   persistedRuleNodes: [],
   persistedRuleEdges: [],
 
+  // Track which attack phase we're on (1 or 2)
+  attackPhase: 1,
+  setAttackPhase: (phase) => set({ attackPhase: phase }),
+
   // Current episode ID setter
   setCurrentEpisodeId: (id) => set({ currentEpisodeId: id }),
   setInvestigationStatus: (status) => set({ investigationStatus: status }),
@@ -103,31 +107,51 @@ export const useStore = create((set, get) => ({
 
   // --- Investigation tree actions (owned by Plan 01, consumed by Plan 02) ---
 
-  initInvestigationTree: () => set((s) => ({
-    nodes: [
-      { id: 'payment', position: { x: 250, y: 0 }, data: { label: 'Payment Agent (Sonnet)', icon: 'payments', status: 'active' }, type: 'sentinel' },
-      { id: 'risk', position: { x: 50, y: 120 }, data: { label: 'Risk Agent', icon: 'shield', status: 'pending' }, type: 'sentinel' },
-      { id: 'compliance', position: { x: 250, y: 120 }, data: { label: 'Compliance Agent', icon: 'verified_user', status: 'pending' }, type: 'sentinel' },
-      { id: 'forensics', position: { x: 450, y: 120 }, data: { label: 'Forensics Agent', icon: 'search', status: 'pending' }, type: 'sentinel' },
-      { id: 'supervisor', position: { x: 250, y: 240 }, data: { label: 'Supervisor (Opus)', icon: 'hub', status: 'pending' }, type: 'sentinel' },
-      { id: 'gate', position: { x: 250, y: 340 }, data: { label: 'Safety Gate (Deterministic)', icon: 'security', status: 'pending' }, type: 'sentinel' },
-      // Re-add Attack 1's rule nodes as active/pulsing (orange) — they're firing in the gate
-      ...s.persistedRuleNodes.map(n => ({
-        ...n,
-        data: { ...n.data, status: 'rule_node' }
-      })),
-    ],
-    edges: [
-      { id: 'e-pay-risk', source: 'payment', target: 'risk', animated: false },
-      { id: 'e-pay-comp', source: 'payment', target: 'compliance', animated: false },
-      { id: 'e-pay-for', source: 'payment', target: 'forensics', animated: false },
-      { id: 'e-risk-sup', source: 'risk', target: 'supervisor', animated: false },
-      { id: 'e-comp-sup', source: 'compliance', target: 'supervisor', animated: false },
-      { id: 'e-for-sup', source: 'forensics', target: 'supervisor', animated: false },
-      { id: 'e-sup-gate', source: 'supervisor', target: 'gate', animated: false },
-      ...s.persistedRuleEdges,
-    ],
-  })),
+  initInvestigationTree: () => set((s) => {
+    // Separate persisted rules (pulsing boxes) from annotations
+    const persistedRules = s.persistedRuleNodes.filter(n => n.data?.status === 'rule_node')
+    const hasPersistedRules = persistedRules.length > 0
+
+    // For Attack 2: position rule nodes at TOP, feeding into Payment Agent
+    const topRuleNodes = hasPersistedRules
+      ? persistedRules.map((n, i) => ({
+          ...n,
+          position: { x: 250 + i * 180, y: -80 },
+          data: { ...n.data, status: 'rule_node' },
+        }))
+      : []
+
+    // Edges from top rules → Payment Agent (yellow pulsing, shows rules monitoring the agent)
+    const topRuleEdges = topRuleNodes.map(n => ({
+      id: `e-rule-${n.id}-to-payment`,
+      source: n.id,
+      target: 'payment',
+      animated: true,
+      style: { stroke: '#e3b341', strokeWidth: 2 },
+    }))
+
+    return {
+      nodes: [
+        ...topRuleNodes,
+        { id: 'payment', position: { x: 250, y: hasPersistedRules ? 40 : 0 }, data: { label: 'Payment Agent (Sonnet)', icon: 'payments', status: 'active' }, type: 'sentinel' },
+        { id: 'risk', position: { x: 50, y: hasPersistedRules ? 160 : 120 }, data: { label: 'Risk Agent', icon: 'shield', status: 'pending' }, type: 'sentinel' },
+        { id: 'compliance', position: { x: 250, y: hasPersistedRules ? 160 : 120 }, data: { label: 'Compliance Agent', icon: 'verified_user', status: 'pending' }, type: 'sentinel' },
+        { id: 'forensics', position: { x: 450, y: hasPersistedRules ? 160 : 120 }, data: { label: 'Forensics Agent', icon: 'search', status: 'pending' }, type: 'sentinel' },
+        { id: 'supervisor', position: { x: 250, y: hasPersistedRules ? 280 : 240 }, data: { label: 'Supervisor (Opus)', icon: 'hub', status: 'pending' }, type: 'sentinel' },
+        { id: 'gate', position: { x: 250, y: hasPersistedRules ? 380 : 340 }, data: { label: 'Safety Gate (Deterministic)', icon: 'security', status: 'pending' }, type: 'sentinel' },
+      ],
+      edges: [
+        ...topRuleEdges,
+        { id: 'e-pay-risk', source: 'payment', target: 'risk', animated: false },
+        { id: 'e-pay-comp', source: 'payment', target: 'compliance', animated: false },
+        { id: 'e-pay-for', source: 'payment', target: 'forensics', animated: false },
+        { id: 'e-risk-sup', source: 'risk', target: 'supervisor', animated: false },
+        { id: 'e-comp-sup', source: 'compliance', target: 'supervisor', animated: false },
+        { id: 'e-for-sup', source: 'forensics', target: 'supervisor', animated: false },
+        { id: 'e-sup-gate', source: 'supervisor', target: 'gate', animated: false },
+      ],
+    }
+  }),
 
   updateNodeStatus: (nodeId, status) => set((s) => ({
     nodes: s.nodes.map((n) =>
@@ -150,8 +174,8 @@ export const useStore = create((set, get) => ({
   })),
 
   addRuleNode: (ruleId, label, source) => set((s) => {
-    // Check if this rule node already exists (evolution path — same rule_id, new version)
-    const existingIdx = s.nodes.findIndex(n => n.id === ruleId)
+    // Check if this rule node already exists in CURRENT nodes (evolution path — same rule_id)
+    const existingIdx = s.nodes.findIndex(n => n.id === ruleId && n.data?.status === 'rule_node')
     if (existingIdx !== -1) {
       // Update existing node: refresh label and ensure it pulses orange
       const updatedNodes = s.nodes.map(n =>
@@ -167,21 +191,45 @@ export const useStore = create((set, get) => ({
       return { nodes: updatedNodes, persistedRuleNodes: updatedPersisted }
     }
 
+    // Find persisted rules from previous attacks (these are at the top of the graph in Attack 2)
+    const previousRules = s.persistedRuleNodes.filter(n => n.data?.status === 'rule_node')
+    const hasPersistedRules = previousRules.length > 0
+
+    // Position the new rule below the gate
+    const gateNode = s.nodes.find(n => n.id === 'gate')
+    const gateY = gateNode?.position?.y || 340
+    const ruleY = gateY
+
     const newNode = {
       id: ruleId,
-      position: { x: 500, y: 340 },
+      position: { x: 520, y: ruleY },
       data: { label, icon: 'auto_awesome', status: 'rule_node' },
       type: 'sentinel',
     }
-    const newEdge = {
-      id: `e-gate-${ruleId}`,
-      source: 'gate',
-      target: ruleId,
-      animated: true,
-      style: { stroke: '#e3b341' },
+    const newEdges = [
+      {
+        id: `e-gate-${ruleId}`,
+        source: 'gate',
+        target: ruleId,
+        animated: true,
+        style: { stroke: '#e3b341' },
+      },
+    ]
+
+    // If there are persisted rules from Attack 1, add evolution edges (branch from old rule → new rule)
+    if (hasPersistedRules) {
+      previousRules.forEach(oldRule => {
+        newEdges.push({
+          id: `e-evolve-${oldRule.id}-${ruleId}`,
+          source: oldRule.id,
+          target: ruleId,
+          animated: true,
+          style: { stroke: '#e3b341', strokeWidth: 2, strokeDasharray: '6 3' },
+        })
+      })
     }
 
-    // Build annotation nodes from rule source analysis
+    // Build annotation nodes from rule source analysis — wider spacing to prevent overlap
     const annotations = []
     const annotationEdges = []
     if (source) {
@@ -192,11 +240,14 @@ export const useStore = create((set, get) => ({
       if (source.includes('mismatch')) hints.push('Penalizes claim mismatches')
       // Limit to 3 annotations
       const displayHints = hints.slice(0, 3)
+      const annotY = ruleY + 90
+      const totalWidth = (displayHints.length - 1) * 280
+      const startX = 520 - totalWidth / 2
       displayHints.forEach((hint, i) => {
         const annotId = `${ruleId}-annot-${i}`
         annotations.push({
           id: annotId,
-          position: { x: 420 + i * 200, y: 430 },
+          position: { x: startX + i * 280, y: annotY },
           data: { label: hint, icon: 'info', status: 'annotation' },
           type: 'sentinel',
         })
@@ -211,13 +262,13 @@ export const useStore = create((set, get) => ({
     }
 
     const allNewNodes = [newNode, ...annotations]
-    const allNewEdges = [newEdge, ...annotationEdges]
+    const allNewEdges = [...newEdges, ...annotationEdges]
 
     return {
       nodes: [...s.nodes, ...allNewNodes],
       edges: [...s.edges, ...allNewEdges],
-      persistedRuleNodes: [...s.persistedRuleNodes, ...allNewNodes],
-      persistedRuleEdges: [...s.persistedRuleEdges, ...allNewEdges],
+      persistedRuleNodes: [...s.persistedRuleNodes, newNode],
+      persistedRuleEdges: [...s.persistedRuleEdges, ...newEdges],
     }
   }),
 

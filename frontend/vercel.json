@@ -5,7 +5,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://YOUR_EC2_HOST/api/:path*"
+      "destination": "https://3.20.246.253.nip.io/api/:path*"
     },
     {
       "source": "/(.*)",
