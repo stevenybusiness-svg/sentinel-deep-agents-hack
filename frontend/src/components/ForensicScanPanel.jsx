@@ -1,17 +1,27 @@
-import { useState, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useStore } from '../store'
 
-function Lightbox({ src, alt, isForensic, onClose }) {
-  const [scale, setScale] = useState(1)
+const BASE_WIDTH = 800
 
-  const zoom = useCallback((delta) => {
-    setScale((s) => Math.min(4, Math.max(0.5, s + delta)))
-  }, [])
+function Lightbox({ src, alt, isForensic, onClose }) {
+  // Forensic scans open at 2× so the hidden text at the bottom is immediately readable
+  const [scale, setScale] = useState(isForensic ? 2 : 1)
+  const containerRef = useRef(null)
+
+  // Auto-scroll to bottom for forensic scans so hidden text is immediately visible
+  useEffect(() => {
+    if (isForensic && containerRef.current) {
+      const el = containerRef.current
+      setTimeout(() => { el.scrollTop = el.scrollHeight }, 150)
+    }
+  }, [isForensic])
 
   const handleWheel = useCallback((e) => {
     e.preventDefault()
-    zoom(e.deltaY < 0 ? 0.2 : -0.2)
-  }, [zoom])
+    // ctrlKey = trackpad pinch; plain scroll = mouse wheel — both zoom
+    const delta = e.deltaY < 0 ? 0.12 : -0.12
+    setScale((s) => Math.min(5, Math.max(0.5, s + delta)))
+  }, [])
 
   return (
     <div
@@ -28,20 +38,12 @@ function Lightbox({ src, alt, isForensic, onClose }) {
             {alt}
           </span>
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => zoom(-0.25)}
-              className="text-text-muted hover:text-text-primary text-lg leading-none px-2 py-0.5 border border-border-muted rounded"
-            >−</button>
             <span className="text-[11px] text-text-muted w-10 text-center">
               {Math.round(scale * 100)}%
             </span>
             <button
-              onClick={() => zoom(0.25)}
-              className="text-text-muted hover:text-text-primary text-lg leading-none px-2 py-0.5 border border-border-muted rounded"
-            >+</button>
-            <button
-              onClick={() => setScale(1)}
-              className="text-[11px] text-text-muted hover:text-text-primary px-2 py-0.5 border border-border-muted rounded ml-1"
+              onClick={() => setScale(isForensic ? 2 : 1)}
+              className="text-[11px] text-text-muted hover:text-text-primary px-2 py-0.5 border border-border-muted rounded"
             >Reset</button>
             <button
               onClick={onClose}
@@ -50,38 +52,24 @@ function Lightbox({ src, alt, isForensic, onClose }) {
           </div>
         </div>
 
-        {/* Image container */}
+        {/* Image container — scroll/pinch to zoom */}
         <div
+          ref={containerRef}
           className="overflow-auto bg-black border-x border-b border-border-muted rounded-b-lg"
           style={{ maxHeight: 'calc(90vh - 48px)' }}
           onWheel={handleWheel}
         >
-          <div
-            className="relative inline-block transition-transform duration-100 origin-top-left"
-            style={{ transform: `scale(${scale})`, transformOrigin: 'top left' }}
-          >
-            <img
-              src={src}
-              alt={alt}
-              className="block max-w-none"
-              style={{ width: `${Math.round(100 / scale)}%`, minWidth: '600px' }}
-              draggable={false}
-            />
-            {isForensic && (
-              <div
-                className="absolute left-0 right-0 bg-danger/50 border-2 border-danger rounded-t flex items-center justify-center"
-                style={{ top: 0, height: '8%' }}
-              >
-                <span className="text-white font-bold text-sm drop-shadow">
-                  [FORENSIC SCAN] ⚠ Hidden prompt injection — white text on white background
-                </span>
-              </div>
-            )}
-          </div>
+          <img
+            src={src}
+            alt={alt}
+            className="block"
+            style={{ width: `${BASE_WIDTH * scale}px`, maxWidth: 'none' }}
+            draggable={false}
+          />
         </div>
 
         <p className="text-[10px] text-text-muted mt-2 text-center">
-          Scroll to zoom · Click outside to close
+          Scroll or pinch to zoom · Click outside to close
         </p>
       </div>
     </div>
@@ -145,29 +133,31 @@ export function ForensicScanPanel() {
           <div className="flex-1">
             <div className="text-[11px] uppercase text-text-muted mb-1">Forensic Scan</div>
             <div
-              className={`bg-surface rounded border border-border-muted h-40 flex items-center justify-center overflow-hidden relative ${hasDocuments ? 'cursor-zoom-in hover:border-danger/60 transition-colors' : ''}`}
+              className={`bg-surface rounded border border-danger/40 h-40 flex items-center justify-center overflow-hidden ${hasDocuments ? 'cursor-zoom-in hover:border-danger/70 transition-colors' : ''}`}
               onClick={() => hasDocuments && setLightbox({ src: '/invoice_forensic.png', alt: 'Forensic Scan', isForensic: true })}
               title={hasDocuments ? 'Click to expand' : undefined}
             >
               {hasDocuments
                 ? (
-                  <>
-                    <img
-                      src="/invoice_forensic.png"
-                      alt="Forensic scan"
-                      className="object-contain h-full w-full"
-                    />
-                    <div className="absolute top-2 left-2 right-2 h-6 bg-danger/40 rounded border border-danger/60 flex items-center justify-center">
-                      <span className="text-[10px] text-white font-semibold">Hidden text detected</span>
-                    </div>
-                  </>
+                  <img
+                    src="/invoice_forensic.png"
+                    alt="Forensic scan"
+                    className="object-contain h-full w-full"
+                  />
                 )
                 : (
                   <span className="text-text-muted text-[13px]">No documents attached.</span>
                 )}
             </div>
             {hasDocuments && (
-              <p className="text-[10px] text-text-muted mt-1 text-center">Click to expand</p>
+              <>
+                <div className="mt-1.5 flex items-center gap-1.5 bg-danger/10 border border-danger/30 rounded px-2 py-1">
+                  <span className="text-danger text-[12px]">⚠</span>
+                  <span className="text-[10px] text-danger font-semibold">
+                    Hidden injection text detected — click to expand &amp; hover to magnify
+                  </span>
+                </div>
+              </>
             )}
           </div>
         </div>

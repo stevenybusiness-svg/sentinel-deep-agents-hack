@@ -9,14 +9,12 @@ export function VoicePanel() {
   const setVoiceCallId = useStore((s) => s.setVoiceCallId)
   const setVoiceCallStatus = useStore((s) => s.setVoiceCallStatus)
 
-  const [phoneNumber, setPhoneNumber] = useState('')
   const [publicHost, setPublicHost] = useState('')
 
   const isReady =
     currentEpisodeId !== null &&
     investigationStatus === 'complete' &&
     voiceCallStatus !== 'calling' &&
-    phoneNumber.trim() !== '' &&
     publicHost.trim() !== ''
 
   async function handleStartCall(e) {
@@ -29,7 +27,6 @@ export function VoicePanel() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           episode_id: currentEpisodeId,
-          phone_number: phoneNumber,
           public_host: publicHost,
         }),
       })
@@ -122,16 +119,6 @@ export function VoicePanel() {
 
       {/* Inline call form */}
       <form onSubmit={handleStartCall} className="space-y-2">
-        <div>
-          <label className={labelClass}>Phone Number</label>
-          <input
-            type="text"
-            className={inputClass}
-            placeholder="+1XXXXXXXXXX"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-          />
-        </div>
         <div>
           <label className={labelClass}>Public Host URL</label>
           <input

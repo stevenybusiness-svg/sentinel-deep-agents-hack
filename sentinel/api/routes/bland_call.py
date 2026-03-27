@@ -27,8 +27,8 @@ class StartCallRequest(BaseModel):
     """Request payload to initiate a Bland AI voice call."""
 
     episode_id: str
-    phone_number: str  # E.164 format e.g. "+15551234567"
     public_host: str   # e.g. "https://abc.ngrok.io" or production URL
+    phone_number: str | None = None  # E.164 format; falls back to DEMO_PHONE_NUMBER env var
 
 
 class StartCallResponse(BaseModel):
@@ -66,7 +66,15 @@ async def start_bland_call(req: StartCallRequest) -> StartCallResponse:
             detail="BLAND_API_KEY not configured — set env var BLAND_API_KEY to a valid key",
         )
 
-    payload = _build_call_payload(req)
+    # Resolve phone number: request body overrides env var
+    phone_number = req.phone_number or os.getenv("DEMO_PHONE_NUMBER", "")
+    if not phone_number:
+        raise HTTPException(
+            status_code=422,
+            detail="Phone number required — set DEMO_PHONE_NUMBER env var or pass phone_number in request",
+        )
+
+    payload = _build_call_payload(req, phone_number)
 
     async with httpx.AsyncClient(timeout=10.0) as client:
         resp = await client.post(
@@ -86,7 +94,7 @@ async def start_bland_call(req: StartCallRequest) -> StartCallResponse:
     )
 
 
-def _build_call_payload(req: StartCallRequest) -> dict:
+def _build_call_payload(req: StartCallRequest, phone_number: str) -> dict:
     """Construct the full Bland AI call payload.
 
     Parameters follow Bland AI v1/calls spec:
@@ -112,7 +120,7 @@ def _build_call_payload(req: StartCallRequest) -> dict:
     )
 
     return {
-        "phone_number": req.phone_number,
+        "phone_number": phone_number,
         "task": task,
         "voice": "maya",
         "model": "base",  # base supports dynamic_data; turbo has limited capabilities
