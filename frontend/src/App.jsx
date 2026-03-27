@@ -136,8 +136,12 @@ function AuthenticatedApp({ user, logout }) {
     setAttackPhase(attackId)
     setActiveTab('logs')
     setExpandedAttack(null)
-    if (attackId === 1) handleAttack1()
-    else handleAttack2()
+    // Auto-trigger the attack when switching to logs view
+    useStore.getState().setInvestigationStatus('idle')
+    setTimeout(() => {
+      if (attackId === 1) handleAttack1()
+      else handleAttack2()
+    }, 300)
   }
 
   function handleProceedToAttack2() {
@@ -232,8 +236,6 @@ function AuthenticatedApp({ user, logout }) {
             isRunning={isRunning}
             investigationStatus={investigationStatus}
             attackPhase={attackPhase}
-            onAttack1={handleAttack1}
-            onAttack2={handleAttack2}
           />
         </ErrorBoundary>
       )}
@@ -241,28 +243,14 @@ function AuthenticatedApp({ user, logout }) {
   )
 }
 
-function DashboardView({ isRunning, investigationStatus, attackPhase, onAttack1, onAttack2 }) {
-  const btnClass =
-    'px-3 py-1.5 rounded text-[10px] font-semibold bg-surface border border-border-muted text-text-main ' +
-    'hover:border-accent hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed'
-
+function DashboardView({ isRunning, investigationStatus, attackPhase }) {
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
-      {/* Sub-header with attack controls */}
+      {/* Sub-header */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-border-muted bg-bg-dark/50 shrink-0">
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] text-text-muted uppercase tracking-wider font-mono">
-            Investigation Log — Attack {attackPhase}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <button className={btnClass} disabled={isRunning} onClick={onAttack1}>
-            Re-run Attack 1
-          </button>
-          <button className={btnClass} disabled={isRunning} onClick={onAttack2}>
-            Re-run Attack 2
-          </button>
-        </div>
+        <span className="text-[10px] text-text-muted uppercase tracking-wider font-mono">
+          Investigation Log — Attack {attackPhase}
+        </span>
       </div>
 
       {/* Two-column layout */}
