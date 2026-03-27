@@ -12,7 +12,7 @@ import { RuleSourcePanel } from './components/RuleSourcePanel'
 import { AerospikeLatency } from './components/AerospikeLatency'
 import { SlackReportPanel } from './components/SlackReportPanel'
 import { QualitativeAnalysisPanel } from './components/QualitativeAnalysisPanel'
-import { ForensicIntroScreen } from './components/ForensicIntroScreen'
+import { ScenarioScreen } from './components/ScenarioScreen'
 
 export default function App() {
   const { isAuthenticated, isLoading, loginWithRedirect, user, logout } = useAuth0()
@@ -55,7 +55,9 @@ export default function App() {
 function AuthenticatedApp({ user, logout }) {
   useWebSocket()
 
-  const [showIntro, setShowIntro] = useState(true)
+  // Guided demo flow state (local React state, not Zustand)
+  // Flow: scenario1 -> dashboard1 -> scenario2 -> dashboard2
+  const [flowStep, setFlowStep] = useState('scenario1')
 
   // Seed demo data on load so dashboard is always populated.
   // Real WebSocket events override demo state when an investigation runs.
@@ -112,25 +114,31 @@ function AuthenticatedApp({ user, logout }) {
     })
   }
 
-  function handleIntroAttack1() {
-    setShowIntro(false)
-    handleAttack1()
-  }
-
-  function handleIntroAttack2() {
-    setShowIntro(false)
-    handleAttack2()
-  }
-
   const btnClass =
     'px-3 py-1.5 rounded text-xs font-semibold bg-surface border border-border-muted text-text-main ' +
     'hover:border-accent hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed'
 
-  if (showIntro) {
+  // Scenario screens (per PHASE8-02: scenario screens appear BEFORE investigations)
+  if (flowStep === 'scenario1') {
     return (
-      <ForensicIntroScreen
-        onAttack1={handleIntroAttack1}
-        onAttack2={handleIntroAttack2}
+      <ScenarioScreen
+        scenario="attack1"
+        onStart={() => {
+          setFlowStep('dashboard1')
+          handleAttack1()
+        }}
+      />
+    )
+  }
+
+  if (flowStep === 'scenario2') {
+    return (
+      <ScenarioScreen
+        scenario="attack2"
+        onStart={() => {
+          setFlowStep('dashboard2')
+          handleAttack2()
+        }}
       />
     )
   }
@@ -157,6 +165,14 @@ function AuthenticatedApp({ user, logout }) {
           >
             Attack 2: Identity Spoofing
           </button>
+          {flowStep === 'dashboard1' && investigationStatus === 'complete' && (
+            <button
+              className="px-3 py-1.5 rounded text-xs font-semibold bg-warning text-bg-dark hover:bg-warning/90 transition-colors"
+              onClick={() => setFlowStep('scenario2')}
+            >
+              Proceed to Attack 2 &rarr;
+            </button>
+          )}
         </div>
 
         {/* Status chip + user */}
