@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Dashboard** - Investigation tree, prediction vs. actual display, verdict board table, anomaly score bar with rule contributions, forensic scan panel, generated rule source panel with evolution history, trust score animation, Zustand state, WebSocket integration
 - [x] **Phase 5: Voice Integration** - Bland AI webhook, barge-in, grounded Q&A with anomaly scores and rule attribution, pre-computed context cache
 - [ ] **Phase 6: Demo Preparation + Deployment** - docker-compose, demo_check.py, fixture loading, dry runs, AWS deployment, screen recording fallback
-- [ ] **Phase 7: Demo Polish & Airbyte Integration** - Fix images, latency tuning, edge animations, Airbyte+Slack report, button rename, intro screen
+- [x] **Phase 7: Demo Polish & Airbyte Integration** - Fix images, latency tuning, edge animations, Airbyte+Slack report, button rename, intro screen (completed 2026-03-27)
 
 ## Phase Details
 
@@ -148,12 +148,12 @@ Plans:
 **Requirements**: DEMO-POLISH-01 (images), DEMO-POLISH-02 (latency), DEMO-POLISH-03 (animations), DEMO-POLISH-04 (Airbyte+Slack), DEMO-POLISH-05 (button rename), DEMO-POLISH-06 (intro screen)
 **Depends on:** Phase 6
 **UI hint:** yes
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 - [x] 07-01-PLAN.md — Fix invoice image serving, rename attack buttons, add colored edge animations (DEMO-POLISH-01, DEMO-POLISH-03, DEMO-POLISH-05)
 - [x] 07-02-PLAN.md — Slack reporter, AirbyteReportPanel replacing VoicePanel, latency tuning (DEMO-POLISH-02, DEMO-POLISH-04)
-- [ ] 07-03-PLAN.md — Forensic intro screen as landing page (DEMO-POLISH-06)
+- [x] 07-03-PLAN.md — Forensic intro screen as landing page (DEMO-POLISH-06)
 
 ## Progress
 
@@ -169,4 +169,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6 → 7
 | 4.1 Performance + Qualitative | 2/2 | Complete   | 2026-03-27 |
 | 5. Voice Integration | 2/2 | Complete   | 2026-03-27 |
 | 6. Demo Preparation + Deployment | 0/2 | Planning complete | - |
-| 7. Demo Polish & Airbyte | 2/3 | In Progress|  |
+| 7. Demo Polish & Airbyte | 3/3 | Complete   | 2026-03-27 |
