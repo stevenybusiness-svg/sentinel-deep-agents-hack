@@ -286,7 +286,7 @@ Built with XYFlow (React Flow) for the investigation pipeline visualization, Zus
 | **Rule Sandbox** | RestrictedPython | Compile-time restriction of generated Python functions |
 | **Frontend** | React 18 + Vite | Concurrent features, XYFlow pipeline graph, Zustand state |
 | **Auth** | Auth0 | SPA authentication for operator dashboard |
-| **Deployment** | Docker + EC2 + Caddy + Vercel | Containerized backend, static frontend, automatic HTTPS |
+| **Deployment** | AWS EC2 + Kiro + Docker + Vercel | AWS-hosted backend, Kiro for AI-assisted development, automatic HTTPS |
 
 ## Attack Scenarios
 
