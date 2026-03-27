@@ -44,7 +44,7 @@ function SentinelNode({ data }) {
 
   return (
     <div
-      className={`bg-surface rounded-lg px-3 py-2 flex items-center gap-2 transition-all duration-150 ${borderClass}`}
+      className={`bg-surface rounded-lg px-3 py-2 flex items-center gap-2 transition-all duration-150 ${borderClass} ${status === 'rule_node' ? 'rule-pulse' : ''}`}
       style={bgStyle}
     >
       <Handle type="target" position={Position.Top} style={{ visibility: 'hidden' }} />

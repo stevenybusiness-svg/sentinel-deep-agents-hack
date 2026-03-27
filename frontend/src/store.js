@@ -87,6 +87,10 @@ export const useStore = create((set, get) => ({
   setReportStatus: (status) => set({ reportStatus: status }),
   setReportChannel: (channel) => set({ reportChannel: channel }),
 
+  // Rule nodes that persist across investigations (PHASE8-03)
+  persistedRuleNodes: [],
+  persistedRuleEdges: [],
+
   // Current episode ID setter
   setCurrentEpisodeId: (id) => set({ currentEpisodeId: id }),
   setInvestigationStatus: (status) => set({ investigationStatus: status }),
@@ -99,7 +103,7 @@ export const useStore = create((set, get) => ({
 
   // --- Investigation tree actions (owned by Plan 01, consumed by Plan 02) ---
 
-  initInvestigationTree: () => set({
+  initInvestigationTree: () => set((s) => ({
     nodes: [
       { id: 'supervisor', position: { x: 250, y: 0 }, data: { label: 'Supervisor', icon: 'hub', status: 'active' }, type: 'sentinel' },
       { id: 'payment', position: { x: 250, y: 100 }, data: { label: 'Payment Agent', icon: 'payments', status: 'active' }, type: 'sentinel' },
@@ -107,6 +111,7 @@ export const useStore = create((set, get) => ({
       { id: 'compliance', position: { x: 250, y: 220 }, data: { label: 'Compliance Agent', icon: 'verified_user', status: 'pending' }, type: 'sentinel' },
       { id: 'forensics', position: { x: 450, y: 220 }, data: { label: 'Forensics Agent', icon: 'search', status: 'pending' }, type: 'sentinel' },
       { id: 'gate', position: { x: 250, y: 340 }, data: { label: 'Safety Gate', icon: 'security', status: 'pending' }, type: 'sentinel' },
+      ...s.persistedRuleNodes,
     ],
     edges: [
       { id: 'e-sup-pay', source: 'supervisor', target: 'payment', animated: true },
@@ -116,8 +121,9 @@ export const useStore = create((set, get) => ({
       { id: 'e-risk-gate', source: 'risk', target: 'gate', animated: false },
       { id: 'e-comp-gate', source: 'compliance', target: 'gate', animated: false },
       { id: 'e-for-gate', source: 'forensics', target: 'gate', animated: false },
+      ...s.persistedRuleEdges,
     ],
-  }),
+  })),
 
   updateNodeStatus: (nodeId, status) => set((s) => ({
     nodes: s.nodes.map((n) =>
@@ -139,21 +145,27 @@ export const useStore = create((set, get) => ({
     ),
   })),
 
-  addRuleNode: (ruleId, label) => set((s) => ({
-    nodes: [...s.nodes, {
+  addRuleNode: (ruleId, label) => set((s) => {
+    const newNode = {
       id: ruleId,
       position: { x: 450, y: 340 + (s.nodes.length - 6) * 80 },
       data: { label, icon: 'auto_awesome', status: 'rule_node' },
       type: 'sentinel',
-    }],
-    edges: [...s.edges, {
+    }
+    const newEdge = {
       id: `e-gate-${ruleId}`,
       source: 'gate',
       target: ruleId,
       animated: true,
       style: { stroke: '#e3b341' },
-    }],
-  })),
+    }
+    return {
+      nodes: [...s.nodes, newNode],
+      edges: [...s.edges, newEdge],
+      persistedRuleNodes: [...s.persistedRuleNodes, newNode],
+      persistedRuleEdges: [...s.persistedRuleEdges, newEdge],
+    }
+  }),
 
   // Reset for new investigation
   resetInvestigation: () => set({

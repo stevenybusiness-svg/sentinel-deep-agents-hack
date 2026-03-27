@@ -56,6 +56,13 @@
       .material-symbols-outlined {
         font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
       }
+
+      /* Orange pulse for rule nodes -- self-improvement visual (PHASE8-03) */
+      @keyframes rule-pulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(227, 179, 65, 0.7); }
+        50%       { box-shadow: 0 0 0 8px rgba(227, 179, 65, 0); }
+      }
+      .rule-pulse { animation: rule-pulse 1.5s ease-in-out infinite; }
     </style>
   </head>
   <body class="bg-bg-dark text-text-main font-display antialiased">
