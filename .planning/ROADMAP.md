@@ -15,8 +15,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation** - Frozen schemas, infrastructure, Aerospike health check, Claude API tier validation, and demo fixtures (completed 2026-03-24)
 - [x] **Phase 2: Core Investigation Pipeline** - Real LLM Payment Agent, prediction step, parallel sub-agents, Verdict Board Engine, Safety Gate with composite anomaly scoring, Aerospike writes, FastAPI/WebSocket, Phase 1 demo arc end-to-end (completed 2026-03-26)
 - [x] **Phase 3: Self-Improvement Loop** - Rule generation prompt (30+ isolation tests), prediction-error-driven scoring function generation, validation harness, rule evolution across incidents, SafetyGate registry, Phase 2 generalization verified end-to-end (completed 2026-03-25)
-- [ ] **Phase 4: Dashboard** - Investigation tree, prediction vs. actual display, verdict board table, anomaly score bar with rule contributions, forensic scan panel, generated rule source panel with evolution history, trust score animation, Zustand state, WebSocket integration
-- [ ] **Phase 5: Voice Integration** - Bland AI webhook, barge-in, grounded Q&A with anomaly scores and rule attribution, pre-computed context cache
+- [x] **Phase 4: Dashboard** - Investigation tree, prediction vs. actual display, verdict board table, anomaly score bar with rule contributions, forensic scan panel, generated rule source panel with evolution history, trust score animation, Zustand state, WebSocket integration
+- [x] **Phase 5: Voice Integration** - Bland AI webhook, barge-in, grounded Q&A with anomaly scores and rule attribution, pre-computed context cache
 - [ ] **Phase 6: Demo Preparation + Deployment** - docker-compose, demo_check.py, fixture loading, dry runs, AWS deployment, screen recording fallback
 
 ## Phase Details
@@ -92,12 +92,12 @@ Plans:
   5. The forensic scan panel shows clean invoice vs. annotated forensic scan side-by-side
   6. The generated rule source panel shows readable Python with provenance and evolution history (v1 → v2)
   7. The Aerospike write latency metric is displayed live on the dashboard
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans complete
 Plans:
 - [x] 04-01-PLAN.md — Zustand store extensions, WebSocket hook, two-column layout shell with attack buttons (VOICE-04)
 - [x] 04-02-PLAN.md — Investigation tree with animated nodes, Gate Decision panel, Anomaly Score Bar (DASH-01, DASH-02, DASH-07, DASH-11)
 - [x] 04-03-PLAN.md — Verdict Board table with prediction sub-rows, Forensic Scan panel (DASH-03, DASH-04, DASH-10)
-- [ ] 04-04-PLAN.md — Rule Source panel with streaming/syntax highlighting, Decision Log, Trust Score Bar, Aerospike Latency (DASH-05, DASH-06, DASH-08, DASH-09)
+- [x] 04-04-PLAN.md — Rule Source panel with streaming/syntax highlighting, Decision Log, Trust Score Bar, Aerospike Latency (DASH-05, DASH-06, DASH-08, DASH-09)
 - [x] 04-05-PLAN.md — Visual verification checkpoint (all DASH requirements)
 **UI hint**: yes
 
@@ -120,7 +120,7 @@ Plans:
   1. A Bland AI voice call is initiated, the Supervisor answers a natural language question about the investigation decision grounded in actual anomaly scores and rule attribution, and the webhook response is delivered within the 8-second budget
   2. Barge-in works during a voice session — interrupting the Supervisor mid-sentence causes it to stop speaking and process the new question
   3. The dashboard displays the same information as voice narration — text fallback is always present if voice fails
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 Plans:
 - [x] 05-01-PLAN.md — Backend Bland AI routes: POST /bland-call, POST /bland-webhook, __latest__ sentinel key, tests (VOICE-01, VOICE-02, VOICE-03, API-04)
 - [x] 05-02-PLAN.md — Frontend VoicePanel with Start button, text fallback display, visual verification (VOICE-01, VOICE-04)
@@ -136,7 +136,10 @@ Plans:
   3. Two consecutive full demo arcs run end-to-end in under 3 minutes each without intervention
   4. The application is deployed to EC2/ECS with a public URL that Bland AI webhooks can reach
   5. A screen recording of the complete demo arc exists as a local file before demo day
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 06-01-PLAN.md — Dockerfile, docker-compose.yml, demo_check.py, reset_demo.py (INFRA-06, DEMO-01, DEMO-02)
+- [ ] 06-02-PLAN.md — dry_run.py timed arc, .env.example, Railway deployment verification, screen recording (DEMO-04, DEMO-05)
 
 ## Progress
 
@@ -148,7 +151,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6
 | 1. Foundation | 5/5 | Complete   | 2026-03-24 |
 | 2. Core Investigation Pipeline | 7/7 | Complete   | 2026-03-26 |
 | 3. Self-Improvement Loop | 4/4 | Complete   | 2026-03-25 |
-| 4. Dashboard | 4/5 | In Progress|  |
-| 4.1 Performance + Qualitative | 1/2 | In Progress|  |
-| 5. Voice Integration | 1/2 | In Progress|  |
-| 6. Demo Preparation + Deployment | 0/TBD | Not started | - |
+| 4. Dashboard | 5/5 | Complete   | 2026-03-27 |
+| 4.1 Performance + Qualitative | 2/2 | Complete   | 2026-03-27 |
+| 5. Voice Integration | 2/2 | Complete   | 2026-03-27 |
+| 6. Demo Preparation + Deployment | 0/2 | Planning complete | - |
