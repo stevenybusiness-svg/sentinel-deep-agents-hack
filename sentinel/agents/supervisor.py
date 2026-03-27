@@ -869,7 +869,15 @@ async def run_investigation(
     steps_taken: list[str] = []
     payment_decision: PaymentDecision | None = None
 
-    for _turn in range(8):
+    _TOOL_LABELS = {
+        "check_counterparty": "Verifying counterparty identity...",
+        "verify_kyc": "Checking KYC compliance records...",
+        "read_invoice": "Reading and parsing invoice document...",
+        "check_payment_history": "Reviewing payment history...",
+        "verify_amount": "Validating payment amount...",
+    }
+
+    for _turn in range(5):
         agent_response = await llm_client.messages.create(
             model=models.get("forensics", models["agent"]),
             max_tokens=512,
@@ -888,6 +896,13 @@ async def run_investigation(
             for block in agent_response.content:
                 if block.type == "tool_use":
                     steps_taken.append(block.name)
+                    # Broadcast progress so the dashboard animates per-step
+                    step_label = _TOOL_LABELS.get(block.name, f"Running {block.name}...")
+                    await ws.broadcast("payment_agent_step", episode_id, {
+                        "step": block.name,
+                        "label": step_label,
+                        "turn": _turn + 1,
+                    })
                     result_content = handle_tool_call(
                         block.name, block.input, fixtures, invoice_path,
                     )
@@ -911,7 +926,7 @@ async def run_investigation(
             break
     else:
         raise RuntimeError(
-            f"Payment Agent exceeded 8 turns without producing a decision "
+            f"Payment Agent exceeded 5 turns without producing a decision "
             f"for episode {episode_id}"
         )
 

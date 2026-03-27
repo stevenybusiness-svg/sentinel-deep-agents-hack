@@ -83,6 +83,12 @@ export function useWebSocket() {
             s.initInvestigationTree()
             break
 
+          case 'payment_agent_step': {
+            // Show per-step progress on the Payment Agent node
+            s.updateNodeLabel('payment', `Payment Agent — ${data.label}`)
+            break
+          }
+
           case 'agent_completed': {
             const agent = data.agent // "risk" | "compliance" | "forensics"
             s.setAgentStatus(agent, 'complete', data.verdict)

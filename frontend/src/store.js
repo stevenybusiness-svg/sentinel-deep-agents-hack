@@ -159,6 +159,12 @@ export const useStore = create((set, get) => ({
     ),
   })),
 
+  updateNodeLabel: (nodeId, label) => set((s) => ({
+    nodes: s.nodes.map((n) =>
+      n.id === nodeId ? { ...n, data: { ...n.data, label } } : n
+    ),
+  })),
+
   setEdgeAnimated: (edgeId, animated) => set((s) => ({
     edges: s.edges.map((e) =>
       e.id === edgeId ? { ...e, animated } : e
