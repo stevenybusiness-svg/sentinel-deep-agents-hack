@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Ready to execute
-stopped_at: Completed 06-01-PLAN.md
-last_updated: "2026-03-27T04:02:24.971Z"
+status: Phase complete — ready for verification
+stopped_at: Completed 06-02-PLAN.md
+last_updated: "2026-03-27T04:07:07.178Z"
 progress:
   total_phases: 7
-  completed_phases: 6
+  completed_phases: 7
   total_plans: 27
-  completed_plans: 26
+  completed_plans: 27
 ---
 
 # Project State
@@ -72,6 +72,7 @@ Plan: 2 of 2
 | Phase 04.1 P02 | 2 | 2 tasks | 4 files |
 | Phase 05 P02 | 117 | 2 tasks | 1 files |
 | Phase 06 P01 | 2 | 2 tasks | 4 files |
+| Phase 06 P02 | 163 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -139,6 +140,7 @@ Recent decisions affecting current work:
 - [Phase 05]: Phone number input added as controlled text input for demo reliability -- no window.prompt
 - [Phase 06]: Adjusted /investigate endpoint path to /api/investigate matching actual router prefix
 - [Phase 06]: Fixtures at sentinel/fixtures/ not repo-root -- Dockerfile COPY sentinel/ captures them
+- [Phase 06]: Adapted dry_run.py to actual API schemas: /api/investigate with scenario+payment_request, /api/confirm with episode_id+attack_type
 
 ### Roadmap Evolution
 
@@ -164,6 +166,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-27T04:02:24.965Z
-Stopped at: Completed 06-01-PLAN.md
+Last session: 2026-03-27T04:07:07.171Z
+Stopped at: Completed 06-02-PLAN.md
 Resume file: None

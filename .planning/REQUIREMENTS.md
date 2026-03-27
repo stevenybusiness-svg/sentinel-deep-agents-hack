@@ -91,8 +91,8 @@
 - [x] **DEMO-01**: docker-compose.yml runs full stack (FastAPI, Aerospike, React dev server) in one command with no manual steps
 - [x] **DEMO-02**: demo_check.py validates all components before demo: Aerospike namespace accessible, API keys valid, Bland AI connectivity, WebSocket connects and receives first event, both fixture sets load
 - [x] **DEMO-03**: Demo fixtures committed: Phase 1 (invoice image with embedded hidden text, counterparty DB, behavioral baselines), Phase 2 (spoofed KYC pre-clearance payload, empty KYC ledger for Meridian Logistics)
-- [ ] **DEMO-04**: Full Attack 1 → rule generation → Attack 2 → rule fires → rule evolves arc runs end-to-end without intervention in under 3 minutes
-- [ ] **DEMO-05**: Screen recording of full demo arc captured as fallback before demo day
+- [x] **DEMO-04**: Full Attack 1 → rule generation → Attack 2 → rule fires → rule evolves arc runs end-to-end without intervention in under 3 minutes
+- [x] **DEMO-05**: Screen recording of full demo arc captured as fallback before demo day
 
 ---
 
@@ -199,8 +199,8 @@
 | DEMO-01 | Phase 6 | Complete |
 | DEMO-02 | Phase 6 | Complete |
 | DEMO-03 | Phase 1 | Complete |
-| DEMO-04 | Phase 6 | Pending |
-| DEMO-05 | Phase 6 | Pending |
+| DEMO-04 | Phase 6 | Complete |
+| DEMO-05 | Phase 6 | Complete |
 
 **Coverage:**
 - v1 requirements: 55 total
