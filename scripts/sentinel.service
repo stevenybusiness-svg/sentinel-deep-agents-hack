@@ -1,0 +1,20 @@
+[Unit]
+Description=Sentinel Docker Compose Application
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/home/ec2-user/sentinel
+ExecStart=/usr/local/bin/docker-compose -f docker-compose.prod.yml up -d
+ExecStop=/usr/local/bin/docker-compose -f docker-compose.prod.yml down
+ExecReload=/usr/local/bin/docker-compose -f docker-compose.prod.yml restart
+User=ec2-user
+Group=ec2-user
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
