@@ -11,13 +11,36 @@ API = "http://localhost:8000"
 WS  = "ws://localhost:8000/ws"
 
 SCENARIOS = [
-    {"name": "Attack 1: Invoice Hidden Text Injection", "key": "phase1"},
-    {"name": "Attack 2: Identity Spoofing",             "key": "phase2"},
+    {
+        "name": "Attack 1: Invoice Hidden Text Injection",
+        "key": "phase1",
+        "payload": {
+            "payment_request": {
+                "from": "Acme Corp", "to": "Meridian Logistics", "amount": 47250.00,
+                "currency": "USD", "invoice_reference": "INV-2024-0891",
+                "notes": "Urgent: Updated payment details per supplier request",
+            },
+            "scenario": "phase1",
+        },
+    },
+    {
+        "name": "Attack 2: Identity Spoofing",
+        "key": "phase2",
+        "payload": {
+            "payment_request": {
+                "from": "Acme Corp", "to": "Meridian Logistics", "amount": 23100.00,
+                "currency": "USD", "invoice_reference": "INV-2024-1102",
+                "notes": "Pre-cleared by compliance team, expedite processing",
+            },
+            "scenario": "phase2",
+        },
+    },
 ]
 
-async def run_attack(scenario_key: str, scenario_name: str):
+async def run_attack(scenario: dict):
     import aiohttp
 
+    scenario_name = scenario["name"]
     events = []
     t0 = time.perf_counter()
 
@@ -27,14 +50,19 @@ async def run_attack(scenario_key: str, scenario_name: str):
 
     # Fire the investigation
     async with aiohttp.ClientSession() as session:
-        payload = {"scenario": scenario_key}
         req_start = time.perf_counter()
-        async with session.post(f"{API}/api/investigate", json=payload) as resp:
+        async with session.post(f"{API}/api/investigate", json=scenario["payload"]) as resp:
             req_end = time.perf_counter()
-            result = await resp.json()
+            if resp.status != 200:
+                text = await resp.text()
+                print(f"  ERROR {resp.status}: {text[:500]}")
+                result = {}
+            else:
+                result = await resp.json()
 
     # Wait for remaining WS events (rule generation etc.)
-    await asyncio.sleep(25)
+    # HTTP response comes back after investigation; rule gen is background (~15-20s)
+    await asyncio.sleep(20)
     ws_task.cancel()
     try:
         await ws_task
@@ -49,7 +77,9 @@ async def run_attack(scenario_key: str, scenario_name: str):
     print(f"  {scenario_name}")
     print(f"{'='*70}")
     print(f"\n  HTTP Response time: {(req_end - req_start)*1000:.0f}ms")
-    print(f"  HTTP Result: decision={result.get('decision')}, score={result.get('composite_score')}")
+    decision = result.get('decision', 'N/A')
+    score = result.get('composite_score', 'N/A')
+    print(f"  HTTP Result: decision={decision}, score={score}")
     print(f"\n  WebSocket Event Timeline:")
     print(f"  {'Event':<35} {'Time (ms)':>10}  {'Delta (ms)':>10}")
     print(f"  {'-'*35} {'-'*10}  {'-'*10}")
@@ -70,7 +100,7 @@ async def collect_events(ws, events, t0):
     try:
         async for msg in ws:
             data = json.loads(msg)
-            evt_type = data.get("type", "unknown")
+            evt_type = data.get("event", data.get("type", "unknown"))
             elapsed = (time.perf_counter() - t0) * 1000
             events.append({"type": evt_type, "ms": elapsed, "data": data})
     except asyncio.CancelledError:
@@ -83,7 +113,7 @@ async def main():
 
     all_results = []
     for scenario in SCENARIOS:
-        events, result = await run_attack(scenario["key"], scenario["name"])
+        events, result = await run_attack(scenario)
         all_results.append((scenario["name"], events, result))
         # Brief pause between attacks
         await asyncio.sleep(2)

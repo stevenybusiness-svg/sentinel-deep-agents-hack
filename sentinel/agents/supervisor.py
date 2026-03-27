@@ -881,11 +881,7 @@ async def run_investigation(
         agent_response = await llm_client.messages.create(
             model=models.get("forensics", models["agent"]),
             max_tokens=512,
-            system=[{
-                "type": "text",
-                "text": PAYMENT_AGENT_SYSTEM_PROMPT,
-                "cache_control": {"type": "ephemeral"},
-            }],
+            system=PAYMENT_AGENT_SYSTEM_PROMPT,
             tools=PAYMENT_TOOLS,
             messages=agent_messages,
         )
