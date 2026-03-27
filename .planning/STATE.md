@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Phase complete — ready for verification
-stopped_at: Completed 06-02-PLAN.md
-last_updated: "2026-03-27T04:07:07.178Z"
+status: Ready to execute
+stopped_at: Completed 07-01-PLAN.md
+last_updated: "2026-03-27T05:45:29.377Z"
 progress:
-  total_phases: 7
+  total_phases: 8
   completed_phases: 7
-  total_plans: 27
-  completed_plans: 27
+  total_plans: 30
+  completed_plans: 28
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-24)
 
 **Core value:** The self-improvement loop: the system autonomously generates composite scoring functions from prediction errors, evolves them across incidents, and catches novel attacks — inspectable Python, not a black box. Live, on stage, in 3 minutes.
-**Current focus:** Phase 06 — demo-preparation-deployment
+**Current focus:** Phase 07 — demo-polish-airbyte-integration
 
 ## Current Position
 
-Phase: 06 (demo-preparation-deployment) — EXECUTING
-Plan: 2 of 2
+Phase: 07 (demo-polish-airbyte-integration) — EXECUTING
+Plan: 2 of 3
 
 ## Performance Metrics
 
@@ -73,6 +73,7 @@ Plan: 2 of 2
 | Phase 05 P02 | 117 | 2 tasks | 1 files |
 | Phase 06 P01 | 2 | 2 tasks | 4 files |
 | Phase 06 P02 | 163 | 2 tasks | 2 files |
+| Phase 07 P01 | 5 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -141,10 +142,13 @@ Recent decisions affecting current work:
 - [Phase 06]: Adjusted /investigate endpoint path to /api/investigate matching actual router prefix
 - [Phase 06]: Fixtures at sentinel/fixtures/ not repo-root -- Dockerfile COPY sentinel/ captures them
 - [Phase 06]: Adapted dry_run.py to actual API schemas: /api/investigate with scenario+payment_request, /api/confirm with episode_id+attack_type
+- [Phase 07]: Invoice PNG routes registered before SPA catch-all — FastAPI route priority requires explicit routes first
+- [Phase 07]: setEdgeActive action adds both animated and colored style to edges — blue=active, gold=evaluating, red=blocked, green=passed
 
 ### Roadmap Evolution
 
 - Phase 04.1 inserted after Phase 4: Performance Optimization and Qualitative Analysis Panel (URGENT) — 30s pipeline latency unacceptable for demo; judges need qualitative attack narrative, subagent reasoning breakdown, and self-improvement story alongside quantitative metrics
+- Phase 07 added: Demo Polish & Airbyte Integration — fix broken images, reduce latency, dynamic edge animations, swap Bland→Airbyte+Slack, rename attack buttons, forensic scan as intro screen
 
 ### Pending Todos
 
@@ -166,6 +170,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-27T04:07:07.171Z
-Stopped at: Completed 06-02-PLAN.md
+Last session: 2026-03-27T05:45:29.371Z
+Stopped at: Completed 07-01-PLAN.md
 Resume file: None
