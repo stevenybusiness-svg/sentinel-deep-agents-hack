@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useStore } from '../store'
 
 const threats = {
   1: {
@@ -321,9 +322,8 @@ function ThreatDetail({ threat, onCollapse, onLaunch, investigationStatus }) {
         {/* Launch button */}
         <div className="text-center pt-2 pb-4">
           <button
-            onClick={() => onLaunch(threat.id)}
-            disabled={isRunning}
-            className="px-8 py-3 rounded-lg bg-danger text-white font-semibold text-sm hover:bg-danger/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-danger/20"
+            onClick={() => { useStore.getState().setInvestigationStatus('idle'); onLaunch(threat.id); }}
+            className="px-8 py-3 rounded-lg bg-danger text-white font-semibold text-sm hover:bg-danger/90 transition-colors shadow-lg shadow-danger/20"
           >
             <span className="material-symbols-outlined text-[16px] align-middle mr-1.5">play_arrow</span>
             Launch Investigation
