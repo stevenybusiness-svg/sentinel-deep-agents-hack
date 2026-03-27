@@ -170,6 +170,16 @@ if _FRONTEND_DIST.exists():
     # Serve hashed assets (JS/CSS chunks) under /assets
     app.mount("/assets", StaticFiles(directory=str(_FRONTEND_DIST / "assets")), name="assets")
 
+    @app.get("/invoice_clean.png", include_in_schema=False)
+    async def serve_invoice_clean() -> FileResponse:
+        """Serve the clean invoice image for the forensic scan panel."""
+        return FileResponse(str(_FRONTEND_DIST / "invoice_clean.png"), media_type="image/png")
+
+    @app.get("/invoice_forensic.png", include_in_schema=False)
+    async def serve_invoice_forensic() -> FileResponse:
+        """Serve the forensic invoice image for the forensic scan panel."""
+        return FileResponse(str(_FRONTEND_DIST / "invoice_forensic.png"), media_type="image/png")
+
     @app.get("/{full_path:path}", include_in_schema=False)
     async def spa_catch_all(full_path: str) -> FileResponse:
         """Return index.html for all non-API paths to support client-side routing."""

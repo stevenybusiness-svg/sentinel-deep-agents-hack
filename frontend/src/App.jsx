@@ -1,5 +1,7 @@
+import { useEffect } from 'react'
 import { useStore } from './store'
 import { useWebSocket } from './hooks/useWebSocket'
+import { seedDemoData } from './demoData'
 import { InvestigationTree } from './components/InvestigationTree'
 import { GateDecisionPanel } from './components/GateDecisionPanel'
 import { AnomalyScoreBar } from './components/AnomalyScoreBar'
@@ -12,6 +14,15 @@ import { QualitativeAnalysisPanel } from './components/QualitativeAnalysisPanel'
 
 export default function App() {
   useWebSocket()
+
+  // Seed demo data on load so dashboard is always populated.
+  // Real WebSocket events override demo state when an investigation runs.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('demo') !== 'false') {
+      seedDemoData()
+    }
+  }, [])
 
   const wsConnected = useStore((s) => s.wsConnected)
   const investigationStatus = useStore((s) => s.investigationStatus)
@@ -76,14 +87,14 @@ export default function App() {
             disabled={isRunning}
             onClick={handleAttack1}
           >
-            Run Attack 1 &mdash; Invoice Injection
+            Attack 1: Invoice Injection
           </button>
           <button
             className={btnClass}
             disabled={isRunning}
             onClick={handleAttack2}
           >
-            Run Attack 2 &mdash; Identity Spoofing
+            Attack 2: Identity Spoofing
           </button>
         </div>
 
