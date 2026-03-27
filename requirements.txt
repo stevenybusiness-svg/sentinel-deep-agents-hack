@@ -7,6 +7,10 @@ RestrictedPython==8.1
 pydantic>=2.12,<3
 python-dotenv>=1.0,<2
 
+# Airbyte + DuckDB (DEMO-POLISH-04) — PyAirbyte used where available, duckdb as fallback
+airbyte
+duckdb
+
 # Dev dependencies
 pytest>=8.0
 pytest-asyncio>=0.24

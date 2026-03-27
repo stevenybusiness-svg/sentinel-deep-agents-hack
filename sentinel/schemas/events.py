@@ -25,6 +25,7 @@ EventType = Literal[
     "supervisor_token",         # Streaming text delta from Supervisor reasoning (D-03)
     "narrative_template",       # Immediate template-filled narrative after gate evaluation (D-09)
     "narrative_ready",          # LLM-polished narrative arrives 3-5s later (D-09)
+    "report_delivered",         # Airbyte+Slack report delivery status (DEMO-POLISH-04)
 ]
 
 

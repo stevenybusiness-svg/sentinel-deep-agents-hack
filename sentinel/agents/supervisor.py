@@ -1034,7 +1034,28 @@ async def run_investigation(
     gate_result = safety_gate.evaluate(verdict_board)
     await ws.broadcast("gate_evaluated", episode_id, gate_result)
 
-    # 9a. Generate narrative template synchronously (D-09)
+    # 9a. Airbyte cache write + Slack report delivery (DEMO-POLISH-04)
+    #     Non-blocking — failures do not affect gate decision or pipeline.
+    from sentinel.integrations.airbyte_cache import write_episode_to_cache
+    from sentinel.integrations.slack_reporter import send_investigation_report
+    await write_episode_to_cache(
+        episode_id=episode_id,
+        decision=gate_result["decision"],
+        composite_score=gate_result.get("composite_score", 0.0),
+        attribution=gate_result.get("attribution", ""),
+    )
+    slack_ok = await send_investigation_report(
+        episode_id=episode_id,
+        decision=gate_result["decision"],
+        composite_score=gate_result.get("composite_score", 0.0),
+        attribution=gate_result.get("attribution", ""),
+    )
+    await ws.broadcast("report_delivered", episode_id, {
+        "channel": "slack",
+        "success": slack_ok,
+    })
+
+    # 9b. Generate narrative template synchronously (D-09)
     #     Fires after gate_evaluated — no LLM call, instant template fill.
     active_rule_sources = []
     try:
