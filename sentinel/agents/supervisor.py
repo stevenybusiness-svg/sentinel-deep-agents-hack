@@ -794,6 +794,7 @@ async def run_investigation(
     safety_gate: SafetyGate,
     aerospike: AerospikeClient | None,
     ws: ConnectionManager,
+    attack_type: str = "prompt_injection_hidden_text",
 ) -> dict:
     """Run the complete investigation pipeline with Opus 4.6 Supervisor LLM.
 
@@ -855,7 +856,7 @@ async def run_investigation(
     for _turn in range(10):
         agent_response = await llm_client.messages.create(
             model=models["agent"],
-            max_tokens=2048,
+            max_tokens=1024,
             system=[{
                 "type": "text",
                 "text": PAYMENT_AGENT_SYSTEM_PROMPT,
@@ -1057,8 +1058,8 @@ async def run_investigation(
         if v is not None:
             agent_verdict_dicts.append(v.model_dump() if hasattr(v, "model_dump") else v)
 
-    # Read attack_type from episode (set by investigate route)
-    _ep_attack_type = getattr(episode, "attack_type", None) or (episode.get("attack_type") if isinstance(episode, dict) else None)
+    # Use attack_type parameter directly (passed from investigate route)
+    _ep_attack_type = attack_type
 
     # Fire-and-forget: Slack delivery runs in background to avoid blocking pipeline
     async def _slack_and_notify():

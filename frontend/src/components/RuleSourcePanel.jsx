@@ -112,7 +112,7 @@ export function RuleSourcePanel() {
 
       <div
         ref={codeRef}
-        className="bg-[#1f2028] rounded border border-border-muted p-3 font-mono text-[12px] leading-relaxed overflow-y-auto max-h-48"
+        className="bg-[#1f2028] rounded border border-border-muted p-3 font-mono text-[12px] leading-relaxed overflow-y-auto max-h-96"
       >
         {ruleStreaming ? (
           <pre className="whitespace-pre-wrap text-text-main">

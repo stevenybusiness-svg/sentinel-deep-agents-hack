@@ -71,6 +71,8 @@ async def investigate(req: InvestigateRequest) -> InvestigateResponse:
     if req.scenario == "phase1":
         invoice_path = app_state["invoice_paths"].get("forensic")
 
+    attack_type = _SCENARIO_ATTACK_TYPE.get(req.scenario, "prompt_injection_hidden_text")
+
     result = await run_investigation(
         payment_request=req.payment_request,
         fixtures=app_state["fixtures"],
@@ -80,6 +82,7 @@ async def investigate(req: InvestigateRequest) -> InvestigateResponse:
         safety_gate=app_state["safety_gate"],
         aerospike=app_state.get("aerospike"),
         ws=ws_manager,
+        attack_type=attack_type,
     )
 
     # Cache active episode for voice Q&A (API-02)
@@ -90,15 +93,7 @@ async def investigate(req: InvestigateRequest) -> InvestigateResponse:
         oldest = next((k for k in episodes if k != "__latest__"), None)
         if oldest:
             del episodes[oldest]
-    # Tag episode with attack_type for Slack report header
-    ep = result["episode"]
-    _attack_type = _SCENARIO_ATTACK_TYPE.get(req.scenario, "prompt_injection_hidden_text")
-    if hasattr(ep, "attack_type"):
-        ep.attack_type = _attack_type
-    elif isinstance(ep, dict):
-        ep["attack_type"] = _attack_type
-
-    episodes[result["episode_id"]] = ep
+    episodes[result["episode_id"]] = result["episode"]
     # Update __latest__ sentinel key so webhook fallback always resolves (VOICE-03)
     episodes["__latest__"] = result["episode_id"]
 
@@ -106,7 +101,6 @@ async def investigate(req: InvestigateRequest) -> InvestigateResponse:
     # Runs as a background task so the API response is not delayed.
     # Wait 1.5s before starting so the frontend has time to render the gate decision.
     if result["decision"] in ("NO-GO", "ESCALATE"):
-        attack_type = _SCENARIO_ATTACK_TYPE.get(req.scenario, "prompt_injection_hidden_text")
         asyncio.create_task(
             _auto_trigger_rule_generation(
                 episode_id=result["episode_id"],

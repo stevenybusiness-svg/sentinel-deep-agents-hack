@@ -202,6 +202,10 @@ export function useWebSocket() {
             if (!s.ruleStreaming) {
               s.setRuleStreaming(true)
               s.clearStreamingBuffer()
+              // Animate orange edges from gate to any existing rule nodes (self-improvement visual)
+              s.setEdgeActive('e-sup-gate', '#e3b341')
+              const ruleNodes = s.nodes.filter(n => n.data?.status === 'rule_node')
+              ruleNodes.forEach(n => s.setEdgeActive(`e-gate-${n.id}`, '#e3b341'))
             }
             s.appendStreamingBuffer(data.token || '')
             break
