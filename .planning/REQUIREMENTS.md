@@ -12,7 +12,7 @@
 - [x] **INFRA-03**: Claude API Tier 2 access confirmed; prompt caching enabled for all agent system prompts to stay within ITPM budget
 - [x] **INFRA-04**: React 18+ frontend initialized with @xyflow/react (12.4.x), Zustand, Tailwind CSS
 - [x] **INFRA-05**: Environment configuration via .env (ANTHROPIC_API_KEY, AEROSPIKE_HOST, BLAND_API_KEY)
-- [ ] **INFRA-06**: AWS deployment configured (EC2/ECS with public URL for Bland AI webhooks)
+- [x] **INFRA-06**: AWS deployment configured (EC2/ECS with public URL for Bland AI webhooks)
 
 ### Schemas
 
@@ -88,8 +88,8 @@
 
 ### Demo Preparation
 
-- [ ] **DEMO-01**: docker-compose.yml runs full stack (FastAPI, Aerospike, React dev server) in one command with no manual steps
-- [ ] **DEMO-02**: demo_check.py validates all components before demo: Aerospike namespace accessible, API keys valid, Bland AI connectivity, WebSocket connects and receives first event, both fixture sets load
+- [x] **DEMO-01**: docker-compose.yml runs full stack (FastAPI, Aerospike, React dev server) in one command with no manual steps
+- [x] **DEMO-02**: demo_check.py validates all components before demo: Aerospike namespace accessible, API keys valid, Bland AI connectivity, WebSocket connects and receives first event, both fixture sets load
 - [x] **DEMO-03**: Demo fixtures committed: Phase 1 (invoice image with embedded hidden text, counterparty DB, behavioral baselines), Phase 2 (spoofed KYC pre-clearance payload, empty KYC ledger for Meridian Logistics)
 - [ ] **DEMO-04**: Full Attack 1 → rule generation → Attack 2 → rule fires → rule evolves arc runs end-to-end without intervention in under 3 minutes
 - [ ] **DEMO-05**: Screen recording of full demo arc captured as fallback before demo day
@@ -147,7 +147,7 @@
 | INFRA-03 | Phase 1 | Complete |
 | INFRA-04 | Phase 1 | Complete |
 | INFRA-05 | Phase 1 | Complete |
-| INFRA-06 | Phase 6 | Pending |
+| INFRA-06 | Phase 6 | Complete |
 | SCHEMA-01 | Phase 1 | Complete |
 | SCHEMA-02 | Phase 1 | Complete |
 | SCHEMA-03 | Phase 1 | Complete |
@@ -196,8 +196,8 @@
 | VOICE-02 | Phase 5 | Complete |
 | VOICE-03 | Phase 5 | Complete |
 | VOICE-04 | Phase 4 | Complete |
-| DEMO-01 | Phase 6 | Pending |
-| DEMO-02 | Phase 6 | Pending |
+| DEMO-01 | Phase 6 | Complete |
+| DEMO-02 | Phase 6 | Complete |
 | DEMO-03 | Phase 1 | Complete |
 | DEMO-04 | Phase 6 | Pending |
 | DEMO-05 | Phase 6 | Pending |

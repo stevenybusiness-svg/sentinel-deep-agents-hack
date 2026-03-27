@@ -138,7 +138,7 @@ Plans:
   5. A screen recording of the complete demo arc exists as a local file before demo day
 **Plans:** 2 plans
 Plans:
-- [ ] 06-01-PLAN.md — Dockerfile, docker-compose.yml, demo_check.py, reset_demo.py (INFRA-06, DEMO-01, DEMO-02)
+- [x] 06-01-PLAN.md — Dockerfile, docker-compose.yml, demo_check.py, reset_demo.py (INFRA-06, DEMO-01, DEMO-02)
 - [ ] 06-02-PLAN.md — dry_run.py timed arc, .env.example, Railway deployment verification, screen recording (DEMO-04, DEMO-05)
 
 ## Progress

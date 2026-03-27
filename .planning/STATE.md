@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Ready to execute
-stopped_at: Completed 04.1-02 + 05-02 (parallel merge)
-last_updated: "2026-03-27T03:27:00.000Z"
+stopped_at: Completed 06-01-PLAN.md
+last_updated: "2026-03-27T04:02:24.971Z"
 progress:
   total_phases: 7
-  completed_phases: 5
-  total_plans: 25
-  completed_plans: 24
+  completed_phases: 6
+  total_plans: 27
+  completed_plans: 26
 ---
 
 # Project State
@@ -19,11 +19,11 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-24)
 
 **Core value:** The self-improvement loop: the system autonomously generates composite scoring functions from prediction errors, evolves them across incidents, and catches novel attacks — inspectable Python, not a black box. Live, on stage, in 3 minutes.
-**Current focus:** Phase 05 — voice-integration
+**Current focus:** Phase 06 — demo-preparation-deployment
 
 ## Current Position
 
-Phase: 05 (voice-integration) — EXECUTING
+Phase: 06 (demo-preparation-deployment) — EXECUTING
 Plan: 2 of 2
 
 ## Performance Metrics
@@ -71,6 +71,7 @@ Plan: 2 of 2
 | Phase 05-voice-integration PP01 | 287 | 2 tasks | 6 files |
 | Phase 04.1 P02 | 2 | 2 tasks | 4 files |
 | Phase 05 P02 | 117 | 2 tasks | 1 files |
+| Phase 06 P01 | 2 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -136,6 +137,8 @@ Recent decisions affecting current work:
 - [Phase 05-01]: Return 503 from /bland-call when BLAND_API_KEY is placeholder to prevent silent auth failure
 - [Phase 04.1]: QualitativeAnalysisPanel uses NarrativeCard inner component with null polishingKey for Self-Improvement Arc -- no LLM polish, template-only from rule_deployed events
 - [Phase 05]: Phone number input added as controlled text input for demo reliability -- no window.prompt
+- [Phase 06]: Adjusted /investigate endpoint path to /api/investigate matching actual router prefix
+- [Phase 06]: Fixtures at sentinel/fixtures/ not repo-root -- Dockerfile COPY sentinel/ captures them
 
 ### Roadmap Evolution
 
@@ -161,6 +164,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-27T03:27:00.000Z
-Stopped at: Completed 04.1-02 + 05-02 (parallel merge)
+Last session: 2026-03-27T04:02:24.965Z
+Stopped at: Completed 06-01-PLAN.md
 Resume file: None
