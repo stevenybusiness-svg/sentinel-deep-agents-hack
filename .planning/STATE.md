@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Ready to execute
-stopped_at: Completed 08-01-PLAN.md
-last_updated: "2026-03-27T12:03:38.722Z"
+stopped_at: Completed 08-02-PLAN.md
+last_updated: "2026-03-27T12:11:21.901Z"
 progress:
   total_phases: 10
   completed_phases: 8
   total_plans: 33
-  completed_plans: 31
+  completed_plans: 32
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-24)
 ## Current Position
 
 Phase: 08 (vercel-full-stack-deployment) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 
 ## Performance Metrics
 
@@ -77,6 +77,7 @@ Plan: 2 of 3
 | Phase 07 P02 | 5 | 2 tasks | 12 files |
 | Phase 07 P03 | 64 | 2 tasks | 2 files |
 | Phase 08 P01 | 15 | 2 tasks | 9 files |
+| Phase 08 P02 | 10 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -154,6 +155,8 @@ Recent decisions affecting current work:
 - [Phase 08]: Auth0 isLoading checked before isAuthenticated -- prevents redirect loop on page refresh
 - [Phase 08]: Slack reporter enrichment backward-compatible with default None params -- existing callers unaffected
 - [Phase 08]: Airbyte gutted to stub docstring rather than deleted -- prevents ImportError from lingering references
+- [Phase 08]: flowStep enum replaces showIntro boolean -- supports multi-step narrative flow
+- [Phase 08]: persistedRuleNodes accumulated via addRuleNode, re-injected in initInvestigationTree -- rule nodes survive resetInvestigation()
 
 ### Roadmap Evolution
 
@@ -181,6 +184,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-27T12:03:38.713Z
-Stopped at: Completed 08-01-PLAN.md
+Last session: 2026-03-27T12:11:21.894Z
+Stopped at: Completed 08-02-PLAN.md
 Resume file: None

@@ -172,7 +172,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6 → 7 �
 | 5. Voice Integration | 2/2 | Complete   | 2026-03-27 |
 | 6. Demo Preparation + Deployment | 0/2 | Planning complete | - |
 | 7. Demo Polish & Airbyte | 3/3 | Complete   | 2026-03-27 |
-| 8. Sponsor Integrations + Deployment Prep | 1/3 | In Progress|  |
+| 8. Sponsor Integrations + Deployment Prep | 2/3 | In Progress|  |
 
 ### Phase 8: Sponsor Integrations, Demo UX, and Deployment Prep
 
@@ -203,11 +203,11 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6 → 7 �
 - PHASE8-07: Aerospike latency panel shows real sub-10ms numbers (verified locally with Docker Aerospike)
 
 **Depends on:** Phase 7
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 
 Plans:
 - [x] 08-01-PLAN.md — Auth0 login + Slack enrichment + Airbyte removal (PHASE8-01, PHASE8-04)
-- [ ] 08-02-PLAN.md — Guided demo flow + self-improvement tree animation (PHASE8-02, PHASE8-03)
+- [x] 08-02-PLAN.md — Guided demo flow + self-improvement tree animation (PHASE8-02, PHASE8-03)
 - [ ] 08-03-PLAN.md — Vercel deployment prep + full arc QA (PHASE8-05, PHASE8-06, PHASE8-07)
 
 ### Phase 9: AWS Deployment via Kiro
