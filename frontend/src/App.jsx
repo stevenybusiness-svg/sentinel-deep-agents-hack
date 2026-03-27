@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useStore } from './store'
 import { useWebSocket } from './hooks/useWebSocket'
 import { seedDemoData } from './demoData'
@@ -11,9 +11,12 @@ import { RuleSourcePanel } from './components/RuleSourcePanel'
 import { AerospikeLatency } from './components/AerospikeLatency'
 import { AirbyteReportPanel } from './components/AirbyteReportPanel'
 import { QualitativeAnalysisPanel } from './components/QualitativeAnalysisPanel'
+import { ForensicIntroScreen } from './components/ForensicIntroScreen'
 
 export default function App() {
   useWebSocket()
+
+  const [showIntro, setShowIntro] = useState(true)
 
   // Seed demo data on load so dashboard is always populated.
   // Real WebSocket events override demo state when an investigation runs.
@@ -70,9 +73,28 @@ export default function App() {
     })
   }
 
+  function handleIntroAttack1() {
+    setShowIntro(false)
+    handleAttack1()
+  }
+
+  function handleIntroAttack2() {
+    setShowIntro(false)
+    handleAttack2()
+  }
+
   const btnClass =
     'px-3 py-1.5 rounded text-xs font-semibold bg-surface border border-border-muted text-text-main ' +
     'hover:border-accent hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed'
+
+  if (showIntro) {
+    return (
+      <ForensicIntroScreen
+        onAttack1={handleIntroAttack1}
+        onAttack2={handleIntroAttack2}
+      />
+    )
+  }
 
   return (
     <div className="h-screen bg-bg-dark text-text-main font-display flex flex-col">
