@@ -19,6 +19,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Voice Integration** - Bland AI webhook, barge-in, grounded Q&A with anomaly scores and rule attribution, pre-computed context cache
 - [ ] **Phase 6: Demo Preparation + Deployment** - docker-compose, demo_check.py, fixture loading, dry runs, AWS deployment, screen recording fallback
 - [x] **Phase 7: Demo Polish & Airbyte Integration** - Fix images, latency tuning, edge animations, Airbyte+Slack report, button rename, intro screen (completed 2026-03-27)
+- [ ] **Phase 8: Sponsor Integrations, Demo UX, and Deployment Prep** - Auth0 login, Slack webhook, guided demo flow (login->scenario->dashboard->learning->repeat), self-improvement tree animation, full arc QA, Vercel deployment prep with API rewrites to AWS EC2
+- [ ] **Phase 9: AWS Deployment via Kiro** - EC2 instance with Docker Compose (FastAPI + Aerospike), HTTPS reverse proxy, Vercel rewrites pointing to EC2, end-to-end verification from deployed URL
 
 ## Phase Details
 
@@ -158,7 +160,7 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6 → 7
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -170,3 +172,67 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6 → 7
 | 5. Voice Integration | 2/2 | Complete   | 2026-03-27 |
 | 6. Demo Preparation + Deployment | 0/2 | Planning complete | - |
 | 7. Demo Polish & Airbyte | 3/3 | Complete   | 2026-03-27 |
+| 8. Sponsor Integrations + Deployment Prep | 0/3 | Planning complete | - |
+
+### Phase 8: Sponsor Integrations, Demo UX, and Deployment Prep
+
+**Goal:** Integrate Auth0 + Slack, build the guided demo UX flow, add self-improvement tree animations, QA the full arc, and prepare the codebase for single-Vercel-URL deployment backed by AWS EC2.
+
+**Guided Demo Flow:**
+1. Auth0 login screen (SRE operator authenticates)
+2. Attack 1 scenario screen (explains the invoice injection attack before investigation runs)
+3. Attack 1 investigation dashboard (live pipeline, investigation tree, gate decision)
+4. Self-improvement learning moment (rule generated — orange tree animation, new node appears)
+5. Attack 2 scenario screen (explains the identity spoofing attack)
+6. Attack 2 investigation dashboard (generated rule fires, rule evolves, tree grows)
+
+**Architecture:**
+- **ONE Vercel URL** — judges visit `https://sentinel-demo.vercel.app`
+- **Vercel** serves React frontend + `vercel.json` rewrites proxy `/api/*` to EC2
+- **WebSocket** connects directly to EC2 via env var `VITE_WS_URL` (Vercel can't proxy WS)
+- **AWS EC2** runs Docker Compose: FastAPI (uvicorn) + Aerospike (community edition)
+- **Slack** Incoming Webhook posts investigation reports to #payment-system-infosec after each gate evaluation
+
+**Requirements:**
+- PHASE8-01: Auth0 login protects dashboard access — operator authenticates before seeing any investigation data
+- PHASE8-02: Guided flow: scenario screens appear BEFORE each investigation, explaining the attack being demonstrated
+- PHASE8-03: Self-improvement visual — when rule is generated/deployed, investigation tree animates (orange pulse) and adds a new node as proof of learning
+- PHASE8-04: Slack webhook posts formatted Block Kit report to #payment-system-infosec after each gate evaluation, including agent verdicts and arc narrative on Run 2
+- PHASE8-05: Full arc QA — Attack 1 → block → confirm → rule generated (tree animates) → Attack 2 → generated rule fires → rule evolves — works end-to-end
+- PHASE8-06: Vercel deployment prep — `vercel.json` with API rewrites, `VITE_API_URL` and `VITE_WS_URL` env vars, frontend builds cleanly for Vercel
+- PHASE8-07: Aerospike latency panel shows real sub-10ms numbers (verified locally with Docker Aerospike)
+
+**Depends on:** Phase 7
+**Plans:** 3 plans
+
+Plans:
+- [ ] 08-01-PLAN.md — Auth0 login + Slack enrichment + Airbyte removal (PHASE8-01, PHASE8-04)
+- [ ] 08-02-PLAN.md — Guided demo flow + self-improvement tree animation (PHASE8-02, PHASE8-03)
+- [ ] 08-03-PLAN.md — Vercel deployment prep + full arc QA (PHASE8-05, PHASE8-06, PHASE8-07)
+
+### Phase 9: AWS Deployment via Kiro
+
+**Goal:** Deploy backend + Aerospike to AWS EC2 using Kiro IDE. Connect Vercel frontend to EC2 backend. Verify full demo arc works from the deployed Vercel URL.
+
+**Done in Kiro, not Claude Code.**
+
+**Architecture:**
+- EC2 instance with Docker Compose: FastAPI container + Aerospike container
+- Caddy or nginx reverse proxy for HTTPS + WebSocket upgrade on port 443
+- Security group: 443 (HTTPS) + 3000 (Aerospike, internal only)
+- Elastic IP for stable DNS
+- Vercel `vercel.json` rewrites point `/api/*` to EC2 public IP
+
+**Requirements:**
+- DEPLOY-01: EC2 instance running Docker Compose with FastAPI + Aerospike, auto-restart on reboot
+- DEPLOY-02: HTTPS with valid cert (Caddy auto-TLS or Let's Encrypt via nginx)
+- DEPLOY-03: WebSocket upgrade works over HTTPS from browser to EC2
+- DEPLOY-04: Vercel frontend deployed and `vercel.json` rewrites route `/api/*` to EC2
+- DEPLOY-05: Full demo arc works end-to-end from the Vercel URL — login, both attacks, self-improvement, Slack delivery
+- DEPLOY-06: Aerospike latency panel shows real numbers from EC2 instance
+
+**Depends on:** Phase 8
+**Plans:** 0 plans (done in Kiro)
+
+Plans:
+- [ ] TBD (done in Kiro IDE, not Claude Code)
