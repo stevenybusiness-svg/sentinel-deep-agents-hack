@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Voice Integration** - Bland AI webhook, barge-in, grounded Q&A with anomaly scores and rule attribution, pre-computed context cache
 - [ ] **Phase 6: Demo Preparation + Deployment** - docker-compose, demo_check.py, fixture loading, dry runs, AWS deployment, screen recording fallback
 - [x] **Phase 7: Demo Polish & Airbyte Integration** - Fix images, latency tuning, edge animations, Airbyte+Slack report, button rename, intro screen (completed 2026-03-27)
-- [ ] **Phase 8: Sponsor Integrations, Demo UX, and Deployment Prep** - Auth0 login, Slack webhook, guided demo flow (login->scenario->dashboard->learning->repeat), self-improvement tree animation, full arc QA, Vercel deployment prep with API rewrites to AWS EC2
+- [x] **Phase 8: Sponsor Integrations, Demo UX, and Deployment Prep** - Auth0 login, Slack webhook, guided demo flow (login->scenario->dashboard->learning->repeat), self-improvement tree animation, full arc QA, Vercel deployment prep with API rewrites to AWS EC2 (completed 2026-03-27)
 - [ ] **Phase 9: AWS Deployment via Kiro** - EC2 instance with Docker Compose (FastAPI + Aerospike), HTTPS reverse proxy, Vercel rewrites pointing to EC2, end-to-end verification from deployed URL
 
 ## Phase Details
@@ -172,7 +172,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6 → 7 �
 | 5. Voice Integration | 2/2 | Complete   | 2026-03-27 |
 | 6. Demo Preparation + Deployment | 0/2 | Planning complete | - |
 | 7. Demo Polish & Airbyte | 3/3 | Complete   | 2026-03-27 |
-| 8. Sponsor Integrations + Deployment Prep | 2/3 | In Progress|  |
+| 8. Sponsor Integrations + Deployment Prep | 3/3 | Complete   | 2026-03-27 |
 
 ### Phase 8: Sponsor Integrations, Demo UX, and Deployment Prep
 
@@ -203,12 +203,12 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6 → 7 �
 - PHASE8-07: Aerospike latency panel shows real sub-10ms numbers (verified locally with Docker Aerospike)
 
 **Depends on:** Phase 7
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 - [x] 08-01-PLAN.md — Auth0 login + Slack enrichment + Airbyte removal (PHASE8-01, PHASE8-04)
 - [x] 08-02-PLAN.md — Guided demo flow + self-improvement tree animation (PHASE8-02, PHASE8-03)
-- [ ] 08-03-PLAN.md — Vercel deployment prep + full arc QA (PHASE8-05, PHASE8-06, PHASE8-07)
+- [x] 08-03-PLAN.md — Vercel deployment prep + full arc QA (PHASE8-05, PHASE8-06, PHASE8-07)
 
 ### Phase 9: AWS Deployment via Kiro
 
