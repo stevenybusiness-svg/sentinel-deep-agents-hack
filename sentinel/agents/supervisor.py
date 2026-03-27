@@ -1080,6 +1080,9 @@ async def run_investigation(
         if v is not None:
             agent_verdict_dicts.append(v.model_dump() if hasattr(v, "model_dump") else v)
 
+    # Read attack_type from episode (set by investigate route)
+    _ep_attack_type = getattr(episode, "attack_type", None) or (episode.get("attack_type") if isinstance(episode, dict) else None)
+
     slack_ok = await send_investigation_report(
         episode_id=episode_id,
         decision=gate_result["decision"],
@@ -1095,6 +1098,7 @@ async def run_investigation(
         attack_narrative=template_narratives.get("attack_narrative"),
         agent_reasoning=template_narratives.get("agent_reasoning"),
         prediction_summary=template_narratives.get("prediction_summary"),
+        attack_type=_ep_attack_type,
     )
     await ws.broadcast("report_delivered", episode_id, {
         "channel": "slack",

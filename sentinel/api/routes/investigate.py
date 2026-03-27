@@ -90,7 +90,15 @@ async def investigate(req: InvestigateRequest) -> InvestigateResponse:
         oldest = next((k for k in episodes if k != "__latest__"), None)
         if oldest:
             del episodes[oldest]
-    episodes[result["episode_id"]] = result["episode"]
+    # Tag episode with attack_type for Slack report header
+    ep = result["episode"]
+    _attack_type = _SCENARIO_ATTACK_TYPE.get(req.scenario, "prompt_injection_hidden_text")
+    if hasattr(ep, "attack_type"):
+        ep.attack_type = _attack_type
+    elif isinstance(ep, dict):
+        ep["attack_type"] = _attack_type
+
+    episodes[result["episode_id"]] = ep
     # Update __latest__ sentinel key so webhook fallback always resolves (VOICE-03)
     episodes["__latest__"] = result["episode_id"]
 

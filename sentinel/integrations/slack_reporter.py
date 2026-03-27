@@ -77,13 +77,17 @@ async def send_investigation_report(
     )
     _ = color  # reserved for future attachment color support
 
-    # Header block
+    # Header block — show attack type as title
+    attack_label = _ATTACK_LABELS.get(attack_type or "", f"Attack Detected ({decision})")
+    header_text = f":rotating_light: {attack_label}"
+
     blocks: list[dict[str, Any]] = [
         {
             "type": "header",
             "text": {
                 "type": "plain_text",
-                "text": f"Sentinel: {decision} \u2014 Episode {episode_id}",
+                "text": header_text,
+                "emoji": True,
             },
         },
         # Decision + Score fields
