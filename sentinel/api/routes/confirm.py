@@ -175,7 +175,7 @@ async def _pipeline(
     # ---- Step 4: Build RuleGenerator ----
     generator = RuleGenerator(
         llm_client=app_state["llm_client"],
-        model=app_state["models"]["supervisor"],
+        model=app_state["models"]["agent"],
     )
 
     # ---- Step 5: Generation vs. evolution path ----

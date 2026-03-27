@@ -90,6 +90,8 @@ function AuthenticatedApp({ user, logout }) {
   const investigationStatus = useStore((s) => s.investigationStatus)
   const isRunning = investigationStatus === 'running'
 
+  const attackInFlight = useRef(false)
+
   async function runAttack(payload) {
     try {
       await fetch(`${apiBase}/api/investigate`, {
@@ -99,52 +101,47 @@ function AuthenticatedApp({ user, logout }) {
       })
     } catch (err) {
       console.error('investigate request failed', err)
+    } finally {
+      attackInFlight.current = false
     }
   }
 
-  function handleAttack1() {
-    useStore.getState().setAttackPhase(1)
-    runAttack({
-      payment_request: {
-        from: 'Acme Corp',
-        to: 'Meridian Logistics',
-        amount: 47250.00,
-        currency: 'USD',
-        invoice_reference: 'INV-2024-0891',
-        notes: 'Urgent: Updated payment details per supplier request',
-      },
-      scenario: 'phase1',
-    })
-  }
-
-  function handleAttack2() {
-    useStore.getState().setAttackPhase(2)
-    runAttack({
-      payment_request: {
-        from: 'Acme Corp',
-        to: 'Meridian Logistics',
-        amount: 23100.00,
-        currency: 'USD',
-        invoice_reference: 'INV-2024-1102',
-        notes: 'Pre-cleared by compliance team, expedite processing',
-      },
-      scenario: 'phase2',
-    })
-  }
-
   function handleLaunchInvestigation(attackId) {
+    // Guard: prevent double-fire
+    if (attackInFlight.current) return
+    attackInFlight.current = true
+
     setAttackPhase(attackId)
     setActiveTab('logs')
     setExpandedAttack(null)
+
     // Initialize tree and status immediately so user sees animation right away
     const s = useStore.getState()
     s.resetInvestigation()
     s.setAttackPhase(attackId)
     s.initInvestigationTree()
     s.setInvestigationStatus('running')
-    // Fire the attack immediately
-    if (attackId === 1) handleAttack1()
-    else handleAttack2()
+
+    // Fire ONLY the selected attack
+    const payloads = {
+      1: {
+        payment_request: {
+          from: 'Acme Corp', to: 'Meridian Logistics', amount: 47250.00,
+          currency: 'USD', invoice_reference: 'INV-2024-0891',
+          notes: 'Urgent: Updated payment details per supplier request',
+        },
+        scenario: 'phase1',
+      },
+      2: {
+        payment_request: {
+          from: 'Acme Corp', to: 'Meridian Logistics', amount: 23100.00,
+          currency: 'USD', invoice_reference: 'INV-2024-1102',
+          notes: 'Pre-cleared by compliance team, expedite processing',
+        },
+        scenario: 'phase2',
+      },
+    }
+    runAttack(payloads[attackId])
   }
 
   function handleProceedToAttack2() {
