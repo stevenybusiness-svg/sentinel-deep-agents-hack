@@ -136,12 +136,15 @@ function AuthenticatedApp({ user, logout }) {
     setAttackPhase(attackId)
     setActiveTab('logs')
     setExpandedAttack(null)
-    // Auto-trigger the attack when switching to logs view
-    useStore.getState().setInvestigationStatus('idle')
-    setTimeout(() => {
-      if (attackId === 1) handleAttack1()
-      else handleAttack2()
-    }, 300)
+    // Initialize tree and status immediately so user sees animation right away
+    const s = useStore.getState()
+    s.resetInvestigation()
+    s.setAttackPhase(attackId)
+    s.initInvestigationTree()
+    s.setInvestigationStatus('running')
+    // Fire the attack immediately
+    if (attackId === 1) handleAttack1()
+    else handleAttack2()
   }
 
   function handleProceedToAttack2() {
