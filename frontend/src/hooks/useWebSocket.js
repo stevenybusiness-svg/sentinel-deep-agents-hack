@@ -91,6 +91,29 @@ export function useWebSocket() {
             s.appendStreamingBuffer(data.token || '')
             break
 
+          case 'supervisor_token':
+            // Supervisor reasoning streaming -- no-op for now, handled by investigation tree
+            break
+
+          case 'narrative_template':
+            s.setNarrativeData('attackNarrative', data.attack_narrative)
+            s.setNarrativeData('agentReasoning', data.agent_reasoning)
+            s.setNarrativeData('predictionSummary', data.prediction_summary)
+            s.setNarrativeData('selfImprovementArc', data.self_improvement_arc)
+            s.setNarrativePolishing('attackNarrative', true)
+            s.setNarrativePolishing('agentReasoning', true)
+            s.setNarrativePolishing('predictionSummary', true)
+            break
+
+          case 'narrative_ready':
+            if (data.attack_narrative) s.setNarrativeData('attackNarrative', data.attack_narrative)
+            if (data.agent_reasoning) s.setNarrativeData('agentReasoning', data.agent_reasoning)
+            if (data.prediction_summary) s.setNarrativeData('predictionSummary', data.prediction_summary)
+            s.setNarrativePolishing('attackNarrative', false)
+            s.setNarrativePolishing('agentReasoning', false)
+            s.setNarrativePolishing('predictionSummary', false)
+            break
+
           case 'rule_deployed':
             s.setRuleStreaming(false)
             s.addRuleSource({
@@ -102,6 +125,18 @@ export function useWebSocket() {
               attribution: data.attribution,
             })
             s.addRuleNode(data.rule_id, `Rule #${data.version || data.rule_id}`)
+            // Update self-improvement arc narrative
+            {
+              const version = data.version || 1
+              const ruleLabel = `#${data.rule_id}`
+              if (version > 1) {
+                s.setNarrativeData('selfImprovementArc',
+                  `Rule ${ruleLabel} fired on the second attack and was refined into Rule ${ruleLabel}-v${version} with tighter thresholds.`)
+              } else {
+                s.setNarrativeData('selfImprovementArc',
+                  `After this attack, Sentinel generated Rule ${ruleLabel}. It is now active in the Safety Gate.`)
+              }
+            }
             break
 
           case 'rule_generation_failed':

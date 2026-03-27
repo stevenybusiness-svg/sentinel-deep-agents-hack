@@ -57,6 +57,30 @@ export const useStore = create((set, get) => ({
   trustScore: 0.85,
   setTrustScore: (score) => set({ trustScore: score }),
 
+  // Qualitative panel state (Phase 04.1 / D-04 through D-09)
+  narrativeData: {
+    attackNarrative: null,
+    agentReasoning: null,
+    predictionSummary: null,
+    selfImprovementArc: null,
+  },
+  narrativePolishing: {
+    attackNarrative: false,
+    agentReasoning: false,
+    predictionSummary: false,
+    // selfImprovementArc intentionally absent -- never polished by LLM
+  },
+  setNarrativeData: (key, value) => set((s) => ({
+    narrativeData: { ...s.narrativeData, [key]: value },
+  })),
+  setNarrativePolishing: (key, bool) => set((s) => ({
+    narrativePolishing: { ...s.narrativePolishing, [key]: bool },
+  })),
+  resetNarrative: () => set({
+    narrativeData: { attackNarrative: null, agentReasoning: null, predictionSummary: null, selfImprovementArc: null },
+    narrativePolishing: { attackNarrative: false, agentReasoning: false, predictionSummary: false },
+  }),
+
   // Voice call state (Phase 5 / VOICE-01)
   voiceCallId: null,
   voiceCallStatus: 'idle', // idle | calling | active | error
@@ -141,5 +165,7 @@ export const useStore = create((set, get) => ({
     ruleStreaming: false,
     streamingBuffer: '',
     trustScore: 0.85,
+    narrativeData: { attackNarrative: null, agentReasoning: null, predictionSummary: null, selfImprovementArc: null },
+    narrativePolishing: { attackNarrative: false, agentReasoning: false, predictionSummary: false },
   }),
 }))
