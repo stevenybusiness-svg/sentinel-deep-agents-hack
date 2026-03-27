@@ -1,15 +1,33 @@
 """Slack Incoming Webhook reporter for autonomous investigation reports.
 
 Sends Block Kit formatted investigation reports to Slack after each gate evaluation.
-Demonstrates autonomous report delivery for Airbyte+Slack integration judges.
+Demonstrates autonomous report delivery for Slack integration judges.
 """
 from __future__ import annotations
 
 import os
+from typing import Any
 
 import httpx
 
 _PLACEHOLDER_PREFIX = "https://hooks.slack.com/services/YOUR"
+
+
+def _build_verdict_fields(agent_verdicts: list[dict]) -> list[dict]:
+    """Build Block Kit fields for agent verdicts (max 10 fields, max 5 agents)."""
+    fields = []
+    for verdict in agent_verdicts[:5]:
+        agent_id = verdict.get("agent_id", "unknown")
+        confidence = verdict.get("confidence", 0.0)
+        flags = verdict.get("flags", [])
+        flag_count = len(flags) if isinstance(flags, list) else 0
+
+        agent_label = agent_id.replace("_", " ").title()
+        fields.append({
+            "type": "mrkdwn",
+            "text": f"*{agent_label}*\nConfidence: `{confidence:.2f}` | Flags: `{flag_count}`",
+        })
+    return fields
 
 
 async def send_investigation_report(
@@ -17,11 +35,23 @@ async def send_investigation_report(
     decision: str,
     composite_score: float,
     attribution: str,
+    agent_verdicts: list[dict] | None = None,
+    rules_fired: list[str] | None = None,
+    generated_rules_fired: list[str] | None = None,
 ) -> bool:
     """Send investigation report to Slack via Incoming Webhook.
 
     Returns True if the webhook POST returned 200, False otherwise.
     Silently returns False if SLACK_WEBHOOK_URL is not configured or is a placeholder.
+
+    Args:
+        episode_id: Unique episode identifier.
+        decision: Gate decision (GO / NO-GO / ESCALATE).
+        composite_score: Composite anomaly score from Safety Gate.
+        attribution: Human-readable attribution chain from Safety Gate.
+        agent_verdicts: List of agent verdict dicts with agent_id, confidence, flags.
+        rules_fired: List of all rule IDs that contributed to the gate decision.
+        generated_rules_fired: Subset of rules_fired that are generated (not hardcoded).
     """
     webhook_url = os.getenv("SLACK_WEBHOOK_URL", "")
     if not webhook_url or webhook_url.startswith(_PLACEHOLDER_PREFIX):
@@ -34,37 +64,84 @@ async def send_investigation_report(
     )
     _ = color  # reserved for future attachment color support
 
-    payload = {
-        "text": f"Sentinel Investigation Report - Episode {episode_id}",
-        "blocks": [
-            {
-                "type": "header",
-                "text": {"type": "plain_text", "text": f"Sentinel: {decision}"},
+    # Header block
+    blocks: list[dict[str, Any]] = [
+        {
+            "type": "header",
+            "text": {
+                "type": "plain_text",
+                "text": f"Sentinel: {decision} \u2014 Episode {episode_id}",
             },
-            {
+        },
+        # Decision + Score fields
+        {
+            "type": "section",
+            "fields": [
+                {
+                    "type": "mrkdwn",
+                    "text": f"*Decision*\n`{decision}`",
+                },
+                {
+                    "type": "mrkdwn",
+                    "text": f"*Composite Score*\n`{composite_score:.2f}`",
+                },
+            ],
+        },
+        # Attribution
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": f"*Attribution*\n{attribution}",
+            },
+        },
+        {"type": "divider"},
+    ]
+
+    # Agent verdicts section
+    if agent_verdicts:
+        verdict_fields = _build_verdict_fields(agent_verdicts)
+        if verdict_fields:
+            blocks.append({
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": (
-                        f"*Episode:* `{episode_id}`\n"
-                        f"*Decision:* `{decision}` (score: `{composite_score:.2f}`)\n"
-                        f"*Attribution:* {attribution}"
-                    ),
+                    "text": "*Agent Verdicts*",
                 },
+                "fields": verdict_fields,
+            })
+
+    # Self-Improvement Arc (conditional — only when generated rules fired)
+    if generated_rules_fired:
+        rule_list = ", ".join(f"`{r}`" for r in generated_rules_fired)
+        blocks.append({"type": "divider"})
+        blocks.append({
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": (
+                    f":sparkles: *Self-Improvement Arc*\n"
+                    f"Generated rules fired on this attack: {rule_list}. "
+                    "These rules were autonomously written by Sentinel after a previous confirmed incident "
+                    "and caught this attack via the same behavioral fingerprint."
+                ),
             },
+        })
+
+    # Context block
+    blocks.append({
+        "type": "context",
+        "elements": [
             {
-                "type": "context",
-                "elements": [
-                    {
-                        "type": "mrkdwn",
-                        "text": (
-                            "Generated by Sentinel autonomous investigation pipeline | "
-                            "Airbyte -> Slack delivery"
-                        ),
-                    }
-                ],
-            },
+                "type": "mrkdwn",
+                "text": "Generated by Sentinel autonomous investigation pipeline",
+            }
         ],
+    })
+
+    payload = {
+        "text": f"Sentinel Investigation Report - Episode {episode_id}",
+        "blocks": blocks,
     }
     try:
         async with httpx.AsyncClient() as client:

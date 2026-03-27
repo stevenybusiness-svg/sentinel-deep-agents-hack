@@ -1034,21 +1034,28 @@ async def run_investigation(
     gate_result = safety_gate.evaluate(verdict_board)
     await ws.broadcast("gate_evaluated", episode_id, gate_result)
 
-    # 9a. Airbyte cache write + Slack report delivery (DEMO-POLISH-04)
+    # 9a. Slack report delivery (PHASE8-04)
     #     Non-blocking — failures do not affect gate decision or pipeline.
-    from sentinel.integrations.airbyte_cache import write_episode_to_cache
     from sentinel.integrations.slack_reporter import send_investigation_report
-    await write_episode_to_cache(
-        episode_id=episode_id,
-        decision=gate_result["decision"],
-        composite_score=gate_result.get("composite_score", 0.0),
-        attribution=gate_result.get("attribution", ""),
-    )
+
+    # Extract agent verdicts from the verdicts list
+    agent_verdict_dicts = []
+    for v in verdicts:
+        if v is not None:
+            agent_verdict_dicts.append(v.model_dump() if hasattr(v, "model_dump") else v)
+
     slack_ok = await send_investigation_report(
         episode_id=episode_id,
         decision=gate_result["decision"],
         composite_score=gate_result.get("composite_score", 0.0),
         attribution=gate_result.get("attribution", ""),
+        agent_verdicts=agent_verdict_dicts,
+        rules_fired=[c["rule_id"] for c in gate_result.get("rule_contributions", [])],
+        generated_rules_fired=[
+            c["rule_id"]
+            for c in gate_result.get("rule_contributions", [])
+            if c.get("is_generated", False)
+        ],
     )
     await ws.broadcast("report_delivered", episode_id, {
         "channel": "slack",
