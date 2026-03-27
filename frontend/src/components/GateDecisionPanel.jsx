@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useStore } from '../store'
 
+const apiBase = import.meta.env.VITE_API_URL || ''
+
 export function GateDecisionPanel() {
   const gateDecision = useStore((s) => s.gateDecision)
   const currentEpisodeId = useStore((s) => s.currentEpisodeId)
@@ -20,7 +22,7 @@ export function GateDecisionPanel() {
     if (!currentEpisodeId || confirming) return
     setConfirming(true)
     try {
-      await fetch('/api/confirm', {
+      await fetch(`${apiBase}/api/confirm`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

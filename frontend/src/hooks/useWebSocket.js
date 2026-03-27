@@ -7,7 +7,8 @@ export function useWebSocket() {
 
   useEffect(() => {
     function connect() {
-      const ws = new WebSocket(`ws://${window.location.host}/ws`)
+      const wsBase = import.meta.env.VITE_WS_URL || `ws://${window.location.host}`
+      const ws = new WebSocket(`${wsBase}/ws`)
       wsRef.current = ws
 
       ws.onopen = () => {

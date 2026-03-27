@@ -14,6 +14,8 @@ import { SlackReportPanel } from './components/SlackReportPanel'
 import { QualitativeAnalysisPanel } from './components/QualitativeAnalysisPanel'
 import { ScenarioScreen } from './components/ScenarioScreen'
 
+const apiBase = import.meta.env.VITE_API_URL || ''
+
 export default function App() {
   const { isAuthenticated, isLoading, loginWithRedirect, user, logout } = useAuth0()
 
@@ -75,7 +77,7 @@ function AuthenticatedApp({ user, logout }) {
 
   async function runAttack(payload) {
     try {
-      await fetch('/api/investigate', {
+      await fetch(`${apiBase}/api/investigate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

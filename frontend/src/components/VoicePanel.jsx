@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useStore } from '../store'
 
+const apiBase = import.meta.env.VITE_API_URL || ''
+
 export function VoicePanel() {
   const currentEpisodeId = useStore((s) => s.currentEpisodeId)
   const investigationStatus = useStore((s) => s.investigationStatus)
@@ -24,7 +26,7 @@ export function VoicePanel() {
     if (!isReady) return
     setVoiceCallStatus('calling')
     try {
-      const res = await fetch('/api/bland-call', {
+      const res = await fetch(`${apiBase}/api/bland-call`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
