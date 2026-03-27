@@ -18,6 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Dashboard** - Investigation tree, prediction vs. actual display, verdict board table, anomaly score bar with rule contributions, forensic scan panel, generated rule source panel with evolution history, trust score animation, Zustand state, WebSocket integration
 - [x] **Phase 5: Voice Integration** - Bland AI webhook, barge-in, grounded Q&A with anomaly scores and rule attribution, pre-computed context cache
 - [ ] **Phase 6: Demo Preparation + Deployment** - docker-compose, demo_check.py, fixture loading, dry runs, AWS deployment, screen recording fallback
+- [ ] **Phase 7: Demo Polish & Airbyte Integration** - Fix images, latency tuning, edge animations, Airbyte+Slack report, button rename, intro screen
 
 ## Phase Details
 
@@ -141,10 +142,23 @@ Plans:
 - [x] 06-01-PLAN.md — Dockerfile, docker-compose.yml, demo_check.py, reset_demo.py (INFRA-06, DEMO-01, DEMO-02)
 - [x] 06-02-PLAN.md — dry_run.py timed arc, .env.example, Railway deployment verification, screen recording (DEMO-04, DEMO-05)
 
+### Phase 7: Demo Polish & Airbyte Integration
+
+**Goal:** Fix broken invoice images, reduce pipeline latency below 10s, add dynamic edge animations showing real-time agent activity on the investigation tree, swap Bland AI voice Q&A for Airbyte+Slack autonomous report delivery, rename attack buttons (drop "Run" prefix), and make forensic scan comparison the intro screen so judges see the attack scenario upfront before the main dashboard
+**Requirements**: DEMO-POLISH-01 (images), DEMO-POLISH-02 (latency), DEMO-POLISH-03 (animations), DEMO-POLISH-04 (Airbyte+Slack), DEMO-POLISH-05 (button rename), DEMO-POLISH-06 (intro screen)
+**Depends on:** Phase 6
+**UI hint:** yes
+**Plans:** 3 plans
+
+Plans:
+- [ ] 07-01-PLAN.md — Fix invoice image serving, rename attack buttons, add colored edge animations (DEMO-POLISH-01, DEMO-POLISH-03, DEMO-POLISH-05)
+- [ ] 07-02-PLAN.md — Slack reporter, AirbyteReportPanel replacing VoicePanel, latency tuning (DEMO-POLISH-02, DEMO-POLISH-04)
+- [ ] 07-03-PLAN.md — Forensic intro screen as landing page (DEMO-POLISH-06)
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -155,3 +169,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6
 | 4.1 Performance + Qualitative | 2/2 | Complete   | 2026-03-27 |
 | 5. Voice Integration | 2/2 | Complete   | 2026-03-27 |
 | 6. Demo Preparation + Deployment | 0/2 | Planning complete | - |
+| 7. Demo Polish & Airbyte | 0/3 | Planning complete | - |
