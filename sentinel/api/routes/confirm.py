@@ -133,6 +133,17 @@ async def _pipeline(
     Supports both Episode model instances and raw dicts (active_episodes stores
     Episode objects from investigate route, but we handle both defensively).
     """
+    # ---- Guard: skip if rule pipeline already ran for this episode ----
+    # Prevents double-run when auto-trigger and manual confirm both fire for the
+    # same episode (auto-trigger sets new_rules_deployed on completion).
+    already_ran = (
+        episode.new_rules_deployed if hasattr(episode, "new_rules_deployed")
+        else episode.get("new_rules_deployed")
+    )
+    if already_ran:
+        logger.info("Rule pipeline already ran for episode %s, skipping duplicate run", req.episode_id)
+        return
+
     # ---- Step 1: Extract VerdictBoard and prediction errors ----
     if hasattr(episode, "verdict_board"):
         # Episode is a Pydantic model instance
@@ -145,12 +156,12 @@ async def _pipeline(
         prediction_errors = episode.get("prediction_report") or {}
         generated_rules_fired = episode.get("generated_rules_fired") or []
 
-    # ---- Step 2: Update episode with operator confirmation ----
+    # ---- Step 2: Update episode with autonomous detection confirmation ----
     if hasattr(episode, "operator_confirmation"):
-        episode.operator_confirmation = "confirmed_attack"
+        episode.operator_confirmation = "auto_detected"
         episode.attack_type = req.attack_type
     else:
-        episode["operator_confirmation"] = "confirmed_attack"
+        episode["operator_confirmation"] = "auto_detected"
         episode["attack_type"] = req.attack_type
 
     # ---- Step 3: Set up WebSocket broadcast wrapper ----
@@ -219,13 +230,15 @@ async def _generate_new_rule(
     rule_path.write_text(source, encoding="utf-8")
     logger.info("Wrote generated rule to %s", rule_path)
 
-    # Hot-reload SafetyGate
+    # Register generated rule directly (not via load_rules_from_directory, which only
+    # loads hardcoded rules — generated rules must go through register_rule so that
+    # is_generated=True is set correctly in all future gate evaluations)
     gate = app_state["safety_gate"]
     try:
-        gate.load_rules_from_directory(rules_dir)
-        logger.info("SafetyGate hot-reloaded from %s", rules_dir)
+        gate.register_rule(rule_id, source)
+        logger.info("SafetyGate registered generated rule %s", rule_id)
     except Exception as exc:
-        logger.warning("SafetyGate hot-reload failed: %s", exc)
+        logger.warning("SafetyGate register_rule failed for %s: %s", rule_id, exc)
 
     # Write provenance to Aerospike
     write_latency = 0.0
@@ -371,13 +384,14 @@ async def _evolve_existing_rule(
     rule_path.write_text(source, encoding="utf-8")
     logger.info("Overwrote evolved rule at %s (v%d)", rule_path, new_version)
 
-    # Hot-reload SafetyGate
+    # Register evolved rule directly — same reasoning as new generation path:
+    # register_rule() preserves is_generated=True; load_rules_from_directory would not.
     gate = app_state["safety_gate"]
     try:
-        gate.load_rules_from_directory(rules_dir)
-        logger.info("SafetyGate hot-reloaded after rule evolution")
+        gate.register_rule(existing_rule_id, source)
+        logger.info("SafetyGate updated evolved rule %s v%d", existing_rule_id, new_version)
     except Exception as exc:
-        logger.warning("SafetyGate hot-reload failed after evolution: %s", exc)
+        logger.warning("SafetyGate register_rule failed for evolved %s: %s", existing_rule_id, exc)
 
     # Combined prediction errors for provenance
     combined_pe = {**existing_prediction_errors, **pe2}

@@ -1034,8 +1034,44 @@ async def run_investigation(
     gate_result = safety_gate.evaluate(verdict_board)
     await ws.broadcast("gate_evaluated", episode_id, gate_result)
 
-    # 9a. Slack report delivery (PHASE8-04)
+    # 9a-pre. Increment fire_count telemetry for generated rules that fired (Bug 4 fix)
+    #         Fire-and-forget — must not block the enforcement path.
+    if aerospike is not None:
+        fired_generated = [
+            c["rule_id"]
+            for c in gate_result.get("rule_contributions", [])
+            if c.get("is_generated", False)
+        ]
+        if fired_generated:
+            from sentinel.memory.rule_store import increment_fire_count
+            for _rule_id in fired_generated:
+                asyncio.create_task(increment_fire_count(_rule_id, aerospike))
+
+    # 9a. Generate narrative template synchronously (D-09)
+    #     Fires after gate_evaluated — no LLM call, instant template fill.
+    #     Built before Slack report so narrative data is available for the report.
+    active_rule_sources = []
+    try:
+        active_rule_sources = [
+            {"rule_id": c["rule_id"], "version": c.get("version", 1)}
+            for c in gate_result.get("rule_contributions", [])
+            if c.get("is_generated", False)
+        ]
+    except Exception:
+        pass
+
+    template_narratives = build_narrative_template(
+        payment_decision=payment_decision,
+        verdict_board=verdict_board,
+        verdicts=[v for v in verdicts if v is not None],  # type: ignore[misc]
+        gate_result=gate_result,
+        rule_sources=active_rule_sources,
+    )
+    await ws.broadcast("narrative_template", episode_id, template_narratives)
+
+    # 9b. Slack report delivery (PHASE8-04)
     #     Non-blocking — failures do not affect gate decision or pipeline.
+    #     Includes Key Findings from the narrative template for richer reports.
     from sentinel.integrations.slack_reporter import send_investigation_report
 
     # Extract agent verdicts from the verdicts list
@@ -1056,34 +1092,16 @@ async def run_investigation(
             for c in gate_result.get("rule_contributions", [])
             if c.get("is_generated", False)
         ],
+        attack_narrative=template_narratives.get("attack_narrative"),
+        agent_reasoning=template_narratives.get("agent_reasoning"),
+        prediction_summary=template_narratives.get("prediction_summary"),
     )
     await ws.broadcast("report_delivered", episode_id, {
         "channel": "slack",
         "success": slack_ok,
     })
 
-    # 9b. Generate narrative template synchronously (D-09)
-    #     Fires after gate_evaluated — no LLM call, instant template fill.
-    active_rule_sources = []
-    try:
-        active_rule_sources = [
-            {"rule_id": c["rule_id"], "version": c.get("version", 1)}
-            for c in gate_result.get("rule_contributions", [])
-            if c.get("is_generated", False)
-        ]
-    except Exception:
-        pass
-
-    template_narratives = build_narrative_template(
-        payment_decision=payment_decision,
-        verdict_board=verdict_board,
-        verdicts=[v for v in verdicts if v is not None],  # type: ignore[misc]
-        gate_result=gate_result,
-        rule_sources=active_rule_sources,
-    )
-    await ws.broadcast("narrative_template", episode_id, template_narratives)
-
-    # 9b. Fire async narrative polish — fire-and-forget, MUST NOT await (D-09)
+    # 9c. Fire async narrative polish — fire-and-forget, MUST NOT await (D-09)
     asyncio.create_task(_generate_narrative_polish(
         episode_id=episode_id,
         verdict_board=verdict_board,
@@ -1117,12 +1135,13 @@ async def run_investigation(
     )
 
     # 11. Write to Aerospike (MEM-01) — failure does not block gate decision
-    write_latency_ms = 0.0
+    # None = Aerospike disabled or write failed; frontend shows gray dot for null
+    write_latency_ms = None
     if aerospike:
         try:
             write_latency_ms = await write_episode(episode, aerospike)
         except Exception:
-            pass
+            pass  # write_latency_ms stays None — surfaces as gray dot, not false green
 
     await ws.broadcast(
         "episode_written",
@@ -1175,5 +1194,13 @@ def _extract_actual_findings(verdicts: list[Verdict]) -> dict[str, bool]:
             # Document is clean if no hidden text flag was raised
             has_hidden_text = "hidden_text_detected" in v.behavioral_flags
             findings["document_should_be_clean"] = not has_hidden_text
+
+    # True only when no agent found a critical-severity mismatch (Bug 3 fix)
+    has_critical_mismatch = any(
+        not cc.match and cc.severity == "critical"
+        for v in verdicts
+        for cc in v.claims_checked
+    )
+    findings["no_critical_field_mismatches"] = not has_critical_mismatch
 
     return findings

@@ -91,39 +91,35 @@ export function VerdictBoardTable() {
               </tr>
             </thead>
             <tbody>
-              {allClaims.map((claim, idx) => (
-                <>
+              {allClaims.map((claim, idx) => {
+                // Normalize field names: backend may send agent_claimed/independently_found OR expected/actual
+                const agentValue = claim.agent_claimed || claim.expected || '-'
+                const foundValue = claim.independently_found || claim.actual || '-'
+                // match can be boolean (true/false) or string ('match'/'mismatch')
+                const isMatch = claim.match === true || claim.match === 'match'
+
+                return (
                   <tr
                     key={`claim-${idx}`}
-                    className={`border-b border-border-muted/50 ${!claim.match ? 'bg-danger/5' : ''}`}
+                    className={`border-b border-border-muted/50 ${!isMatch ? 'bg-danger/5' : ''}`}
                   >
                     <td className="py-1.5 px-2 text-text-main">{claim.field}</td>
                     <td className="py-1.5 px-2 text-text-main font-mono text-[12px]">
-                      {truncate(claim.agent_claimed)}
+                      {truncate(agentValue)}
                     </td>
                     <td className="py-1.5 px-2 text-text-main font-mono text-[12px]">
-                      {truncate(claim.independently_found)}
+                      {truncate(foundValue)}
                     </td>
                     <td className="py-1.5 px-2">
-                      {claim.match
+                      {isMatch
                         ? <span className="material-symbols-outlined text-success text-[16px]">check_circle</span>
                         : <span className="material-symbols-outlined text-danger text-[16px]">cancel</span>
                       }
                     </td>
-                    <td className="py-1.5 px-2">{renderSeverityBadge(claim.severity)}</td>
+                    <td className="py-1.5 px-2">{renderSeverityBadge(claim.severity || (!isMatch ? 'critical' : 'info'))}</td>
                   </tr>
-                  {!claim.match && predictionErrors && (() => {
-                    const expected = findExpectedValue(claim.field, predictionErrors)
-                    return expected ? (
-                      <tr key={`pred-${idx}`} className="border-b border-border-muted/30">
-                        <td colSpan={5} className="py-1 px-2 pl-6 text-[11px] text-text-muted italic">
-                          Expected: {expected}
-                        </td>
-                      </tr>
-                    ) : null
-                  })()}
-                </>
-              ))}
+                )
+              })}
             </tbody>
           </table>
 

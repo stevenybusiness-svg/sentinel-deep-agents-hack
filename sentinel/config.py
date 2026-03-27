@@ -15,6 +15,8 @@ class Settings:
         self.AEROSPIKE_HOST: str = os.getenv("AEROSPIKE_HOST", "localhost")
         self.AEROSPIKE_PORT: int = int(os.getenv("AEROSPIKE_PORT", "3000"))
         self.AEROSPIKE_NAMESPACE: str = os.getenv("AEROSPIKE_NAMESPACE", "sentinel")
+        self.AEROSPIKE_USER: str = os.getenv("AEROSPIKE_USER", "")
+        self.AEROSPIKE_PASSWORD: str = os.getenv("AEROSPIKE_PASSWORD", "")
         self.BLAND_API_KEY: str = os.getenv("BLAND_API_KEY", "")
         self.OKTA_DOMAIN: str = os.getenv("OKTA_DOMAIN", "")
         self.OKTA_CLIENT_ID: str = os.getenv("OKTA_CLIENT_ID", "")

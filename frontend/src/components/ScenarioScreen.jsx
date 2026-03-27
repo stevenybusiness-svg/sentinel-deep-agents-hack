@@ -20,7 +20,7 @@ export function ScenarioScreen({ scenario, onStart }) {
       details: [
         'Meridian Logistics is absent from the KYC ledger — an intentional gap',
         'The generated scoring function from Attack 1 detects shared behavioral patterns',
-        "Rule evolution: after confirmation, the rule refines using both attack's prediction errors",
+        "Rule evolution: the system autonomously refines the rule using both attacks' prediction errors",
       ],
       buttonText: 'Launch Investigation',
       icon: 'person_off',

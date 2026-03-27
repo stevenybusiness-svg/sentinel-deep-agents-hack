@@ -1,0 +1,21 @@
+# Replace YOUR_DOMAIN with your EC2 Elastic IP or domain
+# For free DNS with Let's Encrypt: use <ELASTIC_IP>.nip.io
+# Example: 54.123.45.67.nip.io
+
+YOUR_DOMAIN {
+    # API routes
+    reverse_proxy /api/* sentinel:8000
+
+    # WebSocket — Caddy handles upgrade automatically
+    reverse_proxy /ws sentinel:8000
+
+    # Health check
+    reverse_proxy /health sentinel:8000
+
+    # Invoice images (served by FastAPI)
+    reverse_proxy /invoice_clean.png sentinel:8000
+    reverse_proxy /invoice_forensic.png sentinel:8000
+
+    # Catch-all for any other backend routes
+    reverse_proxy /* sentinel:8000
+}

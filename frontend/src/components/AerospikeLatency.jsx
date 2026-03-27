@@ -32,7 +32,11 @@ export function AerospikeLatency() {
                 }`}>
                   {entry.gate_decision}
                 </span>
-                <span className="text-text-main truncate">{entry.attribution}</span>
+                <span className="text-text-main truncate">
+                  {Array.isArray(entry.attribution)
+                    ? entry.attribution.map((a) => a.rule_id).join(', ')
+                    : (entry.attribution || '')}
+                </span>
               </div>
             ))}
           </div>

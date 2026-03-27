@@ -12,25 +12,74 @@ function relativeTime(iso) {
 
 function highlightPython(source) {
   if (!source) return ''
-  // Order matters -- keywords first, then strings, then numbers, then comments
-  return source
-    // Multi-line strings/docstrings
-    .replace(/("""[\s\S]*?"""|'''[\s\S]*?''')/g, '<span class="text-success">$1</span>')
-    // Single-line strings
-    .replace(/(["'])(?:(?=(\\?))\2.)*?\1/g, '<span class="text-success">$&</span>')
-    // Comments
-    .replace(/(#.*$)/gm, '<span class="text-text-muted italic">$1</span>')
-    // Keywords
-    .replace(/\b(def|return|if|elif|else|for|in|not|and|or|True|False|None|float|dict|int|str|bool|import|from|class|try|except|with|as|lambda|yield)\b/g,
-      '<span class="text-primary">$&</span>')
-    // Numbers
-    .replace(/\b(\d+\.?\d*)\b/g, '<span class="text-warning">$&</span>')
+
+  // Single-pass tokenizer to avoid regex passes clobbering each other's HTML spans.
+  // Each token type is captured in a single combined regex with named groups.
+  const keywords = new Set([
+    'def', 'return', 'if', 'elif', 'else', 'for', 'in', 'not', 'and', 'or',
+    'True', 'False', 'None', 'float', 'dict', 'int', 'str', 'bool',
+    'import', 'from', 'class', 'try', 'except', 'with', 'as', 'lambda', 'yield',
+  ])
+
+  // Combined regex: order matters -- earlier alternatives are tried first.
+  // 1. Triple-quoted strings (docstrings)
+  // 2. Single-line strings (double or single quoted)
+  // 3. Comments
+  // 4. Words (potential keywords or identifiers)
+  // 5. Numbers
+  // 6. Any other character (passed through)
+  const tokenRegex = /("""[\s\S]*?"""|'''[\s\S]*?''')|(["'])(?:(?=(\\?))\3.)*?\2|(#.*$)|(\b[a-zA-Z_]\w*\b)|(\b\d+\.?\d*\b)/gm
+
+  let result = ''
+  let lastIndex = 0
+
+  for (const match of source.matchAll(tokenRegex)) {
+    // Append any text between the previous match and this one (whitespace, operators, etc.)
+    if (match.index > lastIndex) {
+      result += escapeHtml(source.slice(lastIndex, match.index))
+    }
+
+    const [full, tripleStr, , , comment, word, num] = match
+
+    if (tripleStr !== undefined) {
+      result += '<span style="color:#3fb950">' + escapeHtml(tripleStr) + '</span>'
+    } else if (comment !== undefined) {
+      result += '<span style="color:#8b949e;font-style:italic">' + escapeHtml(comment) + '</span>'
+    } else if (word !== undefined) {
+      if (keywords.has(word)) {
+        result += '<span style="color:#57abff">' + escapeHtml(word) + '</span>'
+      } else {
+        result += escapeHtml(word)
+      }
+    } else if (num !== undefined) {
+      result += '<span style="color:#e3b341">' + escapeHtml(num) + '</span>'
+    } else {
+      // Single-line string match (group 2 matched the quote char)
+      result += '<span style="color:#3fb950">' + escapeHtml(full) + '</span>'
+    }
+
+    lastIndex = match.index + full.length
+  }
+
+  // Append any remaining text after last match
+  if (lastIndex < source.length) {
+    result += escapeHtml(source.slice(lastIndex))
+  }
+
+  return result
+}
+
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
 }
 
 function addV2Badge(html) {
   // After def score( line, append [v2] badge
   return html.replace(
-    /(<span class="text-primary">def<\/span> score\([^)]*\)[^:]*:)/,
+    /(<span style="color:#57abff">def<\/span> score\([^)]*\)[^:]*:)/,
     '$1 <span class="bg-warning/20 text-warning text-[10px] font-mono rounded px-1 inline-block ml-1">[v2]</span>'
   )
 }

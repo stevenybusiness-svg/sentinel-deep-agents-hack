@@ -1,39 +1,9 @@
-import { useState, useEffect } from 'react'
 import { useStore } from '../store'
-
-const apiBase = import.meta.env.VITE_API_URL || ''
 
 export function GateDecisionPanel() {
   const gateDecision = useStore((s) => s.gateDecision)
-  const currentEpisodeId = useStore((s) => s.currentEpisodeId)
   const trustScore = useStore((s) => s.trustScore)
-  const investigationStatus = useStore((s) => s.investigationStatus)
-
-  const [confirming, setConfirming] = useState(false)
-
-  // Reset confirming state when a new investigation starts
-  useEffect(() => {
-    if (investigationStatus === 'running') {
-      setConfirming(false)
-    }
-  }, [investigationStatus])
-
-  async function handleConfirm() {
-    if (!currentEpisodeId || confirming) return
-    setConfirming(true)
-    try {
-      await fetch(`${apiBase}/api/confirm`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          episode_id: currentEpisodeId,
-          attack_type: 'confirmed',
-        }),
-      })
-    } catch (err) {
-      console.error('confirm request failed', err)
-    }
-  }
+  const ruleSources = useStore((s) => s.ruleSources)
 
   if (!gateDecision) {
     return (
@@ -64,7 +34,11 @@ export function GateDecisionPanel() {
 
       {/* Attribution */}
       {attribution && (
-        <p className="text-[12px] text-text-main">{attribution}</p>
+        <p className="text-[12px] text-text-main">
+          {Array.isArray(attribution)
+            ? attribution.map((a) => `${a.rule_id} (+${a.contribution?.toFixed(2) ?? '?'})`).join(', ')
+            : attribution}
+        </p>
       )}
 
       {/* Trust score inline (DASH-06) */}
@@ -84,20 +58,20 @@ export function GateDecisionPanel() {
         </span>
       </div>
 
-      {/* Confirm button — only visible on NO-GO */}
+      {/* Autonomous learning status — no human action needed */}
       {decision === 'NO-GO' && (
-        <div className="pt-1">
-          <button
-            className="bg-accent text-white font-semibold text-sm px-4 py-2 rounded hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={handleConfirm}
-            disabled={confirming}
-          >
-            {confirming ? (
-              <span className="text-text-muted">Generating rule...</span>
-            ) : (
-              'Confirm Attack \u2014 Learn \u25b6'
-            )}
-          </button>
+        <div className="pt-1 flex items-center gap-2 text-[11px]">
+          {ruleSources.length > 0 ? (
+            <>
+              <span className="material-symbols-outlined text-warning text-[14px]">auto_awesome</span>
+              <span className="text-warning font-semibold">Autonomous learning complete — scoring function deployed</span>
+            </>
+          ) : (
+            <>
+              <span className="material-symbols-outlined text-primary text-[14px] animate-spin">sync</span>
+              <span className="text-text-muted">Autonomously generating scoring function...</span>
+            </>
+          )}
         </div>
       )}
     </div>

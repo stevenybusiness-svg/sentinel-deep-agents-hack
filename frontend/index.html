@@ -20,6 +20,7 @@
             colors: {
               "primary":      "#57abff",
               "accent":       "#57abff",
+              "cyber":        "#00d4aa",
               "success":      "#3fb950",
               "danger":       "#f85149",
               "warning":      "#e3b341",
@@ -63,6 +64,36 @@
         50%       { box-shadow: 0 0 0 8px rgba(227, 179, 65, 0); }
       }
       .rule-pulse { animation: rule-pulse 1.5s ease-in-out infinite; }
+
+      /* Floating card animation for landing page */
+      @keyframes float-card {
+        0%, 100% { transform: translateY(0px); }
+        50%      { transform: translateY(-8px); }
+      }
+      .float-card { animation: float-card 4s ease-in-out infinite; }
+
+      /* Scan line overlay */
+      @keyframes scan-line {
+        0%   { transform: translateY(-100%); }
+        100% { transform: translateY(100%); }
+      }
+      .scan-line-overlay {
+        background: linear-gradient(transparent 40%, rgba(0,212,170,0.08) 50%, transparent 60%);
+        animation: scan-line 3s ease-in-out infinite;
+      }
+
+      /* Auth screen spin */
+      @keyframes auth-spin {
+        0%   { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      .auth-spin { animation: auth-spin 3s linear infinite; }
+
+      /* Tab active underline */
+      .tab-active { border-bottom: 2px solid #00d4aa; color: #00d4aa; }
+
+      /* Hide React Flow attribution watermark */
+      .react-flow__attribution { display: none !important; }
     </style>
   </head>
   <body class="bg-bg-dark text-text-main font-display antialiased">

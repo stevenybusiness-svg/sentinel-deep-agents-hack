@@ -587,6 +587,13 @@ class RuleGenerator:
 
             # Validate evolved source against vb2 (second attack fixture)
             valid, reason = validate_rule(source, vb2)
+            # Also verify it still fires on vb1 — the evolved function must score
+            # both incidents, not just the latest one (Bug 5 fix)
+            if valid and vb1:
+                valid_vb1, reason_vb1 = validate_rule(source, vb1)
+                if not valid_vb1:
+                    valid = False
+                    reason = f"regresses on incident 1: {reason_vb1}"
             if valid:
                 return source, None
 

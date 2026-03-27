@@ -30,6 +30,12 @@ def _build_verdict_fields(agent_verdicts: list[dict]) -> list[dict]:
     return fields
 
 
+_ATTACK_LABELS: dict[str, str] = {
+    "prompt_injection_hidden_text": "Prompt Injection — Hidden Text Manipulation",
+    "identity_spoofing": "Identity Spoofing — KYC Pre-Clearance Forgery",
+}
+
+
 async def send_investigation_report(
     episode_id: str,
     decision: str,
@@ -38,6 +44,10 @@ async def send_investigation_report(
     agent_verdicts: list[dict] | None = None,
     rules_fired: list[str] | None = None,
     generated_rules_fired: list[str] | None = None,
+    attack_narrative: str | None = None,
+    agent_reasoning: str | None = None,
+    prediction_summary: str | None = None,
+    attack_type: str | None = None,
 ) -> bool:
     """Send investigation report to Slack via Incoming Webhook.
 
@@ -52,6 +62,9 @@ async def send_investigation_report(
         agent_verdicts: List of agent verdict dicts with agent_id, confidence, flags.
         rules_fired: List of all rule IDs that contributed to the gate decision.
         generated_rules_fired: Subset of rules_fired that are generated (not hardcoded).
+        attack_narrative: Plain-English summary of what happened (from narrative template).
+        agent_reasoning: Per-agent finding summary (from narrative template).
+        prediction_summary: Prediction vs. actual divergence summary (from narrative template).
     """
     webhook_url = os.getenv("SLACK_WEBHOOK_URL", "")
     if not webhook_url or webhook_url.startswith(_PLACEHOLDER_PREFIX):
@@ -97,6 +110,27 @@ async def send_investigation_report(
         },
         {"type": "divider"},
     ]
+
+    # Key Findings section — top 3 qualitative findings in plain English
+    findings_bullets: list[str] = []
+    if attack_narrative:
+        findings_bullets.append(attack_narrative)
+    if agent_reasoning:
+        findings_bullets.append(agent_reasoning)
+    if prediction_summary:
+        findings_bullets.append(prediction_summary)
+
+    if findings_bullets:
+        # Build bullet-point list (up to 3 items)
+        bullet_text = "\n".join(f"\u2022 {f}" for f in findings_bullets[:3])
+        blocks.append({
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": f"*Key Findings*\n{bullet_text}",
+            },
+        })
+        blocks.append({"type": "divider"})
 
     # Agent verdicts section
     if agent_verdicts:

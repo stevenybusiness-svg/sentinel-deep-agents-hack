@@ -129,6 +129,10 @@ class PredictionEngine:
         if "read_invoice" in payment_decision.steps_taken:
             outcomes["document_should_be_clean"] = True
 
+        # We always expect no critical field mismatches — a legitimate agent should
+        # produce claims that investigators can independently confirm (Bug 3 fix)
+        outcomes["no_critical_field_mismatches"] = True
+
         return outcomes
 
     def _compute_step_deviation(

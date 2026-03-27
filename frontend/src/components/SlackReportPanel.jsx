@@ -22,9 +22,9 @@ export function SlackReportPanel() {
     <div className="bg-surface rounded-lg border border-border-muted p-4 space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
-          <span className="material-symbols-outlined text-[16px] text-accent">send</span>
+          <span className="material-symbols-outlined text-[16px] text-accent">psychology</span>
           <span className="text-[13px] font-semibold text-text-main uppercase tracking-wider">
-            Slack Report Delivery
+            Deep Dive with AI
           </span>
         </div>
         <span className={`text-[12px] font-mono ${statusColor[reportStatus] || statusColor.idle}`}>
@@ -53,11 +53,13 @@ export function SlackReportPanel() {
           </p>
           {gateDecision.attribution && (
             <p className="text-[12px] text-text-muted leading-snug">
-              {gateDecision.attribution}
+              {Array.isArray(gateDecision.attribution)
+                ? gateDecision.attribution.map((a) => `${a.rule_id} (+${a.contribution?.toFixed(2) ?? '?'})`).join(', ')
+                : gateDecision.attribution}
             </p>
           )}
           <p className="text-[10px] text-text-muted mt-1 italic">
-            Sentinel delivers investigation reports to #payment-system-infosec via Slack webhook
+            AI-generated report delivered to #payment-system-infosec via Slack
           </p>
         </div>
       ) : (

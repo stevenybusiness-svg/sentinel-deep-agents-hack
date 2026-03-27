@@ -114,6 +114,21 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# CORS — required for Vercel frontend → EC2 backend cross-origin requests
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:8000",
+        "https://sentinel-demo.vercel.app",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # ---------------------------------------------------------------------------
 # WebSocket endpoint — API-01

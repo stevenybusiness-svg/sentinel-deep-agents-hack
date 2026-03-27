@@ -279,10 +279,10 @@ class TestEventTypeExtended:
         """EventType includes 'rule_generation_failed'."""
         assert "rule_generation_failed" in EventType.__args__
 
-    def test_event_type_has_twelve_values(self):
-        """EventType Literal has exactly 12 values after Phase 04.1 extension."""
-        # Original 9 + 3 new (supervisor_token, narrative_template, narrative_ready)
-        assert len(EventType.__args__) == 12
+    def test_event_type_has_thirteen_values(self):
+        """EventType Literal has exactly 13 values after report_delivered addition."""
+        # Original 9 + 3 (supervisor_token, narrative_template, narrative_ready) + report_delivered
+        assert len(EventType.__args__) == 13
 
 
 class TestRuleGeneratorClass:

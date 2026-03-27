@@ -105,13 +105,17 @@ export const useStore = create((set, get) => ({
 
   initInvestigationTree: () => set((s) => ({
     nodes: [
-      { id: 'supervisor', position: { x: 250, y: 0 }, data: { label: 'Supervisor', icon: 'hub', status: 'active' }, type: 'sentinel' },
-      { id: 'payment', position: { x: 250, y: 100 }, data: { label: 'Payment Agent', icon: 'payments', status: 'active' }, type: 'sentinel' },
+      { id: 'supervisor', position: { x: 250, y: 0 }, data: { label: 'Supervisor (Opus)', icon: 'hub', status: 'active' }, type: 'sentinel' },
+      { id: 'payment', position: { x: 250, y: 100 }, data: { label: 'Payment Agent (Sonnet)', icon: 'payments', status: 'active' }, type: 'sentinel' },
       { id: 'risk', position: { x: 50, y: 220 }, data: { label: 'Risk Agent', icon: 'shield', status: 'pending' }, type: 'sentinel' },
       { id: 'compliance', position: { x: 250, y: 220 }, data: { label: 'Compliance Agent', icon: 'verified_user', status: 'pending' }, type: 'sentinel' },
       { id: 'forensics', position: { x: 450, y: 220 }, data: { label: 'Forensics Agent', icon: 'search', status: 'pending' }, type: 'sentinel' },
-      { id: 'gate', position: { x: 250, y: 340 }, data: { label: 'Safety Gate', icon: 'security', status: 'pending' }, type: 'sentinel' },
-      ...s.persistedRuleNodes,
+      { id: 'gate', position: { x: 250, y: 340 }, data: { label: 'Safety Gate (Deterministic)', icon: 'security', status: 'pending' }, type: 'sentinel' },
+      // Re-add Attack 1's rule nodes as completed/inherited (green, not pulsing)
+      ...s.persistedRuleNodes.map(n => ({
+        ...n,
+        data: { ...n.data, status: 'complete' }
+      })),
     ],
     edges: [
       { id: 'e-sup-pay', source: 'supervisor', target: 'payment', animated: true },
@@ -145,10 +149,10 @@ export const useStore = create((set, get) => ({
     ),
   })),
 
-  addRuleNode: (ruleId, label) => set((s) => {
+  addRuleNode: (ruleId, label, source) => set((s) => {
     const newNode = {
       id: ruleId,
-      position: { x: 450, y: 340 + (s.nodes.length - 6) * 80 },
+      position: { x: 500, y: 340 },
       data: { label, icon: 'auto_awesome', status: 'rule_node' },
       type: 'sentinel',
     }
@@ -159,11 +163,44 @@ export const useStore = create((set, get) => ({
       animated: true,
       style: { stroke: '#e3b341' },
     }
+
+    // Build annotation nodes from rule source analysis
+    const annotations = []
+    const annotationEdges = []
+    if (source) {
+      const hints = []
+      if (source.includes('z_score') || source.includes('z >')) hints.push('Flags z-score > 2\u03C3')
+      if (source.includes('verify_counterparty') || source.includes('step_sequence')) hints.push('Detects skipped verification')
+      if (source.includes('hidden') || source.includes('injection')) hints.push('Catches hidden injection')
+      if (source.includes('mismatch')) hints.push('Penalizes claim mismatches')
+      // Limit to 3 annotations
+      const displayHints = hints.slice(0, 3)
+      displayHints.forEach((hint, i) => {
+        const annotId = `${ruleId}-annot-${i}`
+        annotations.push({
+          id: annotId,
+          position: { x: 420 + i * 200, y: 430 },
+          data: { label: hint, icon: 'info', status: 'annotation' },
+          type: 'sentinel',
+        })
+        annotationEdges.push({
+          id: `e-${ruleId}-annot-${i}`,
+          source: ruleId,
+          target: annotId,
+          animated: false,
+          style: { stroke: '#e3b341', strokeWidth: 1, strokeDasharray: '4 4' },
+        })
+      })
+    }
+
+    const allNewNodes = [newNode, ...annotations]
+    const allNewEdges = [newEdge, ...annotationEdges]
+
     return {
-      nodes: [...s.nodes, newNode],
-      edges: [...s.edges, newEdge],
-      persistedRuleNodes: [...s.persistedRuleNodes, newNode],
-      persistedRuleEdges: [...s.persistedRuleEdges, newEdge],
+      nodes: [...s.nodes, ...allNewNodes],
+      edges: [...s.edges, ...allNewEdges],
+      persistedRuleNodes: [...s.persistedRuleNodes, ...allNewNodes],
+      persistedRuleEdges: [...s.persistedRuleEdges, ...allNewEdges],
     }
   }),
 

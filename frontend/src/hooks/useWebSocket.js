@@ -1,13 +1,49 @@
 import { useEffect, useRef } from 'react'
 import { useStore } from '../store'
 
+/**
+ * Build a human-readable label for a rule node from its ID, version, and source.
+ * e.g. "Overconfidence Detector v2" instead of "Rule #v2"
+ */
+function buildRuleLabel(ruleId, version, source) {
+  // Try to extract a descriptive name from the docstring or function characteristics
+  let name = 'Scoring Rule'
+
+  if (source) {
+    // Check docstring first: """..."""
+    const docMatch = source.match(/"""([^"]+)"""|'''([^']+)'''/)
+    if (docMatch) {
+      const doc = (docMatch[1] || docMatch[2]).trim()
+      // Take the first sentence/phrase (up to the first dash or period)
+      const phrase = doc.split(/\s*[—\-\.\n]/, 1)[0].trim()
+      if (phrase.length > 3 && phrase.length < 50) {
+        name = phrase
+      }
+    }
+  }
+
+  // Fallback: derive from rule_id
+  if (name === 'Scoring Rule' && ruleId) {
+    if (ruleId.includes('overconfidence')) name = 'Overconfidence Detector'
+    else if (ruleId.includes('mismatch')) name = 'Mismatch Detector'
+    else if (ruleId.includes('injection')) name = 'Injection Detector'
+    else if (ruleId.includes('sequence')) name = 'Sequence Anomaly Detector'
+    else name = ruleId.replace(/^gen_rule_/, '').replace(/_/g, ' ').replace(/\bv\d+$/, '').trim()
+    // Capitalize first letter of each word
+    name = name.replace(/\b\w/g, (c) => c.toUpperCase())
+  }
+
+  return version > 1 ? `${name} v${version}` : name
+}
+
 export function useWebSocket() {
   const wsRef = useRef(null)
   const reconnectTimer = useRef(null)
 
   useEffect(() => {
     function connect() {
-      const wsBase = import.meta.env.VITE_WS_URL || `ws://${window.location.host}`
+      const wsProto = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+      const wsBase = import.meta.env.VITE_WS_URL || `${wsProto}//${window.location.host}`
       const ws = new WebSocket(`${wsBase}/ws`)
       wsRef.current = ws
 
@@ -29,7 +65,13 @@ export function useWebSocket() {
       }
 
       ws.onmessage = (evt) => {
-        const msg = JSON.parse(evt.data)
+        let msg
+        try {
+          msg = JSON.parse(evt.data)
+        } catch (err) {
+          console.error('WebSocket: malformed JSON', err)
+          return
+        }
         const { event, episode_id, data } = msg
         const s = useStore.getState()
 
@@ -51,18 +93,39 @@ export function useWebSocket() {
             break
           }
 
-          case 'verdict_board_assembled':
-            s.setVerdictBoard(data.verdict_board)
-            if (data.verdict_board?.prediction_errors) {
-              s.setPredictionData(data.verdict_board.prediction_errors)
+          case 'verdict_board_assembled': {
+            const vb = data.verdict_board
+            s.setVerdictBoard(vb)
+            if (vb?.prediction_errors) {
+              s.setPredictionData(vb.prediction_errors)
             }
             s.updateNodeStatus('gate', 'active')
             s.setEdgeActive('e-risk-gate', '#e3b341')
             s.setEdgeActive('e-comp-gate', '#e3b341')
             s.setEdgeActive('e-for-gate', '#e3b341')
-            break
 
-          case 'gate_evaluated':
+            // Build agent reasoning narrative from actual verdict board claims
+            const claims = vb?.fields || vb?.claims || []
+            const mismatches = claims.filter(c => c.match === 'mismatch')
+            const zClaim = claims.find(c => c.field === 'confidence_z_score')
+            const kycClaim = claims.find(c => c.field === 'counterparty_registered' || c.field === 'counterparty_kyc_status')
+            const docClaim = claims.find(c => c.field === 'document_integrity')
+            const stepClaim = claims.find(c => c.field === 'step_sequence')
+
+            let reasoning = ''
+            if (zClaim) reasoning += `Confidence z-score: ${zClaim.investigator_finding} (agent claimed: ${zClaim.agent_claim}). `
+            if (stepClaim) reasoning += `Step sequence: ${stepClaim.investigator_finding} (expected: ${stepClaim.agent_claim}). `
+            if (kycClaim) reasoning += `KYC status: ${kycClaim.investigator_finding} (agent claimed: ${kycClaim.agent_claim}). `
+            if (docClaim) reasoning += `Document integrity: ${docClaim.investigator_finding} (agent claimed: ${docClaim.agent_claim}). `
+            reasoning += `${mismatches.length} mismatches found across ${claims.length} claims checked.`
+
+            if (reasoning.trim()) {
+              s.setNarrativeData('agentReasoning', reasoning)
+            }
+            break
+          }
+
+          case 'gate_evaluated': {
             s.setGateDecision(data)
             s.setInvestigationStatus('complete')
             s.updateNodeStatus('gate', data.decision === 'NO-GO' ? 'blocked' : 'complete')
@@ -89,7 +152,47 @@ export function useWebSocket() {
             }
             // Signal report delivery in progress (DEMO-POLISH-04)
             s.setReportStatus('sending')
+
+            // Build Attack Details narrative from gate result + verdict board
+            {
+              const score = data.composite_score != null ? data.composite_score.toFixed(2) : '?'
+              const decision = data.decision || 'UNKNOWN'
+              const ruleContribs = data.rule_contributions || data.attribution || []
+              const contribStr = ruleContribs.map(r =>
+                `${r.rule_id}: ${(r.score != null ? r.score : r.contribution || 0).toFixed(3)}${r.is_generated ? ' (generated)' : ''}`
+              ).join(', ')
+
+              const vb = s.verdictBoard
+              const amount = vb?.amount || data.amount
+              const counterparty = vb?.counterparty || data.counterparty
+
+              let attackDetails = ''
+              if (amount || counterparty) {
+                attackDetails += `Payment${amount ? ' of ' + amount : ''}${counterparty ? ' to ' + counterparty : ''} was intercepted. `
+              }
+              attackDetails += `Gate decision: ${decision} with composite score ${score} (threshold: 1.0). `
+              if (contribStr) {
+                attackDetails += `Rule contributions: ${contribStr}.`
+              }
+              s.setNarrativeData('attackNarrative', attackDetails)
+            }
+
+            // Build Prediction vs Actual narrative from verdict board prediction errors
+            {
+              const vb = s.verdictBoard
+              const predErrors = vb?.prediction_errors || s.predictionData || []
+              const score = data.composite_score != null ? data.composite_score.toFixed(2) : '?'
+
+              if (predErrors.length > 0) {
+                const errorLines = predErrors.map(pe =>
+                  `${pe.field}: predicted ${pe.predicted}, actual: ${pe.actual} (error: ${pe.error_magnitude})`
+                ).join('; ')
+                s.setNarrativeData('predictionSummary',
+                  `Sentinel predicted: ${errorLines}. ${predErrors.length} prediction error${predErrors.length > 1 ? 's' : ''} triggered the ${data.decision || 'NO-GO'} gate with composite score ${score} (threshold: 1.0).`)
+              }
+            }
             break
+          }
 
           case 'episode_written':
             s.setAerospikeLatencyMs(data.write_latency_ms)
@@ -136,19 +239,46 @@ export function useWebSocket() {
               deployedAt: new Date().toISOString(),
               attribution: data.attribution,
             })
-            s.addRuleNode(data.rule_id, `Rule #${data.version || data.rule_id}`)
-            // Update self-improvement arc narrative
+            {
+              // Build a descriptive label from the rule source or rule_id
+              const version = data.version || 1
+              const ruleId = data.rule_id || 'unknown'
+              const descriptiveLabel = buildRuleLabel(ruleId, version, data.source)
+
+              s.addRuleNode(ruleId, descriptiveLabel, data.source)
+            }
+            // Auto-populate self-improvement arc narrative from event data
             {
               const version = data.version || 1
-              const ruleLabel = `#${data.rule_id}`
+              const ruleId = data.rule_id || 'unknown'
+              const source = data.source || ''
+              const attribution = data.attribution || ''
+
+              // Extract behavioral insights from the rule source code
+              const detects = []
+              if (source.includes('z_score') || source.includes('z >')) detects.push('overconfidence patterns (z-score > 2\u03C3)')
+              if (source.includes('verify_counterparty') || source.includes('step_sequence')) detects.push('skipped verification steps')
+              if (source.includes('hidden') || source.includes('injection')) detects.push('hidden injection text')
+              if (source.includes('mismatch')) detects.push('claim-vs-reality mismatches')
+              const detectStr = detects.length > 0
+                ? detects.join(' and ')
+                : 'anomalous behavioral patterns'
+
               if (version > 1) {
+                const episodeCount = data.episode_ids ? data.episode_ids.length : 2
                 s.setNarrativeData('selfImprovementArc',
-                  `Rule ${ruleLabel} fired on the second attack and was refined into Rule ${ruleLabel}-v${version} with tighter thresholds.`)
+                  `Scoring function autonomously evolved to v${version} after analyzing ${episodeCount} incidents. Detects ${detectStr}. Rule deployed to Safety Gate \u2014 tighter thresholds will fire on future attacks matching this behavioral signature.${attribution ? ' ' + attribution : ''}`)
               } else {
                 s.setNarrativeData('selfImprovementArc',
-                  `After this attack, Sentinel generated Rule ${ruleLabel}. It is now active in the Safety Gate.`)
+                  `Generated scoring function detects ${detectStr}. Rule deployed to Safety Gate and will fire on future attacks matching this behavioral signature.${attribution ? ' ' + attribution : ''}`)
               }
             }
+            break
+
+          case 'rule_generated':
+            // Rule generated but not yet deployed -- update self-improvement arc
+            s.setNarrativeData('selfImprovementArc',
+              `Sentinel is generating a new scoring function from the prediction errors observed in this attack. The rule will be deployed to the Safety Gate momentarily...`)
             break
 
           case 'rule_generation_failed':

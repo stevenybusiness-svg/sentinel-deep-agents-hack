@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  aerospike:
+    image: aerospike/aerospike-server:latest
+    volumes:
+      - ./aerospike.conf:/etc/aerospike/aerospike.conf
+      - aerospike-data:/opt/aerospike/data
+    healthcheck:
+      test: ["CMD", "asinfo", "-v", "status"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  sentinel:
+    build: .
+    env_file: .env
+    environment:
+      - AEROSPIKE_HOST=aerospike
+      - AEROSPIKE_PORT=3000
+      - AEROSPIKE_NAMESPACE=sentinel
+    depends_on:
+      aerospike:
+        condition: service_healthy
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - sentinel
+    restart: unless-stopped
+
+volumes:
+  aerospike-data:
+  caddy_data:
+  caddy_config:

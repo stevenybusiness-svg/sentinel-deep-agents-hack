@@ -35,25 +35,35 @@ function SentinelNode({ data }) {
       iconName = 'auto_awesome'
       bgStyle = { backgroundColor: 'rgba(227,179,65,0.1)' }
       break
+    case 'annotation':
+      borderClass = 'border border-warning/50'
+      iconColorClass = 'text-warning/70'
+      iconName = icon || 'info'
+      bgStyle = { backgroundColor: 'rgba(227,179,65,0.05)' }
+      break
     default:
       // pending
       break
   }
 
   const isSpinning = status === 'active'
+  const isAnnotation = status === 'annotation'
+  const textSizeClass = isAnnotation ? 'text-[9px] text-text-muted' : 'text-[11px] text-text-main'
+  const iconSizeClass = isAnnotation ? 'text-[14px]' : 'text-[18px]'
+  const paddingClass = isAnnotation ? 'px-2 py-1' : 'px-3 py-2'
 
   return (
     <div
-      className={`bg-surface rounded-lg px-3 py-2 flex items-center gap-2 transition-all duration-150 ${borderClass} ${status === 'rule_node' ? 'rule-pulse' : ''}`}
+      className={`bg-surface rounded-lg ${paddingClass} flex items-center gap-2 transition-all duration-150 ${borderClass} ${status === 'rule_node' ? 'rule-pulse' : ''}`}
       style={bgStyle}
     >
       <Handle type="target" position={Position.Top} style={{ visibility: 'hidden' }} />
       <span
-        className={`material-symbols-outlined text-[18px] ${iconColorClass} ${isSpinning ? 'animate-spin' : ''}`}
+        className={`material-symbols-outlined ${iconSizeClass} ${iconColorClass} ${isSpinning ? 'animate-spin' : ''}`}
       >
         {iconName}
       </span>
-      <span className="text-[11px] font-display text-text-main whitespace-nowrap">{label}</span>
+      <span className={`font-display whitespace-nowrap ${textSizeClass}`}>{label}</span>
       <Handle type="source" position={Position.Bottom} style={{ visibility: 'hidden' }} />
     </div>
   )
@@ -82,6 +92,7 @@ export function InvestigationTree() {
       nodeTypes={nodeTypes}
       fitView
       nodesDraggable={false}
+      proOptions={{ hideAttribution: true }}
       nodesConnectable={false}
       elementsSelectable={false}
     >

@@ -1,5 +1,31 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, Component } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
+
+// Error boundary to catch and display runtime errors instead of blank screen
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props)
+    this.state = { error: null }
+  }
+  static getDerivedStateFromError(error) {
+    return { error }
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ padding: 40, color: '#f85149', fontFamily: 'monospace', background: '#0d1117', minHeight: '100vh' }}>
+          <h2>Dashboard Error</h2>
+          <pre style={{ whiteSpace: 'pre-wrap', color: '#c9d1d9' }}>{this.state.error.message}</pre>
+          <pre style={{ whiteSpace: 'pre-wrap', color: '#8b949e', fontSize: 12 }}>{this.state.error.stack}</pre>
+          <button onClick={() => this.setState({ error: null })} style={{ marginTop: 20, padding: '8px 16px', background: '#57abff', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' }}>
+            Retry
+          </button>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
 import { useStore } from './store'
 import { useWebSocket } from './hooks/useWebSocket'
 import { seedDemoData } from './demoData'
@@ -12,43 +38,37 @@ import { RuleSourcePanel } from './components/RuleSourcePanel'
 import { AerospikeLatency } from './components/AerospikeLatency'
 import { SlackReportPanel } from './components/SlackReportPanel'
 import { QualitativeAnalysisPanel } from './components/QualitativeAnalysisPanel'
-import { ScenarioScreen } from './components/ScenarioScreen'
+import { LandingPage } from './components/LandingPage'
+import { AuthenticatingScreen } from './components/AuthenticatingScreen'
+import { SecurityThreatsPage } from './components/SecurityThreatsPage'
 
 const apiBase = import.meta.env.VITE_API_URL || ''
 
 export default function App() {
-  const { isAuthenticated, isLoading, loginWithRedirect, user, logout } = useAuth0()
+  const { isAuthenticated, isLoading, user, logout } = useAuth0()
+  const [localAuth, setLocalAuth] = useState(false)
+  const [authenticating, setAuthenticating] = useState(false)
+  const authTimer = useRef(null)
 
-  // Auth0 loading state -- show loading screen
-  if (isLoading) {
-    return (
-      <div className="h-screen bg-bg-dark flex items-center justify-center flex-col gap-4">
-        <h1 className="text-2xl font-semibold text-white tracking-tight">Sentinel</h1>
-        <span className="text-text-muted text-sm">Authenticating...</span>
-      </div>
-    )
+  const handleEnter = () => {
+    if (authenticating) return // prevent double-click
+    setAuthenticating(true)
+    if (authTimer.current) clearTimeout(authTimer.current)
+    authTimer.current = setTimeout(() => {
+      setLocalAuth(true)
+      setAuthenticating(false)
+      authTimer.current = null
+    }, 3000)
   }
 
-  // Auth0 login gate -- first screen in demo flow
-  if (!isAuthenticated) {
-    return (
-      <div className="h-screen bg-bg-dark flex items-center justify-center flex-col gap-6">
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold text-white tracking-tight">Sentinel</h1>
-          <p className="text-text-muted text-sm">Autonomous Security for AI Agents</p>
-          <p className="text-text-muted text-xs">SRE Operator Console</p>
-        </div>
-        <button
-          onClick={() => loginWithRedirect()}
-          className="px-6 py-2.5 rounded-lg bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition-colors"
-        >
-          Sign In with Auth0
-        </button>
-        <p className="text-text-muted text-[10px] mt-4">
-          Auditability &middot; Traceability &middot; Autonomous Security &middot; Knowledge Enrichment
-        </p>
-      </div>
-    )
+  // Show authenticating screen during transition or Auth0 loading
+  if (authenticating || isLoading) {
+    return <AuthenticatingScreen />
+  }
+
+  // Show landing page if not authenticated
+  if (!isAuthenticated && !localAuth) {
+    return <LandingPage onEnter={handleEnter} />
   }
 
   return <AuthenticatedApp user={user} logout={logout} />
@@ -57,12 +77,14 @@ export default function App() {
 function AuthenticatedApp({ user, logout }) {
   useWebSocket()
 
-  // Guided demo flow state (local React state, not Zustand)
-  // Flow: scenario1 -> dashboard1 -> scenario2 -> dashboard2
-  const [flowStep, setFlowStep] = useState('scenario1')
+  // View state: which tab is active
+  const [activeTab, setActiveTab] = useState('threats') // 'threats' | 'logs'
+  // Which attack is currently expanded in the threats view (null = overview)
+  const [expandedAttack, setExpandedAttack] = useState(1) // Start with attack 1 expanded
+  // Which attack phase we're on (1 or 2)
+  const [attackPhase, setAttackPhase] = useState(1)
 
-  // Seed demo data on load so dashboard is always populated.
-  // Real WebSocket events override demo state when an investigation runs.
+  // Seed demo data on load
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     if (params.get('demo') !== 'false') {
@@ -72,7 +94,6 @@ function AuthenticatedApp({ user, logout }) {
 
   const wsConnected = useStore((s) => s.wsConnected)
   const investigationStatus = useStore((s) => s.investigationStatus)
-
   const isRunning = investigationStatus === 'running'
 
   async function runAttack(payload) {
@@ -83,7 +104,6 @@ function AuthenticatedApp({ user, logout }) {
         body: JSON.stringify(payload),
       })
     } catch (err) {
-      // WebSocket events drive state — ignore fetch response errors
       console.error('investigate request failed', err)
     }
   }
@@ -116,81 +136,81 @@ function AuthenticatedApp({ user, logout }) {
     })
   }
 
-  const btnClass =
-    'px-3 py-1.5 rounded text-xs font-semibold bg-surface border border-border-muted text-text-main ' +
-    'hover:border-accent hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed'
-
-  // Scenario screens (per PHASE8-02: scenario screens appear BEFORE investigations)
-  if (flowStep === 'scenario1') {
-    return (
-      <ScenarioScreen
-        scenario="attack1"
-        onStart={() => {
-          setFlowStep('dashboard1')
-          handleAttack1()
-        }}
-      />
-    )
+  function handleLaunchInvestigation(attackId) {
+    setAttackPhase(attackId)
+    setActiveTab('logs')
+    setExpandedAttack(null)
+    if (attackId === 1) handleAttack1()
+    else handleAttack2()
   }
 
-  if (flowStep === 'scenario2') {
-    return (
-      <ScenarioScreen
-        scenario="attack2"
-        onStart={() => {
-          setFlowStep('dashboard2')
-          handleAttack2()
-        }}
-      />
-    )
+  function handleProceedToAttack2() {
+    setAttackPhase(2)
+    setActiveTab('threats')
+    setExpandedAttack(2)
   }
+
+  // Show "Proceed to Attack 2" when attack 1 investigation is complete
+  const showProceed = attackPhase === 1 && investigationStatus === 'complete' && activeTab === 'logs'
 
   return (
     <div className="h-screen bg-bg-dark text-text-main font-display flex flex-col">
-      {/* Header */}
-      <header className="flex items-center justify-between h-12 px-4 border-b border-border-muted bg-surface/50 backdrop-blur-md sticky top-0 z-10 shrink-0">
-        <h1 className="text-sm font-semibold tracking-tight text-white">Sentinel Dashboard</h1>
+      {/* Persistent Header */}
+      <header className="flex items-center justify-between h-12 px-5 border-b border-border-muted bg-surface/50 backdrop-blur-md sticky top-0 z-20 shrink-0">
+        {/* Left: Branding */}
+        <div className="flex items-center gap-6">
+          <span className="text-sm font-bold tracking-wider text-cyber">SENTINEL</span>
 
-        {/* Attack buttons */}
-        <div className="flex items-center gap-2">
-          <button
-            className={btnClass}
-            disabled={isRunning}
-            onClick={handleAttack1}
-          >
-            Attack 1: Invoice Injection
-          </button>
-          <button
-            className={btnClass}
-            disabled={isRunning}
-            onClick={handleAttack2}
-          >
-            Attack 2: Identity Spoofing
-          </button>
-          {flowStep === 'dashboard1' && investigationStatus === 'complete' && (
+          {/* Tab navigation */}
+          <nav className="flex items-center gap-1">
             <button
-              className="px-3 py-1.5 rounded text-xs font-semibold bg-warning text-bg-dark hover:bg-warning/90 transition-colors"
-              onClick={() => setFlowStep('scenario2')}
+              onClick={() => setActiveTab('threats')}
+              className={`px-3 py-3 text-[11px] uppercase tracking-wider font-semibold transition-colors ${
+                activeTab === 'threats'
+                  ? 'tab-active text-cyber'
+                  : 'text-text-muted hover:text-white border-b-2 border-transparent'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[14px] align-middle mr-1">warning</span>
+              Security Threats
+            </button>
+            <button
+              onClick={() => setActiveTab('logs')}
+              className={`px-3 py-3 text-[11px] uppercase tracking-wider font-semibold transition-colors ${
+                activeTab === 'logs'
+                  ? 'tab-active text-cyber'
+                  : 'text-text-muted hover:text-white border-b-2 border-transparent'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[14px] align-middle mr-1">monitoring</span>
+              Security Logs
+            </button>
+          </nav>
+        </div>
+
+        {/* Right: Status + actions */}
+        <div className="flex items-center gap-3">
+          {showProceed && (
+            <button
+              onClick={handleProceedToAttack2}
+              className="px-3 py-1.5 rounded text-[10px] font-bold bg-warning text-bg-dark hover:bg-warning/90 transition-colors uppercase tracking-wider"
             >
               Proceed to Attack 2 &rarr;
             </button>
           )}
-        </div>
 
-        {/* Status chip + user */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded border border-border-muted bg-bg-dark text-[10px] text-text-muted font-mono uppercase tracking-wider">
-            <span
-              className={`pulse-dot inline-block w-1.5 h-1.5 rounded-full ${wsConnected ? 'bg-success' : 'bg-text-muted'}`}
-            />
+          {/* Status chip */}
+          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded border border-border-muted bg-bg-dark text-[9px] text-text-muted font-mono uppercase tracking-wider">
+            <span className={`pulse-dot inline-block w-1.5 h-1.5 rounded-full ${wsConnected ? 'bg-success' : 'bg-text-muted'}`} />
             {wsConnected ? 'connected' : 'disconnected'} &middot; {investigationStatus}
           </div>
+
           {user && (
-            <div className="flex items-center gap-2 ml-2">
-              <span className="text-[10px] text-text-muted">{user.email}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] text-text-muted">{user.email}</span>
               <button
                 onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
-                className="text-[10px] text-text-muted hover:text-white transition-colors"
+                className="text-[9px] text-text-muted hover:text-white transition-colors"
               >
                 Logout
               </button>
@@ -199,6 +219,56 @@ function AuthenticatedApp({ user, logout }) {
         </div>
       </header>
 
+      {/* Content area */}
+      {activeTab === 'threats' && (
+        <SecurityThreatsPage
+          expandedAttack={expandedAttack}
+          onExpand={setExpandedAttack}
+          onCollapse={() => setExpandedAttack(null)}
+          onLaunchInvestigation={handleLaunchInvestigation}
+          investigationStatus={investigationStatus}
+          currentAttack={attackPhase}
+        />
+      )}
+      {activeTab === 'logs' && (
+        <ErrorBoundary>
+          <DashboardView
+            isRunning={isRunning}
+            investigationStatus={investigationStatus}
+            attackPhase={attackPhase}
+            onAttack1={handleAttack1}
+            onAttack2={handleAttack2}
+          />
+        </ErrorBoundary>
+      )}
+    </div>
+  )
+}
+
+function DashboardView({ isRunning, investigationStatus, attackPhase, onAttack1, onAttack2 }) {
+  const btnClass =
+    'px-3 py-1.5 rounded text-[10px] font-semibold bg-surface border border-border-muted text-text-main ' +
+    'hover:border-accent hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed'
+
+  return (
+    <div className="flex-1 flex flex-col overflow-hidden">
+      {/* Sub-header with attack controls */}
+      <div className="flex items-center justify-between px-4 py-2 border-b border-border-muted bg-bg-dark/50 shrink-0">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-text-muted uppercase tracking-wider font-mono">
+            Investigation Log — Attack {attackPhase}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button className={btnClass} disabled={isRunning} onClick={onAttack1}>
+            Re-run Attack 1
+          </button>
+          <button className={btnClass} disabled={isRunning} onClick={onAttack2}>
+            Re-run Attack 2
+          </button>
+        </div>
+      </div>
+
       {/* Two-column layout */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left: Investigation tree */}
@@ -206,7 +276,7 @@ function AuthenticatedApp({ user, logout }) {
           <InvestigationTree />
         </div>
 
-        {/* Right: Panel stack — exactly 6 panels per D-03 */}
+        {/* Right: Panel stack */}
         <div className="w-1/2 h-full overflow-y-auto border-l border-border-muted p-4 space-y-3">
           <GateDecisionPanel />
           <AnomalyScoreBar />
@@ -218,7 +288,7 @@ function AuthenticatedApp({ user, logout }) {
         </div>
       </div>
 
-      {/* Qualitative Analysis -- full-width bottom row (D-10) */}
+      {/* Qualitative Analysis -- full-width bottom row */}
       <div className="border-t border-border-muted bg-bg-dark px-4 py-3 shrink-0">
         <QualitativeAnalysisPanel />
       </div>

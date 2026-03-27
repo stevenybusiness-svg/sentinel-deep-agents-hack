@@ -94,12 +94,17 @@ class SafetyGate:
             def score(verdict_board: dict) -> float
 
         This method is idempotent and replaces all previously loaded hardcoded rules.
+        Generated rules (rule_generated_*.py) are excluded — they must be registered
+        via register_rule() to ensure correct is_generated classification.
 
         Args:
             rules_dir: Path to directory containing rule_*.py files.
         """
         self._hardcoded_rules = {}
-        rule_files = sorted(rules_dir.glob("rule_*.py"))
+        rule_files = [
+            f for f in sorted(rules_dir.glob("rule_*.py"))
+            if not f.stem.startswith("rule_generated_")
+        ]
         for rule_file in rule_files:
             rule_id = rule_file.stem  # e.g. "rule_hidden_text"
             spec = importlib.util.spec_from_file_location(rule_id, rule_file)
@@ -208,6 +213,9 @@ class SafetyGate:
             except Exception:
                 # Rule errors must never block the gate — skip silently
                 pass
+
+        # Update hardcoded_rule_fired so generated rules can condition on it (Bug 2 fix)
+        vb_dict["hardcoded_rule_fired"] = hardcoded_fired
 
         # 2. Run generated rules (ENGN-03) with 5-second timeout per ENGN-05
         for rule_id, score_fn in self._generated_rules.items():

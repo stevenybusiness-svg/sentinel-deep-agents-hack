@@ -33,14 +33,28 @@ class AerospikeClient:
         self.host = host or os.getenv("AEROSPIKE_HOST", "localhost")
         self.port = port or int(os.getenv("AEROSPIKE_PORT", "3000"))
         self.namespace = namespace or os.getenv("AEROSPIKE_NAMESPACE", "sentinel")
+        self.user = os.getenv("AEROSPIKE_USER", "")
+        self.password = os.getenv("AEROSPIKE_PASSWORD", "")
         self._executor = ThreadPoolExecutor(max_workers=max_workers)
         self._client = None
 
-    def connect(self) -> "AerospikeClient":
-        """Connect to Aerospike server. Call once at app startup."""
+    def connect(self, timeout_ms: int = 3000) -> "AerospikeClient":
+        """Connect to Aerospike server. Call once at app startup.
+
+        Raises on timeout to prevent blocking the event loop during startup.
+        """
         if _aerospike_lib is None:
             raise RuntimeError("aerospike package not installed")
-        config = {"hosts": [(self.host, self.port)]}
+        config: dict = {
+            "hosts": [(self.host, self.port)],
+            "policies": {
+                "timeout": timeout_ms,
+                "login_timeout_ms": timeout_ms,
+            },
+        }
+        if self.user and self.password:
+            config["user"] = self.user
+            config["password"] = self.password
         self._client = _aerospike_lib.client(config).connect()
         return self
 
