@@ -106,11 +106,11 @@ Plans:
 **Goal:** Reduce investigation pipeline latency from ~30s to <10s via batched tool calls, prompt caching, and Supervisor streaming; add a full-width qualitative analysis panel with 4 plain English cards (Attack Narrative, Agent Reasoning, Prediction vs. Actual, Self-Improvement Arc) using hybrid template-fill + async LLM polish
 **Requirements**: D-01, D-02, D-03, D-04, D-05, D-06, D-07, D-08, D-09, D-10
 **Depends on:** Phase 4
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 
 Plans:
 - [x] 04.1-01-PLAN.md — Backend performance optimization: batched tool calls, prompt caching, Supervisor streaming, narrative template generation + async polish (D-01, D-02, D-03, D-09)
-- [ ] 04.1-02-PLAN.md — Qualitative Analysis Panel: Zustand state, WebSocket handlers, 4-card component, App.jsx layout integration (D-04 through D-10)
+- [x] 04.1-02-PLAN.md — Qualitative Analysis Panel: Zustand state, WebSocket handlers, 4-card component, App.jsx layout integration (D-04 through D-10)
 
 ### Phase 5: Voice Integration
 **Goal**: The Bland AI voice session is live for the demo — the Supervisor answers "Why did you block that?" in plain language using actual anomaly scores, prediction errors, and rule attribution; barge-in works; all voice answers are also visible on the dashboard as text fallback
