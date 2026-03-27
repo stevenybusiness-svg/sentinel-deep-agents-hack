@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useAuth0 } from '@auth0/auth0-react'
 import { useStore } from './store'
 import { useWebSocket } from './hooks/useWebSocket'
 import { seedDemoData } from './demoData'
@@ -14,6 +15,44 @@ import { QualitativeAnalysisPanel } from './components/QualitativeAnalysisPanel'
 import { ForensicIntroScreen } from './components/ForensicIntroScreen'
 
 export default function App() {
+  const { isAuthenticated, isLoading, loginWithRedirect, user, logout } = useAuth0()
+
+  // Auth0 loading state -- show loading screen
+  if (isLoading) {
+    return (
+      <div className="h-screen bg-bg-dark flex items-center justify-center flex-col gap-4">
+        <h1 className="text-2xl font-semibold text-white tracking-tight">Sentinel</h1>
+        <span className="text-text-muted text-sm">Authenticating...</span>
+      </div>
+    )
+  }
+
+  // Auth0 login gate -- first screen in demo flow
+  if (!isAuthenticated) {
+    return (
+      <div className="h-screen bg-bg-dark flex items-center justify-center flex-col gap-6">
+        <div className="text-center space-y-2">
+          <h1 className="text-3xl font-bold text-white tracking-tight">Sentinel</h1>
+          <p className="text-text-muted text-sm">Autonomous Security for AI Agents</p>
+          <p className="text-text-muted text-xs">SRE Operator Console</p>
+        </div>
+        <button
+          onClick={() => loginWithRedirect()}
+          className="px-6 py-2.5 rounded-lg bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition-colors"
+        >
+          Sign In with Auth0
+        </button>
+        <p className="text-text-muted text-[10px] mt-4">
+          Auditability &middot; Traceability &middot; Autonomous Security &middot; Knowledge Enrichment
+        </p>
+      </div>
+    )
+  }
+
+  return <AuthenticatedApp user={user} logout={logout} />
+}
+
+function AuthenticatedApp({ user, logout }) {
   useWebSocket()
 
   const [showIntro, setShowIntro] = useState(true)
@@ -120,12 +159,25 @@ export default function App() {
           </button>
         </div>
 
-        {/* Status chip */}
-        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded border border-border-muted bg-bg-dark text-[10px] text-text-muted font-mono uppercase tracking-wider">
-          <span
-            className={`pulse-dot inline-block w-1.5 h-1.5 rounded-full ${wsConnected ? 'bg-success' : 'bg-text-muted'}`}
-          />
-          {wsConnected ? 'connected' : 'disconnected'} &middot; {investigationStatus}
+        {/* Status chip + user */}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded border border-border-muted bg-bg-dark text-[10px] text-text-muted font-mono uppercase tracking-wider">
+            <span
+              className={`pulse-dot inline-block w-1.5 h-1.5 rounded-full ${wsConnected ? 'bg-success' : 'bg-text-muted'}`}
+            />
+            {wsConnected ? 'connected' : 'disconnected'} &middot; {investigationStatus}
+          </div>
+          {user && (
+            <div className="flex items-center gap-2 ml-2">
+              <span className="text-[10px] text-text-muted">{user.email}</span>
+              <button
+                onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+                className="text-[10px] text-text-muted hover:text-white transition-colors"
+              >
+                Logout
+              </button>
+            </div>
+          )}
         </div>
       </header>
 
