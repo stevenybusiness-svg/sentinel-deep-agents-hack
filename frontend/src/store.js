@@ -81,11 +81,11 @@ export const useStore = create((set, get) => ({
     narrativePolishing: { attackNarrative: false, agentReasoning: false, predictionSummary: false },
   }),
 
-  // Voice call state (Phase 5 / VOICE-01)
-  voiceCallId: null,
-  voiceCallStatus: 'idle', // idle | calling | active | error
-  setVoiceCallId: (id) => set({ voiceCallId: id }),
-  setVoiceCallStatus: (status) => set({ voiceCallStatus: status }),
+  // Airbyte report delivery state (DEMO-POLISH-04)
+  reportStatus: 'idle', // idle | sending | delivered | failed
+  reportChannel: null,
+  setReportStatus: (status) => set({ reportStatus: status }),
+  setReportChannel: (channel) => set({ reportChannel: channel }),
 
   // Current episode ID setter
   setCurrentEpisodeId: (id) => set({ currentEpisodeId: id }),
@@ -175,5 +175,7 @@ export const useStore = create((set, get) => ({
     trustScore: 0.85,
     narrativeData: { attackNarrative: null, agentReasoning: null, predictionSummary: null, selfImprovementArc: null },
     narrativePolishing: { attackNarrative: false, agentReasoning: false, predictionSummary: false },
+    reportStatus: 'idle',
+    reportChannel: null,
   }),
 }))

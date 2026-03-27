@@ -9,7 +9,7 @@ import { VerdictBoardTable } from './components/VerdictBoardTable'
 import { ForensicScanPanel } from './components/ForensicScanPanel'
 import { RuleSourcePanel } from './components/RuleSourcePanel'
 import { AerospikeLatency } from './components/AerospikeLatency'
-import { VoicePanel } from './components/VoicePanel'
+import { AirbyteReportPanel } from './components/AirbyteReportPanel'
 import { QualitativeAnalysisPanel } from './components/QualitativeAnalysisPanel'
 
 export default function App() {
@@ -122,7 +122,7 @@ export default function App() {
           <ForensicScanPanel />
           <RuleSourcePanel />
           <AerospikeLatency />
-          <VoicePanel />
+          <AirbyteReportPanel />
         </div>
       </div>
 

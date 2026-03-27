@@ -86,6 +86,8 @@ export function useWebSocket() {
               const trust = Math.max(0, Math.min(1, 1.0 - (data.composite_score || 0)))
               s.setTrustScore(trust)
             }
+            // Signal report delivery in progress (DEMO-POLISH-04)
+            s.setReportStatus('sending')
             break
 
           case 'episode_written':
@@ -150,6 +152,11 @@ export function useWebSocket() {
 
           case 'rule_generation_failed':
             s.setRuleStreaming(false)
+            break
+
+          case 'report_delivered':
+            s.setReportStatus(data.success ? 'delivered' : 'failed')
+            s.setReportChannel(data.channel || 'slack')
             break
 
           default:
