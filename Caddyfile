@@ -1,5 +1,6 @@
 3.20.246.253.nip.io {
     # Reverse proxy all traffic to FastAPI (serves both API and static frontend)
+    # Caddy automatically handles WebSocket upgrade headers
     reverse_proxy sentinel:8000
 
     # CORS headers for Vercel frontend -> EC2 backend
@@ -7,5 +8,6 @@
         Access-Control-Allow-Origin *
         Access-Control-Allow-Methods "GET, POST, OPTIONS"
         Access-Control-Allow-Headers "Content-Type, Authorization"
+        Access-Control-Allow-Credentials true
     }
 }
