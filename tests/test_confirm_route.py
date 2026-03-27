@@ -83,7 +83,7 @@ def test_confirm_returns_202(client):
     """POST /confirm with a valid episode_id returns 202 Accepted immediately."""
     with patch("asyncio.create_task"):
         response = client.post(
-            "/confirm",
+            "/api/confirm",
             json={"episode_id": EPISODE_ID, "attack_type": "prompt_injection_hidden_text"},
         )
     assert response.status_code == 202
@@ -97,7 +97,7 @@ def test_confirm_returns_202(client):
 def test_confirm_returns_404_for_unknown_episode(client):
     """POST /confirm with nonexistent episode_id returns 404 Not Found."""
     response = client.post(
-        "/confirm",
+        "/api/confirm",
         json={"episode_id": "nonexistent-episode-xyz", "attack_type": "test"},
     )
     assert response.status_code == 404
@@ -112,7 +112,7 @@ def test_confirm_returns_404_for_unknown_episode(client):
 def test_confirm_request_validation(client):
     """POST /confirm without attack_type returns 422 Unprocessable Entity."""
     response = client.post(
-        "/confirm",
+        "/api/confirm",
         json={"episode_id": EPISODE_ID},  # Missing attack_type
     )
     assert response.status_code == 422
@@ -127,7 +127,7 @@ def test_confirm_spawns_background_task(client):
     """After POST /confirm, asyncio.create_task is called once."""
     with patch("asyncio.create_task") as mock_create_task:
         response = client.post(
-            "/confirm",
+            "/api/confirm",
             json={"episode_id": EPISODE_ID, "attack_type": "prompt_injection_hidden_text"},
         )
     assert response.status_code == 202
@@ -143,7 +143,7 @@ def test_confirm_response_schema(client):
     """Response body contains episode_id matching the request and status='accepted'."""
     with patch("asyncio.create_task"):
         response = client.post(
-            "/confirm",
+            "/api/confirm",
             json={"episode_id": EPISODE_ID, "attack_type": "identity_spoofing"},
         )
     assert response.status_code == 202

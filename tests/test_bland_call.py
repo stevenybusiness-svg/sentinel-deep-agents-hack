@@ -82,7 +82,7 @@ def test_call_payload_structure():
         phone_number="+15551234567",
         public_host="https://abc.ngrok.io",
     )
-    payload = _build_call_payload(req)
+    payload = _build_call_payload(req, req.phone_number or "+15550000000")
 
     assert payload["phone_number"] == "+15551234567"
     assert "task" in payload
@@ -113,7 +113,7 @@ def test_barge_in_params():
         phone_number="+15559876543",
         public_host="https://demo.example.com",
     )
-    payload = _build_call_payload(req)
+    payload = _build_call_payload(req, req.phone_number or "+15550000000")
 
     assert payload["interruption_threshold"] == 150
     assert payload["block_interruptions"] is False
@@ -156,6 +156,6 @@ def test_dynamic_data_timeout():
         phone_number="+15550001111",
         public_host="https://test.ngrok.io",
     )
-    payload = _build_call_payload(req)
+    payload = _build_call_payload(req, req.phone_number or "+15550000000")
 
     assert payload["dynamic_data"][0]["timeout"] == 3000
