@@ -209,8 +209,12 @@ export function useWebSocket() {
               s.clearStreamingBuffer()
               // Animate orange edges from gate to any existing rule nodes (self-improvement visual)
               s.setEdgeActive('e-sup-gate', '#e3b341')
+              // Transition persisted rule nodes to "evolving" state — brighter pulse shows system is learning
               const ruleNodes = s.nodes.filter(n => n.data?.status === 'rule_node')
-              ruleNodes.forEach(n => s.setEdgeActive(`e-gate-${n.id}`, '#e3b341'))
+              ruleNodes.forEach(n => {
+                s.setEdgeActive(`e-gate-${n.id}`, '#e3b341')
+                s.updateNodeStatus(n.id, 'rule_evolving')
+              })
             }
             s.appendStreamingBuffer(data.token || '')
             break
@@ -240,6 +244,10 @@ export function useWebSocket() {
 
           case 'rule_deployed':
             s.setRuleStreaming(false)
+            // Revert any evolving nodes back to steady pulse
+            s.nodes.filter(n => n.data?.status === 'rule_evolving').forEach(n => {
+              s.updateNodeStatus(n.id, 'rule_node')
+            })
             s.addRuleSource({
               rule_id: data.rule_id,
               version: data.version,
@@ -255,6 +263,11 @@ export function useWebSocket() {
               const descriptiveLabel = buildRuleLabel(ruleId, version, data.source)
 
               s.addRuleNode(ruleId, descriptiveLabel, data.source)
+              // New rule enters with dramatic glow burst, then settles to steady pulse
+              s.updateNodeStatus(ruleId, 'rule_new')
+              setTimeout(() => {
+                useStore.getState().updateNodeStatus(ruleId, 'rule_node')
+              }, 2000)
             }
             // Auto-populate self-improvement arc narrative from event data
             {
@@ -292,6 +305,10 @@ export function useWebSocket() {
 
           case 'rule_generation_failed':
             s.setRuleStreaming(false)
+            // Revert any evolving nodes back to steady pulse
+            s.nodes.filter(n => n.data?.status === 'rule_evolving').forEach(n => {
+              s.updateNodeStatus(n.id, 'rule_node')
+            })
             break
 
           case 'report_delivered':
