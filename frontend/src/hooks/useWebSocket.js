@@ -203,13 +203,12 @@ export function useWebSocket() {
             s.setAerospikeLatencyMs(data.write_latency_ms)
             break
 
-          case 'rule_generating':
+          case 'rule_generating': {
             if (!s.ruleStreaming) {
               s.setRuleStreaming(true)
               s.clearStreamingBuffer()
-              // Animate orange edges from gate to any existing rule nodes (self-improvement visual)
               s.setEdgeActive('e-sup-gate', '#e3b341')
-              // Transition persisted rule nodes to "evolving" state — brighter pulse shows system is learning
+              // Transition persisted rule nodes to "evolving" state
               const ruleNodes = s.nodes.filter(n =>
                 n.data?.status === 'rule_node' || n.data?.status === 'rule_new' || n.data?.status === 'rule_evolving'
               )
@@ -217,7 +216,7 @@ export function useWebSocket() {
                 s.setEdgeActive(`e-gate-${n.id}`, '#e3b341')
                 s.updateNodeStatus(n.id, 'rule_evolving')
               })
-              // Add a placeholder "learning" node immediately so the tree shows active learning
+              // Add placeholder "Learning..." node
               if (!s.nodes.find(n => n.id === '__generating__')) {
                 const gateNode = s.nodes.find(n => n.id === 'gate')
                 const gateY = gateNode?.position?.y || 340
@@ -237,7 +236,53 @@ export function useWebSocket() {
               }
             }
             s.appendStreamingBuffer(data.token || '')
+
+            // Dynamically add finding annotations as patterns appear in streamed source
+            const buf = useStore.getState().streamingBuffer || ''
+            const genNode = useStore.getState().nodes.find(n => n.id === '__generating__')
+            if (genNode) {
+              const genY = genNode.position.y
+              const findings = []
+              if (buf.includes('z_score') || buf.includes('z >') || buf.includes('abs_z'))
+                findings.push({ id: '__gen_annot_0__', label: 'Flagging confidence anomaly' })
+              if (buf.includes('hidden') || buf.includes('injection'))
+                findings.push({ id: '__gen_annot_1__', label: 'Detecting hidden injection' })
+              if (buf.includes('mismatch') || buf.includes('critical_count'))
+                findings.push({ id: '__gen_annot_0__', label: 'Penalizing claim mismatches' })
+              if (buf.includes('kyc') || buf.includes('identity') || buf.includes('spoof'))
+                findings.push({ id: '__gen_annot_1__', label: 'Flagging KYC gaps' })
+              if (buf.includes('step_sequence') || buf.includes('deviation'))
+                findings.push({ id: '__gen_annot_1__', label: 'Detecting step deviation' })
+
+              // Keep max 2 unique findings
+              const seen = new Set()
+              const unique = findings.filter(f => { if (seen.has(f.id)) return false; seen.add(f.id); return true }).slice(0, 2)
+              const currState = useStore.getState()
+              for (const finding of unique) {
+                const exists = currState.nodes.find(n => n.id === finding.id)
+                if (!exists) {
+                  const idx = finding.id.endsWith('0__') ? 0 : 1
+                  currState.addNodes([{
+                    id: finding.id,
+                    position: { x: 400 + idx * 240, y: genY + 80 },
+                    data: { label: finding.label, icon: 'info', status: 'annotation' },
+                    type: 'sentinel',
+                  }])
+                  currState.addEdges([{
+                    id: `e-gen-${finding.id}`,
+                    source: '__generating__',
+                    target: finding.id,
+                    animated: false,
+                    style: { stroke: '#e3b341', strokeWidth: 1, strokeDasharray: '4 4' },
+                  }])
+                } else if (exists.data.label !== finding.label) {
+                  // Update label if a new pattern was detected for this slot
+                  currState.updateNodeLabel(finding.id, finding.label)
+                }
+              }
+            }
             break
+          }
 
           case 'supervisor_token':
             // Supervisor reasoning streaming -- no-op for now, handled by investigation tree

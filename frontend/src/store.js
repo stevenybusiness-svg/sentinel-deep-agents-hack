@@ -190,9 +190,10 @@ export const useStore = create((set, get) => ({
   addRuleNode: (ruleId, label, source) => set((s) => {
     const isRuleStatus = (st) => st === 'rule_node' || st === 'rule_new' || st === 'rule_evolving' || st === 'rule_generating'
 
-    // Remove the "Learning..." placeholder if present
-    const filteredNodes = s.nodes.filter(n => n.id !== '__generating__')
-    const filteredEdges = s.edges.filter(e => e.source !== '__generating__' && e.target !== '__generating__')
+    // Remove the "Learning..." placeholder and its annotation branches
+    const genIds = new Set(['__generating__', '__gen_annot_0__', '__gen_annot_1__'])
+    const filteredNodes = s.nodes.filter(n => !genIds.has(n.id))
+    const filteredEdges = s.edges.filter(e => !genIds.has(e.source) && !genIds.has(e.target))
 
     // Check if this rule node already exists in CURRENT nodes (evolution path — same rule_id)
     const existingIdx = filteredNodes.findIndex(n => n.id === ruleId && isRuleStatus(n.data?.status))
