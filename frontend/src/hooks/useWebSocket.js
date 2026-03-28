@@ -222,7 +222,7 @@ export function useWebSocket() {
                 const gateY = gateNode?.position?.y || 340
                 s.addNodes([{
                   id: '__generating__',
-                  position: { x: 520, y: gateY },
+                  position: { x: 350, y: gateY + 120 },
                   data: { label: 'Learning...', icon: 'auto_awesome', status: 'rule_generating' },
                   type: 'sentinel',
                 }])
@@ -264,7 +264,7 @@ export function useWebSocket() {
                   const idx = finding.id.endsWith('0__') ? 0 : 1
                   currState.addNodes([{
                     id: finding.id,
-                    position: { x: 400 + idx * 240, y: genY + 80 },
+                    position: { x: 200 + idx * 300, y: genY + 100 },
                     data: { label: finding.label, icon: 'info', status: 'annotation' },
                     type: 'sentinel',
                   }])

@@ -216,14 +216,14 @@ export const useStore = create((set, get) => ({
     const previousRules = s.persistedRuleNodes.filter(n => isRuleStatus(n.data?.status))
     const hasPersistedRules = previousRules.length > 0
 
-    // Position the new rule below the gate
+    // Position the new rule below and right of the gate
     const gateNode = filteredNodes.find(n => n.id === 'gate')
     const gateY = gateNode?.position?.y || 340
-    const ruleY = gateY
+    const ruleY = gateY + 120
 
     const newNode = {
       id: ruleId,
-      position: { x: 520, y: ruleY },
+      position: { x: 350, y: ruleY },
       data: { label, icon: 'auto_awesome', status: 'rule_new' },
       type: 'sentinel',
     }
@@ -256,19 +256,19 @@ export const useStore = create((set, get) => ({
     if (source) {
       const hints = []
       if (source.includes('z_score') || source.includes('z >')) hints.push('Flags z-score > 2\u03C3')
-      if (source.includes('verify_counterparty') || source.includes('step_sequence')) hints.push('Detects skipped verification')
       if (source.includes('hidden') || source.includes('injection')) hints.push('Catches hidden injection')
       if (source.includes('mismatch')) hints.push('Penalizes claim mismatches')
-      // Limit to 3 annotations
-      const displayHints = hints.slice(0, 3)
-      const annotY = ruleY + 90
-      const totalWidth = (displayHints.length - 1) * 280
-      const startX = 520 - totalWidth / 2
+      if (source.includes('verify_counterparty') || source.includes('step_sequence')) hints.push('Detects skipped verification')
+      // Limit to 2 annotations to keep tree clean
+      const displayHints = hints.slice(0, 2)
+      const annotY = ruleY + 100
+      const totalWidth = (displayHints.length - 1) * 300
+      const startX = 350 - totalWidth / 2
       displayHints.forEach((hint, i) => {
         const annotId = `${ruleId}-annot-${i}`
         annotations.push({
           id: annotId,
-          position: { x: startX + i * 280, y: annotY },
+          position: { x: startX + i * 300, y: annotY },
           data: { label: hint, icon: 'info', status: 'annotation' },
           type: 'sentinel',
         })
