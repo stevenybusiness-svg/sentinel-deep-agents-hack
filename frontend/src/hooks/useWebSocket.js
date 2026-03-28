@@ -210,11 +210,31 @@ export function useWebSocket() {
               // Animate orange edges from gate to any existing rule nodes (self-improvement visual)
               s.setEdgeActive('e-sup-gate', '#e3b341')
               // Transition persisted rule nodes to "evolving" state — brighter pulse shows system is learning
-              const ruleNodes = s.nodes.filter(n => n.data?.status === 'rule_node')
+              const ruleNodes = s.nodes.filter(n =>
+                n.data?.status === 'rule_node' || n.data?.status === 'rule_new' || n.data?.status === 'rule_evolving'
+              )
               ruleNodes.forEach(n => {
                 s.setEdgeActive(`e-gate-${n.id}`, '#e3b341')
                 s.updateNodeStatus(n.id, 'rule_evolving')
               })
+              // Add a placeholder "learning" node immediately so the tree shows active learning
+              if (!s.nodes.find(n => n.id === '__generating__')) {
+                const gateNode = s.nodes.find(n => n.id === 'gate')
+                const gateY = gateNode?.position?.y || 340
+                s.addNodes([{
+                  id: '__generating__',
+                  position: { x: 520, y: gateY },
+                  data: { label: 'Learning...', icon: 'auto_awesome', status: 'rule_generating' },
+                  type: 'sentinel',
+                }])
+                s.addEdges([{
+                  id: 'e-gate-generating',
+                  source: 'gate',
+                  target: '__generating__',
+                  animated: true,
+                  style: { stroke: '#e3b341', strokeWidth: 2 },
+                }])
+              }
             }
             s.appendStreamingBuffer(data.token || '')
             break

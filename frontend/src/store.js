@@ -154,6 +154,13 @@ export const useStore = create((set, get) => ({
     }
   }),
 
+  addNodes: (newNodes) => set((s) => ({ nodes: [...s.nodes, ...newNodes] })),
+  addEdges: (newEdges) => set((s) => ({ edges: [...s.edges, ...newEdges] })),
+  removeNode: (nodeId) => set((s) => ({
+    nodes: s.nodes.filter(n => n.id !== nodeId),
+    edges: s.edges.filter(e => e.source !== nodeId && e.target !== nodeId),
+  })),
+
   updateNodeStatus: (nodeId, status) => set((s) => ({
     nodes: s.nodes.map((n) =>
       n.id === nodeId ? { ...n, data: { ...n.data, status } } : n
@@ -181,13 +188,17 @@ export const useStore = create((set, get) => ({
   })),
 
   addRuleNode: (ruleId, label, source) => set((s) => {
-    const isRuleStatus = (st) => st === 'rule_node' || st === 'rule_new' || st === 'rule_evolving'
+    const isRuleStatus = (st) => st === 'rule_node' || st === 'rule_new' || st === 'rule_evolving' || st === 'rule_generating'
+
+    // Remove the "Learning..." placeholder if present
+    const filteredNodes = s.nodes.filter(n => n.id !== '__generating__')
+    const filteredEdges = s.edges.filter(e => e.source !== '__generating__' && e.target !== '__generating__')
 
     // Check if this rule node already exists in CURRENT nodes (evolution path — same rule_id)
-    const existingIdx = s.nodes.findIndex(n => n.id === ruleId && isRuleStatus(n.data?.status))
+    const existingIdx = filteredNodes.findIndex(n => n.id === ruleId && isRuleStatus(n.data?.status))
     if (existingIdx !== -1) {
       // Update existing node: refresh label, entrance glow burst then settle
-      const updatedNodes = s.nodes.map(n =>
+      const updatedNodes = filteredNodes.map(n =>
         n.id === ruleId
           ? { ...n, data: { ...n.data, label, status: 'rule_new' } }
           : n
@@ -197,7 +208,7 @@ export const useStore = create((set, get) => ({
           ? { ...n, data: { ...n.data, label, status: 'rule_new' } }
           : n
       )
-      return { nodes: updatedNodes, persistedRuleNodes: updatedPersisted }
+      return { nodes: updatedNodes, edges: filteredEdges, persistedRuleNodes: updatedPersisted }
     }
 
     // Find persisted rules from previous attacks (these are at the top of the graph in Attack 2)
@@ -205,7 +216,7 @@ export const useStore = create((set, get) => ({
     const hasPersistedRules = previousRules.length > 0
 
     // Position the new rule below the gate
-    const gateNode = s.nodes.find(n => n.id === 'gate')
+    const gateNode = filteredNodes.find(n => n.id === 'gate')
     const gateY = gateNode?.position?.y || 340
     const ruleY = gateY
 
@@ -274,8 +285,8 @@ export const useStore = create((set, get) => ({
     const allNewEdges = [...newEdges, ...annotationEdges]
 
     return {
-      nodes: [...s.nodes, ...allNewNodes],
-      edges: [...s.edges, ...allNewEdges],
+      nodes: [...filteredNodes, ...allNewNodes],
+      edges: [...filteredEdges, ...allNewEdges],
       persistedRuleNodes: [...s.persistedRuleNodes, newNode],
       persistedRuleEdges: [...s.persistedRuleEdges, ...newEdges],
     }

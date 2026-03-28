@@ -53,6 +53,12 @@ function SentinelNode({ data }) {
       iconName = 'auto_awesome'
       bgStyle = { backgroundColor: 'rgba(227,179,65,0.2)' }
       break
+    case 'rule_generating':
+      borderClass = 'border border-warning/60 border-dashed'
+      iconColorClass = 'text-warning'
+      iconName = 'auto_awesome'
+      bgStyle = { backgroundColor: 'rgba(227,179,65,0.08)' }
+      break
     case 'annotation':
       borderClass = 'border border-warning/50'
       iconColorClass = 'text-warning/70'
@@ -72,7 +78,7 @@ function SentinelNode({ data }) {
 
   return (
     <div
-      className={`bg-surface rounded-lg ${paddingClass} flex items-center gap-2 transition-all duration-150 ${borderClass} ${status === 'rule_node' ? 'rule-pulse' : ''} ${status === 'rule_new' ? 'rule-deploy' : ''} ${status === 'rule_evolving' ? 'rule-evolving' : ''} ${status === 'compromised' ? 'compromised-pulse' : ''} ${status === 'pending' ? 'node-dormant' : ''}`}
+      className={`bg-surface rounded-lg ${paddingClass} flex items-center gap-2 transition-all duration-150 ${borderClass} ${status === 'rule_node' ? 'rule-pulse' : ''} ${status === 'rule_new' ? 'rule-deploy' : ''} ${status === 'rule_evolving' ? 'rule-evolving' : ''} ${status === 'rule_generating' ? 'rule-evolving' : ''} ${status === 'compromised' ? 'compromised-pulse' : ''} ${status === 'pending' ? 'node-dormant' : ''}`}
       style={bgStyle}
     >
       <Handle type="target" position={Position.Top} style={{ visibility: 'hidden' }} />
